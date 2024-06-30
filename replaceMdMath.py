@@ -11,7 +11,7 @@ MATH_SECTION_PATTERN = r'### Math Blocks'
 
 DEFAULT_IMG_DIR = os.path.expanduser('~/Notes/images/math/')
 
-def gen_image_link_from_md_math_str(md_file_name:str, n:int, image_dir:str=DEFAULT_IMG_DIR, file_extension='.png'):
+def gen_image_link_from_md_math_str(md_file_name:str, n:int, image_dir:str=DEFAULT_IMG_DIR, file_extension='png'):
     return f'![math_{n}]({image_dir}{md_file_name}_math_{n}.{file_extension})'
 
 md_path = 'temp.md'
@@ -25,7 +25,8 @@ result = (re.split(MATH_SECTION_PATTERN, md_str))
 if len(result)==1: 
     result_str = md_str
 else: 
-    result_str = result[1]
+    math_scratchpad = result[1]
+    result_str = result[0]
 
 math_block_str = ''
 while(True):
@@ -34,16 +35,19 @@ while(True):
     if(image_match==None and math_match==None):
         break
     elif math_match==None: #we muct have matched an image
-        pass
+        img_link = image_match.group(0)
+        n = int(img_link[7])
+        #math_block = re.search(f'math_{}'+
+        pass 
     else: #we must have matched a math block
-        img_link = gen_image_link_from_md_math_str(md_path[0:-4],  cnt)
+        img_link = gen_image_link_from_md_math_str(md_path[0:-3],  cnt)
         math_block_str += f'math_{cnt}\n'+math_match.group(0)+'\n'
         result_str = md_math_str_pattern.sub(img_link, result_str, count=1)
     cnt+=1
 
 result_str = result_str + '\n' + MATH_SECTION_PATTERN + '\n' + math_block_str
+
 def save_str_to_file(path:str, text_str:str)->None:
     with open(path, 'w', encoding='utf-8', errors="xmlcharrefreplace") as output_file:
         output_file.write(text_str)
-
 save_str_to_file(md_path, result_str)
