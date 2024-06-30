@@ -1,4 +1,4 @@
 run:
-	python genImageFromLatex.py
+	python replaceMdMath.py
 debug:
-	python -m pdb genImageFromLatex.py
+	python -m pdb replaceMdMath.py

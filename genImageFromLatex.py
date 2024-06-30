@@ -3,6 +3,10 @@ import sys
 import os
 from pdf2image import convert_from_path
 
+
+def get_dir_from_path(path:str)->str:
+    return re.sub(r'[^/]+\.pdf', '', pdf_path)
+
 #Takes in a mardown math string that looks something like this:
 #   $$
 #   a+b=c
@@ -18,34 +22,31 @@ def format_latex_math(math_str:str)->str:
     end_str = r'\end{align*}\end{document}"'
     return header_str + math_str + end_str
 
-
-#TODO: verify that pdf compilation was successful
-#TODO: wait for os system call to finish 
 #NOTE: you need to use pdflatex not pdftex to generate the file with this string
 #       for example you can use os.system('pdflatex'+latex_string)
 def gen_pdf_from_latex_str(latex_str:str, pdf_path:str)->bool:
-    e = os.system('pdflatex '+latex_str)
+    e = os.system(f'pdflatex '+latex_str)
     if e!=0 : return False
     os.rename('texput.pdf',pdf_path) 
     os.remove('texput.aux')
     os.remove('texput.log')
     return True
 
-def gen_png_from_latex_str(math_str:str)->str: 
-    return ''
-
-def parse_args(argv):
-    pass
-
-def main(argv):
-    pdf_path = 'latex_math.pdf'
-    md_math = '$$\na^2+b^2=c^2\n$$'
-    latex_math = format_latex_math(md_math) 
-    success = gen_pdf_from_latex_str(latex_math, pdf_path)
+#given a latex_style math str generate a png image of the math and save it 
+#    to the passed png_path
+def gen_png_from_latex_str(math_str:str, png_path:str)->bool: 
+    pdf_path = png_path[0:-3] + 'pdf'
+    if not(gen_pdf_from_latex_str(math_str, pdf_path)): return False 
     image = convert_from_path(pdf_path)[0]
-    image.save('out.png', 'PNG')
+    image.save(png_path, 'PNG')
+    os.remove(pdf_path)
+    return True
 
-if __name__=='__main__':
-    print('Hello World!')
-    args = parse_args(sys.argv)
-    main(args)
+def gen_png_from_md_math_str(md_math_str, png_path)->bool:
+    latex_str = format_latex_math(md_math_str)
+    if not(gen_png_from_latex_str(latex_str, png_path)): return False
+    return True
+
+#md_math_str = '$$\na^2+b^2=c^2\n$$' 
+#png_path = os.path.expanduser('~/Notes/images/test.png')
+#gen_png_from_md_math_str(md_math_str, png_path)    
