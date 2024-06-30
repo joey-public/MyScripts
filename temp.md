@@ -1,28 +1,27 @@
 # Temp
 
-Here is a math eq:
+Here is a math eq
 
-![math_0](/home/joey/Notes/images/math/temp_math_0.png)
+![math_0](/home/joey/Notes/images/math/tests1_i_math_0.png)
 
-and more 
+and more
 
-![math_1](/home/joey/Notes/images/math/temp_math_1.png) 
+![math_1](/home/joey/Notes/images/math/tests1_i_math_1.png) 
 
-then 
+then
 
-![math_2](/home/joey/Notes/images/math/temp_math_2.png)
+![math_2](/home/joey/Notes/images/math/tests1_i_math_2.png)
 
-so that
+so tha
 
-![math_3](/home/joey/Notes/images/math/temp_math_3.png)
+![math_3](/home/joey/Notes/images/math/tests1_i_math_3.png
 
-![math_4](/home/joey/Notes/images/math/temp_math_4.png)
+![math_4](/home/joey/Notes/images/math/tests1_i_math_4.png)
 
-$$
-    2b + 2 = 9
-$$
+![math_5](/home/joey/Notes/images/math/tests1_i_math_5.png
 
-![math_5](/home/joey/Notes/images/math/temp_math_5.png)
+![math_6](/home/joey/Notes/images/math/tests1_i_math_6.png)
+
 
 ### Math Blocks
 
@@ -45,8 +44,11 @@ $$
 math_4
 $$
     2b = 9-2
+$$math_5
 $$
-math_5
+    2b + 2 = 9
+$$
+math_6
 $$
     b = 7/2 = 3.5
 $$
