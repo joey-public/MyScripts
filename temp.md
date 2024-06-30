@@ -2,25 +2,25 @@
 
 Here is a math eq
 
-![math_0](/home/joey/Notes/images/math/tests1_i_math_0.png)
+![math_0](/home/joey/Notes/images/math/tests1_in_math_0.png)
 
 and more
 
-![math_1](/home/joey/Notes/images/math/tests1_i_math_1.png) 
+![math_1](/home/joey/Notes/images/math/tests1_in_math_1.png) 
 
 then
 
-![math_2](/home/joey/Notes/images/math/tests1_i_math_2.png)
+![math_2](/home/joey/Notes/images/math/tests1_in_math_2.png)
 
 so tha
 
-![math_3](/home/joey/Notes/images/math/tests1_i_math_3.png
+![math_3](/home/joey/Notes/images/math/tests1_in_math_3.png
 
-![math_4](/home/joey/Notes/images/math/tests1_i_math_4.png)
+![math_4](/home/joey/Notes/images/math/tests1_in_math_4.png)
 
-![math_5](/home/joey/Notes/images/math/tests1_i_math_5.png
+![math_5](/home/joey/Notes/images/math/tests1_in_math_5.png
 
-![math_6](/home/joey/Notes/images/math/tests1_i_math_6.png)
+![math_6](/home/joey/Notes/images/math/tests1_in_math_6.png)
 
 
 ### Math Blocks
