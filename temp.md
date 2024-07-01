@@ -1,29 +1,31 @@
 # Temp
 
-Here is a math eq
+Here is a math eq:
 
 ![math_0](/home/joey/Notes/images/math/tests1_in_math_0.png)
 
-and more
+and more 
 
 ![math_1](/home/joey/Notes/images/math/tests1_in_math_1.png) 
 
-then
+then 
 
 ![math_2](/home/joey/Notes/images/math/tests1_in_math_2.png)
 
-so tha
+so that
 
-![math_3](/home/joey/Notes/images/math/tests1_in_math_3.png
+![math_3](/home/joey/Notes/images/math/tests1_in_math_3.png)
 
 ![math_4](/home/joey/Notes/images/math/tests1_in_math_4.png)
 
-![math_5](/home/joey/Notes/images/math/tests1_in_math_5.png
+![math_5](/home/joey/Notes/images/math/tests1_in_math_5.png)
 
 ![math_6](/home/joey/Notes/images/math/tests1_in_math_6.png)
 
 
+
 ### Math Blocks
+
 
 math_0
 $$
@@ -44,7 +46,8 @@ $$
 math_4
 $$
     2b = 9-2
-$$math_5
+$$
+math_5
 $$
     2b + 2 = 9
 $$
