@@ -22,6 +22,8 @@ so that
 
 ![math_6](/home/joey/Notes/images/math/tests1_in_math_6.png)
 
+![math_7](/home/joey/Notes/images/math/tests1_in_math_7.png)
+
 
 
 ### Math Blocks
@@ -52,6 +54,10 @@ $$
     2b + 2 = 9
 $$
 math_6
+$$
+    2b = 7
+$$
+math_7
 $$
     b = 7/2 = 3.5
 $$

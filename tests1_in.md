@@ -22,6 +22,10 @@ $$
     2b + 2 = 9
 $$
 
+$$
+    2b = 7
+$$
+
 ![math_5](/home/joey/Notes/images/math/tests1_in_math_5.png)
 
 ### Math Blocks
