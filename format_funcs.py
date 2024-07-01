@@ -14,20 +14,35 @@ from pdf2image import convert_from_path
 def _create_image_path(n:str, md_file_name:str, img_dir:str, img_fmt:str)->str:
     return f'{img_dir}{md_file_name}_math_{n}{img_fmt}'
 
+def _save_latex_file(latex_str:str, file_path:str)->None:
+    with open(path, 'w', encoding='utf-8', errors="xmlcharrefreplace") as output_file:
+        output_file.write(html)
+     
+
 #NOTE: you need to use pdflatex not pdftex to generate the file with this string
 #       for example you can use os.system('pdflatex'+latex_string)
+#NOTE: it works best to just create a .tex file write to it and then call 
+#       'pdflatex file_path.tex'
 def _gen_pdf_from_latex_str(latex_str:str, pdf_path:str)->bool:
-    e = os.system(f'pdflatex '+latex_str)
+    pdf_file_name = os.path.splitext(os.path.basename(pdf_path))[0]
+    temp_str = os.path.splitext(pdf_path)[0]
+    tex_path = temp_str + '.tex'
+    pdf_dir = os.path.dirname(pdf_path)
+    with open(tex_path, 'w', encoding='utf-8') as output_file:
+        output_file.write(latex_str)
+    cmd = f'pdflatex -output-directory {pdf_dir} '+tex_path
+    e = os.system(cmd)
     if e!=0 : return False
-    os.rename('texput.pdf',pdf_path) 
-    os.remove('texput.aux')
-    os.remove('texput.log')
+    os.remove(temp_str + '.aux')
+    os.remove(temp_str + '.log')
+    os.remove(temp_str + '.tex')
     return True
 
 #given a latex_style math str generate a png image of the math and save it 
 #    to the passed png_path
 def _gen_png_from_latex_str(math_str:str, png_path:str)->bool: 
-    pdf_path = png_path[0:-3] + 'pdf'
+    temp_str = os.path.splitext(png_path)[0]
+    pdf_path = temp_str + '.pdf'
     if not(_gen_pdf_from_latex_str(math_str, pdf_path)): return False 
     image = convert_from_path(pdf_path)[0]
     image.save(png_path, 'PNG')
@@ -46,13 +61,14 @@ def _gen_png_from_latex_str(math_str:str, png_path:str)->bool:
 #'''
 def _convert_md_math_to_latex_math(md_math_str:str)->str:
     regex_pattern = r'(\$\$\n)'
-    header_str = r'"\documentclass[preview]{standalone}\usepackage{amsmath}\begin{document}\begin{align*}'
+    header_str = r'\documentclass[preview]{standalone}\usepackage{amsmath}\begin{document}\begin{align*}'
     math_str = re.sub(regex_pattern, '', md_math_str, count=1, flags=re.M)
     regex_pattern = r'\n\$\$'
     math_str = re.sub(regex_pattern, '', math_str, count=1, flags=re.M)
-    end_str = r'\end{align*}\end{document}"'
+    end_str = r'\end{align*}\end{document}'
     latex_str = header_str + math_str + end_str
     return header_str + math_str + end_str
+
 
 #'''Loop through a md_file_str and replace all math block with image links
 #arguments: 
