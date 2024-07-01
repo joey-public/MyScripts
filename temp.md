@@ -2,62 +2,40 @@
 
 Here is a math eq:
 
-![math_0](/home/joey/Notes/images/math/tests1_in_math_0.png)
-
-and more 
-
-![math_1](/home/joey/Notes/images/math/tests1_in_math_1.png) 
-
-then 
-
-![math_2](/home/joey/Notes/images/math/tests1_in_math_2.png)
-
-so that
-
-![math_3](/home/joey/Notes/images/math/tests1_in_math_3.png)
-
-![math_4](/home/joey/Notes/images/math/tests1_in_math_4.png)
-
-![math_5](/home/joey/Notes/images/math/tests1_in_math_5.png)
-
-![math_6](/home/joey/Notes/images/math/tests1_in_math_6.png)
-
-![math_7](/home/joey/Notes/images/math/tests1_in_math_7.png)
-
-
-
-### Math Blocks
-
-
-math_0
 $$
     a + b = 9
 $$
-math_1
+
+and more 
+
 $$
     a - b = 2 
 $$
-math_2
+
+then 
+
 $$
     a = b + 2
 $$
-math_3
+
+so that
+
 $$
     (b+2) + b = 9
 $$
-math_4
+
 $$
     2b = 9-2
 $$
-math_5
+
 $$
     2b + 2 = 9
 $$
-math_6
+
 $$
     2b = 7
 $$
-math_7
+
 $$
     b = 7/2 = 3.5
 $$

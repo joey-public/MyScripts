@@ -3,25 +3,6 @@ import sys
 import os
 from pdf2image import convert_from_path
 
-
-def get_dir_from_path(path:str)->str:
-    return re.sub(r'[^/]+\.pdf', '', pdf_path)
-
-#Takes in a mardown math string that looks something like this:
-#   $$
-#   a+b=c
-#   $$
-#Returns a latex equivalent lieke this:
-#   \usepackage{amsmath}\begin{align*}a+b=c\end{align*}
-def format_latex_math(math_str:str)->str:
-    regex_pattern = r'(\$\$\n)'
-    header_str = r'"\documentclass[preview]{standalone}\usepackage{amsmath}\begin{document}\begin{align*}'
-    math_str = re.sub(regex_pattern, '', math_str, count=1, flags=re.M)
-    regex_pattern = r'\n\$\$'
-    math_str = re.sub(regex_pattern, '', math_str, count=1, flags=re.M)
-    end_str = r'\end{align*}\end{document}"'
-    return header_str + math_str + end_str
-
 #NOTE: you need to use pdflatex not pdftex to generate the file with this string
 #       for example you can use os.system('pdflatex'+latex_string)
 def gen_pdf_from_latex_str(latex_str:str, pdf_path:str)->bool:
@@ -42,10 +23,6 @@ def gen_png_from_latex_str(math_str:str, png_path:str)->bool:
     os.remove(pdf_path)
     return True
 
-def gen_png_from_md_math_str(md_math_str, png_path)->bool:
-    latex_str = format_latex_math(md_math_str)
-    if not(gen_png_from_latex_str(latex_str, png_path)): return False
-    return True
 
 def gen_math_images(md_file_name, md_text, img_dir):
     cnt = 0
@@ -59,7 +36,3 @@ def gen_math_images(md_file_name, md_text, img_dir):
         img_path = f'{img_dir}{md_file_name}_math_{cnt}.png'
         gen_png_from_md_math_str(md_math_str, img_path)
         cnt+=1
-
-#md_math_str = '$$\na^2+b^2=c^2\n$$' 
-#png_path = os.path.expanduser('~/Notes/images/test.png')
-#gen_png_from_md_math_str(md_math_str, png_path)    

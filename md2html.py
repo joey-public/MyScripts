@@ -1,20 +1,16 @@
 import sys
+import os
 import markdown
 from markdown.extensions.wikilinks import WikiLinkExtension
-from replaceMdMath import format_md_str_math 
-from genImageFromLatex import gen_math_images 
+from format_funcs import replace_md_math_with_img_links, gen_math_images_from_md_str
+
 
 BASE_URL = '~/Notes/html/'
 USAGE_STR = 'python md2html.py <input.md> <output.html>'
 OFFICIAL_EXT=['fenced_code', 'tables', WikiLinkExtension(base_url=BASE_URL, end_url='.html')]
-OTHER_EXT = ['mdx_math']
 EXTENSIONS = OFFICIAL_EXT 
-DEFAULT_IMG_DIR = os.path.expanduser('~/Notes/images/math/')
 
-def file_to_html(path:str):
-    with open(path, 'r', encoding='utf-8') as input_file:
-        text=input_file.read()
-    return markdown.markdown(text, extensions=EXTENSIONS)
+DEFAULT_IMG_DIR = os.path.expanduser('~/Notes/images/math/')
 
 def save_html_to_file(path:str, html):
     with open(path, 'w', encoding='utf-8', errors="xmlcharrefreplace") as output_file:
@@ -44,15 +40,22 @@ def parse_args(argv):
         print(USAGE_STR) 
     return (md_path, html_path)
 
+# TODO: error checking 
+#       - make sure pdftex is on the system
+#       - make sure md_path is valid
+#       - make sure html_path is valid
+#       - make sure image_dir is valid
+
 def main(argv):
     md_path, html_path = parse_args(argv)
     md_file_name = md_path[0:-3]
-    md_str = read_txt_file(md_path)
+    print(md_file_name)
+    md_file_str = read_txt_file(md_path)
     img_dir = DEFAULT_IMG_DIR
-    result_str = format_md_str_math(md_file_name, md_str, img_dir)
-    gen_math_images(md_file_name, result_str, img_dir)
+    img_fmt = '.png' 
+    gen_math_images_from_md_str(md_file_str,md_file_name,img_dir,img_fmt)
+    result_str = replace_md_math_with_img_links(md_file_str,md_file_name,img_dir,img_fmt)
     html_obj = markdown.markdown(result_str, extensions=EXTENSIONS)
-   # html_obj = file_to_html(md_path)
     save_html_to_file(html_path, html_obj)
 
 if __name__=='__main__':
