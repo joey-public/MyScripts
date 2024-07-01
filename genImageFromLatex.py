@@ -47,6 +47,19 @@ def gen_png_from_md_math_str(md_math_str, png_path)->bool:
     if not(gen_png_from_latex_str(latex_str, png_path)): return False
     return True
 
+def gen_math_images(md_file_name, md_text, img_dir):
+    cnt = 0
+    while(True):
+        LABELED_MATH_PATTERN = f'math_{cnt}'+r'\n\$\$[^$]+\$\$'
+        match = re.search(LABELED_MATH_PATTERN, md_text)
+        if(match==None):
+            break
+        match_str = match.group(0) 
+        md_math_str = match_str[7:]
+        img_path = f'{img_dir}{md_file_name}_math_{cnt}.png'
+        gen_png_from_md_math_str(md_math_str, img_path)
+        cnt+=1
+
 #md_math_str = '$$\na^2+b^2=c^2\n$$' 
 #png_path = os.path.expanduser('~/Notes/images/test.png')
 #gen_png_from_md_math_str(md_math_str, png_path)    

@@ -5,10 +5,6 @@ from genImageFromLatex import gen_png_from_md_math_str
 
 #DEFAULT_IMG_DIR = os.path.expanduser('~/Notes/images/math/')
 
-def read_txt_file(path:str)->str:
-    with open(path, 'r', encoding='utf-8') as input_file:
-        txt_str=input_file.read()
-    return txt_str
 
 def save_str_to_file(path:str, text_str:str)->None:
     with open(path, 'w', encoding='utf-8', errors="xmlcharrefreplace") as output_file:
@@ -58,18 +54,6 @@ def format_md_str_math(md_file_name, md_str:str, img_dir:str)->str:
     return result_str
 
     
-def gen_math_images(md_file_name, md_text, img_dir):
-    cnt = 0
-    while(True):
-        LABELED_MATH_PATTERN = f'math_{cnt}'+r'\n\$\$[^$]+\$\$'
-        match = re.search(LABELED_MATH_PATTERN, md_text)
-        if(match==None):
-            break
-        match_str = match.group(0) 
-        md_math_str = match_str[7:]
-        img_path = f'{img_dir}{md_file_name}_math_{cnt}.png'
-        gen_png_from_md_math_str(md_math_str, img_path)
-        cnt+=1
         
 #md_path = 'tests1_in.md'
 #md_file_name = md_path[0:-3]

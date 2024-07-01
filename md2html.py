@@ -1,9 +1,8 @@
 import sys
 import markdown
 from markdown.extensions.wikilinks import WikiLinkExtension
-from replaceMdMath import *
-#import replaceMath.py
-#import genImageFromLatex.py 
+from replaceMdMath import format_md_str_math 
+from genImageFromLatex import gen_math_images 
 
 BASE_URL = '~/Notes/html/'
 USAGE_STR = 'python md2html.py <input.md> <output.html>'
