@@ -1,7 +1,9 @@
 import re
 import os
+import subprocess as sbp
 from pdf2image import convert_from_path
 
+LATEX_TIMEOUT = 1.0
 #'''Create a path to an image 
 #arguments: 
 #    n -- The nth math image in the file
@@ -17,7 +19,6 @@ def _create_image_path(n:str, md_file_name:str, img_dir:str, img_fmt:str)->str:
 def _save_latex_file(latex_str:str, file_path:str)->None:
     with open(path, 'w', encoding='utf-8', errors="xmlcharrefreplace") as output_file:
         output_file.write(html)
-     
 
 #NOTE: you need to use pdflatex not pdftex to generate the file with this string
 #       for example you can use os.system('pdflatex'+latex_string)
@@ -30,9 +31,11 @@ def _gen_pdf_from_latex_str(latex_str:str, pdf_path:str)->bool:
     pdf_dir = os.path.dirname(pdf_path)
     with open(tex_path, 'w', encoding='utf-8') as output_file:
         output_file.write(latex_str)
-    cmd = f'pdflatex -output-directory {pdf_dir} '+tex_path
-    e = os.system(cmd)
-    if e!=0 : return False
+#    cmd = f'pdflatex -output-directory {pdf_dir} '+tex_path
+    cmd = ['pdflatex', f'-output-directory', f'{pdf_dir}', f'{tex_path}']
+    out = sbp.run(cmd, capture_output='True', timeout=LATEX_TIMEOUT)
+    e = out.stderr
+    if e!=b'': return False
     os.remove(temp_str + '.aux')
     os.remove(temp_str + '.log')
     os.remove(temp_str + '.tex')
