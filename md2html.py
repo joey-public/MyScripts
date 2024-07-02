@@ -21,20 +21,32 @@ def _read_txt_file(path:str)->str:
         txt_str=input_file.read()
     return txt_str
 
-#--TODO: make sure argv paths are valid...
 def _parse_args(argv):
     n_args=len(argv)
     md_path=''
     html_path=''
-    if  n_args==2: 
-        md_path = argv[1]
-#        html_path = argv[1][0:-3] + '.html'
-#        print(f'No html file given, saving as:\n\t{html_path}')
+    if n_args == 1: 
+        print('Error: No Markdown or HTML paths were given\n    '+USAGE_STR)
+    elif  n_args==2: #TODO: we should be abel to autogenerate the html file in the same directory as the md file 
+        valid_md_path = os.path.isfile(argv[1]) and os.path.splitext(argv[1])[1]=='.md'
+        if valid_md_path:
+            md_path = argv[1]
+        else:
+            print(f'Error: Invalid Markdown Path: <{argv[1]}> does not exist\n    '+USAGE_STR)
+        print(f'Error: No HTML path given\n    '+USAGE_STR)
     elif  n_args==3: 
-        md_path = argv[1]
-        html_path = argv[2]
+        valid_md_path = os.path.isfile(argv[1]) and os.path.splitext(argv[1])[1]=='.md'
+        valid_html_path = os.path.isdir(os.path.dirname(argv[2])) and os.path.splitext(argv[2])[1]=='.html'
+        if valid_md_path:
+            md_path = argv[1]
+        else:
+            print(f'Error: Invalid Markdown Path: <{argv[1]}> does not exist\n    '+USAGE_STR)
+        if valid_html_path:
+            html_path = argv[2]
+        else:
+            print(f'Error: Invalid HTML Path: <{argv[2]}> does not exist\n    '+USAGE_STR)
     else: 
-        print('Error: Missing one or more arguments\n    '+USAGE_STR) 
+        print('Error: Too many arguments\n    '+USAGE_STR) 
     return (md_path, html_path)
 
 # TODO: error checking 
@@ -42,13 +54,8 @@ def _parse_args(argv):
 #       - make sure image_dir is valid
 def main(argv):
     md_path, html_path = _parse_args(argv)
-    valid_md_path = os.path.isfile(md_path) and os.path.splitext(md_path)[1]=='.md'
-    valid_html_path = os.path.isdir(os.path.dirname(html_path)) and os.path.splitext(html_path)[1]=='.html'
-    if not(valid_md_path):
-        print(f'Error: Invalid Markdown Path: <{md_path}> does not exist\n    '+USAGE_STR)
-        return 
-    if not(valid_html_path): 
-        print(f'Error: Invalid HTML Path: <{html_path[0:-6]}> does not exits\n    '+USAGE_STR)
+    if md_path=='' or html_path=='':
+        print('Invalid arguments see messages above...')
         return 
     md_file_name = os.path.splitext(os.path.basename(md_path))[0]
     md_file_str = _read_txt_file(md_path)
