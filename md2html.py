@@ -9,6 +9,21 @@ BASE_URL = '~/Notes/html/'
 USAGE_STR = 'python md2html.py <input.md> <output.html> <img_dir>'
 OFFICIAL_EXT=['fenced_code', 'tables', WikiLinkExtension(base_url=BASE_URL, end_url='.html')]
 EXTENSIONS = OFFICIAL_EXT 
+MDX_HTML_HEADER = """
+<header>
+    <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3.0.0/es5/tex-mml-chtml.js">
+    </script>
+    <script>
+    MathJax = {
+      tex: {
+          inlineMath: [['$', '$'], ['\(', '\)']]
+           }
+    };
+    </script>
+</header>
+"""
+
 
 def _save_html_to_file(path:str, html):
     with open(path, 'w', encoding='utf-8', errors="xmlcharrefreplace") as output_file:
@@ -55,13 +70,17 @@ def main(argv):
         return 
     md_file_name = os.path.splitext(os.path.basename(md_path))[0]
     md_file_str = _read_txt_file(md_path)
-    
-    img_fmt = '.svg' 
-    result_str = replace_md_math_with_img_links(md_file_str,md_file_name,img_dir,img_fmt)
-    if not(result_str==md_file_str): #only need to generate the images if there was acually math in the md_file
-        gen_math_images_from_md_str(md_file_str,md_file_name,img_dir,img_fmt)
-    html_obj = markdown.markdown(result_str, extensions=EXTENSIONS)
-    _save_html_to_file(html_path, html_obj)
+    use_mathjax = True 
+    if use_mathjax: #prefferd method
+        html_str = markdown.markdown(md_file_str, extensions=EXTENSIONS)
+        html_str = MDX_HTML_HEADER + html_str
+    else: #useing 'pdftex to gen a pdf, then pdf2image to create a png and link it in the markdown file
+        img_fmt = '.png' 
+        result_str = replace_md_math_with_img_links(md_file_str,md_file_name,img_dir,img_fmt)
+        if not(result_str==md_file_str): #only need to generate the images if there was acually math in the md_file
+            gen_math_images_from_md_str(md_file_str,md_file_name,img_dir,img_fmt)
+        html_str = markdown.markdown(result_str, extensions=EXTENSIONS)
+    _save_html_to_file(html_path, html_str)
 
 if __name__=='__main__':
     main(sys.argv)
