@@ -47,17 +47,3 @@ And here is what it looks like when it is rendered
 
 This is great, but when I view my markdown source file in a markdown viewer (like github, or Obsidian) I would prefer if the inline html were formatted to look like a code block. I want to write my inline html with syntax as shown below using `(```<inline html>)` 
 
-```
-(```<inline html>)
-<table>
-    <tr>
-    <th> Company</th>
-    <th> Contact</th>
-    <th> Country</th>
-    </tr>
-    <tr>
-    <th> Google </th>
-    <th> John Doe</th>
-    <th> USA </th>
-    </tr>
-```
