@@ -1,0 +1,60 @@
+
+<header>
+    <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3.0.0/es5/tex-mml-chtml.js">
+    </script>
+    <script>
+    MathJax = {
+      tex: {
+          inlineMath: [['$', '$'], ['\(', '\)']]
+           }
+    };
+    </script>
+</header>
+<h1>Table Test</h1>
+<p>I want to update my custom md script <code>md2html.py</code> to be capable of generating good looking tables in html. </p>
+<p>The ideas I looked into:
+1. Using the pandas DataFrame's <code>to_latex()</code> function
+2. Using the pandas DataFrame's <code>to_html()</code> function
+3. Use inline html and custom parsing
+4. Use inline lates and custom parsing
+5. Hacking an array into md using mathjax and array fucntion</p>
+<p>I ultumately may want to try to implement more of these, but the most useful place to start is with </p>
+<h2>Using Inline HTML</h2>
+<h4>Syntax</h4>
+<p>Python markdown implements John Gruber's <a href="https://daringfireball.net/projects/markdown/syntax#html">Markdown</a> so it should support inline html code by defulat.</p>
+<p>For example here is a table in HTML syntax:</p>
+<pre><code>&lt;table&gt;
+    &lt;tr&gt;
+    &lt;th&gt; Company&lt;/th&gt;
+    &lt;th&gt; Contact&lt;/th&gt;
+    &lt;th&gt; Country&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+    &lt;th&gt; Google &lt;/th&gt;
+    &lt;th&gt; John Doe&lt;/th&gt;
+    &lt;th&gt; USA &lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+    &lt;th&gt; Apple &lt;/th&gt;
+    &lt;th&gt; Jane Doe&lt;/th&gt;
+    &lt;th&gt; UK &lt;/th&gt;
+    &lt;/tr&gt;
+</code></pre>
+<p>And here is what it looks like when it is rendered </p>
+<table>
+    <tr>
+    <th> Company</th>
+    <th> Contact</th>
+    <th> Country</th>
+    </tr>
+    <tr>
+    <th> Google </th>
+    <th> John Doe</th>
+    <th> USA </th>
+    </tr>
+    <tr>
+    <th> Apple </th>
+    <th> Jane Doe</th>
+    <th> UK </th>
+    </tr>
