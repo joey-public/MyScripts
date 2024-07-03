@@ -48,7 +48,7 @@ def _gen_png_from_latex_str(math_str:str, png_path:str)->bool:
     pdf_path = temp_str + '.pdf'
     if not(_gen_pdf_from_latex_str(math_str, pdf_path)): return False 
     image = convert_from_path(pdf_path)[0]
-    image.save(png_path, 'PNG')
+    image.save(png_path, 'SVG')
     os.remove(pdf_path)
     return True
 

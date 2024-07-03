@@ -19,11 +19,12 @@ def _read_txt_file(path:str)->str:
         txt_str=input_file.read()
     return txt_str
 
+#TODO: If user passes an img_dir then use pdftex to gen math images, ignore the math  
 def _parse_args(argv):
     n_args=len(argv)
     md_path=''
     html_path=''
-    img_path=''
+    img_dir=''
     if n_args==4:
         valid_md_path = os.path.isfile(argv[1]) and os.path.splitext(argv[1])[1]=='.md'
         valid_html_path = os.path.isdir(os.path.dirname(argv[2])) and os.path.splitext(argv[2])[1]=='.html'
@@ -55,7 +56,7 @@ def main(argv):
     md_file_name = os.path.splitext(os.path.basename(md_path))[0]
     md_file_str = _read_txt_file(md_path)
     
-    img_fmt = '.png' 
+    img_fmt = '.svg' 
     result_str = replace_md_math_with_img_links(md_file_str,md_file_name,img_dir,img_fmt)
     if not(result_str==md_file_str): #only need to generate the images if there was acually math in the md_file
         gen_math_images_from_md_str(md_file_str,md_file_name,img_dir,img_fmt)
