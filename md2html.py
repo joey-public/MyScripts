@@ -52,19 +52,22 @@ def _save_html_file(path:str, content:str)->None:
     with open(path, 'w', encoding='utf-8', errors='xmlcharrefreplace') as output_file:
         output_file.write(content)
 
+def md2html(md_file_path:str, html_dir:str)->None:
+    md_content_str = _get_md_file_content(md_file_path)
+    html_content_str = markdown.markdown(md_content_str, extension=EXTENSIONS)
+    html_content_str = MDX_HTML_HEADER + html_content_str
+    html_file_name = os.path.splitext(os.path.basename(md_file_path))[0]
+    html_file_path = html_dir + html_file_name + '.html'
+    _save_html_file(html_file_path, html_content_str)
+    
 def main(argv:list)->None:
     arg_list = _parse_args(argv)
     if arg_list == []: 
         print('Error while parsing input arguments')
         return 
     md_file_path = arg_list[0]
-    md_content_str = _get_md_file_content(md_file_path)
-    html_content_str = markdown.markdown(md_content_str, extension=EXTENSIONS)
-    html_content_str = MDX_HTML_HEADER + html_content_str
     html_dir = arg_list[1]
-    html_file_name = os.path.splitext(os.path.basename(md_file_path))[0]
-    html_file_path = html_dir + html_file_name + '.html'
-    _save_html_file(html_file_path, html_content_str)
+    md2html(md_file_path, html_dir)
 
 if __name__=='__main__':
     main(sys.argv)
