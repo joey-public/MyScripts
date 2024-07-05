@@ -1,14 +1,9 @@
 import sys
 import os
-import markdown
-from markdown.extensions.wikilinks import WikiLinkExtension
-from format_funcs import replace_md_math_with_img_links, gen_math_images_from_md_str
+import markdown 
+from fileio import read_txt_file_content, save_str_to_file 
 
-
-BASE_URL = '~/Notes/html/'
-USAGE_STR = 'python md2html.py <input.md> <output.html> <img_dir>'
-OFFICIAL_EXT=['fenced_code', 'tables', WikiLinkExtension(base_url=BASE_URL, end_url='.html')]
-EXTENSIONS = OFFICIAL_EXT 
+EXTENSIONS=['fenced_code']
 MDX_HTML_HEADER = """
 <header>
     <script id="MathJax-script" async
@@ -24,63 +19,47 @@ MDX_HTML_HEADER = """
 </header>
 """
 
-
-def _save_html_to_file(path:str, html):
-    with open(path, 'w', encoding='utf-8', errors="xmlcharrefreplace") as output_file:
-        output_file.write(html)
-
-def _read_txt_file(path:str)->str:
-    with open(path, 'r', encoding='utf-8') as input_file:
-        txt_str=input_file.read()
-    return txt_str
-
-#TODO: If user passes an img_dir then use pdftex to gen math images, ignore the math  
-def _parse_args(argv):
+def _parse_args(argv:list)->list:
+    usage_str = 'usage: python md2html.py <input.md>'
     n_args=len(argv)
-    md_path=''
-    html_path=''
-    img_dir=''
-    if n_args==4:
-        valid_md_path = os.path.isfile(argv[1]) and os.path.splitext(argv[1])[1]=='.md'
-        valid_html_path = os.path.isdir(os.path.dirname(argv[2])) and os.path.splitext(argv[2])[1]=='.html'
-        valid_img_dir = os.path.isdir(argv[3])
-        if valid_md_path:
-            md_path = argv[1]
-        else:
-            print(f'Error: Invalid Markdown Path: <{argv[1]}> does not exist\n    '+USAGE_STR)
-        if valid_html_path:
-            html_path = argv[2]
-        else:
-            print(f'Error: Invalid HTML Path: <{argv[2]}> does not exist\n    '+USAGE_STR)
-        if valid_img_dir:
-            img_dir = argv[3]
-        else:
-            print(f'Error: Invalid Image Directory: <{argv[3]}> does not exist\n    '+USAGE_STR)
-    else: 
-        print('Error: Incorrect arguments\n    '+USAGE_STR) 
-    return (md_path, html_path, img_dir)
+    expected_n_args = 3
+    if not(n_args==expected_n_args):
+        print(f'Error: Arguments Incorrect:\n    {usage_str}')
+        return []
+    md_file_exisits = os.path.isfile(argv[1])
+    md_file_valid = os.path.splitext(argv[1])[1]=='.md'
+    if not(md_file_exisits): 
+        print(f'Error: {argv[1]} md file does not exist:\n    {usage_str}')
+        return []
+    if not(md_file_valid):
+        print(f'Error: {argv[1]} is not a md file:\n    {usage_str}')
+        return []
+    # make sure the html dir is valid and exists already
+    html_dir_exists = os.path.isdir(argv[2])
+    if not(html_dir_exists):
+        print(f'Error: {argv[2]} is not an existing directory :\n    {usage_str}')
+        return []
+    #If we make it here we know both arguments are good
+    md_file_str = argv[1]
+    html_dir_str = argv[2]
+    return [md_file_str, html_dir_str]
 
-# TODO: error checking 
-#       - make sure pdftex is on the system
-#       - make sure image_dir is valid
-def main(argv):
-    md_path, html_path, img_dir = _parse_args(argv)
-    if md_path=='' or html_path=='' or img_dir=='':
-        print('Invalid arguments see messages above...')
+def md2html(md_file_path:str, html_dir:str)->None:
+    md_content_str = read_txt_file_content(md_file_path)
+    html_content_str = markdown.markdown(md_content_str, extension=EXTENSIONS)
+    html_content_str = MDX_HTML_HEADER + html_content_str
+    html_file_name = os.path.splitext(os.path.basename(md_file_path))[0]
+    html_file_path = html_dir + html_file_name + '.html'
+    save_str_to_file(html_file_path, html_content_str)
+    
+def main(argv:list)->None:
+    arg_list = _parse_args(argv)
+    if arg_list == []: 
+        print('Error while parsing input arguments')
         return 
-    md_file_name = os.path.splitext(os.path.basename(md_path))[0]
-    md_file_str = _read_txt_file(md_path)
-    use_mathjax = True 
-    if use_mathjax: #prefferd method
-        html_str = markdown.markdown(md_file_str, extensions=EXTENSIONS)
-        html_str = MDX_HTML_HEADER + html_str
-    else: #useing 'pdftex to gen a pdf, then pdf2image to create a png and link it in the markdown file
-        img_fmt = '.png' 
-        result_str = replace_md_math_with_img_links(md_file_str,md_file_name,img_dir,img_fmt)
-        if not(result_str==md_file_str): #only need to generate the images if there was acually math in the md_file
-            gen_math_images_from_md_str(md_file_str,md_file_name,img_dir,img_fmt)
-        html_str = markdown.markdown(result_str, extensions=EXTENSIONS)
-    _save_html_to_file(html_path, html_str)
+    md_file_path = arg_list[0]
+    html_dir = arg_list[1]
+    md2html(md_file_path, html_dir)
 
 if __name__=='__main__':
     main(sys.argv)
