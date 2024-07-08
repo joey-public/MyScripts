@@ -98,7 +98,6 @@ def replace_md_math_with_img_links(md_file_str:str, md_file_name, img_dir:str, i
         cnt += 1
     return result_str
 
-
 #'''Seach through md_file_str and generate a png image for each match block
 #arguments:
 #    md_file_str -- The contents of the markdown file to be converted
