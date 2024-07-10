@@ -16,7 +16,12 @@ MDX_HTML_HEADER = """
            }
     };
     </script>
+    <link rel="stylesheet" href="styles.css">
 </header>
+<body>
+"""
+HTML_FOOTER = """
+</body>
 """
 
 def _parse_args(argv:list)->list:
@@ -47,7 +52,7 @@ def _parse_args(argv:list)->list:
 def md2html(md_file_path:str, html_dir:str)->None:
     md_content_str = read_txt_file_content(md_file_path)
     html_content_str = markdown.markdown(md_content_str, extensions=EXTENSIONS)
-    html_content_str = MDX_HTML_HEADER + html_content_str
+    html_content_str = MDX_HTML_HEADER + html_content_str + HTML_FOOTER
     html_file_name = os.path.splitext(os.path.basename(md_file_path))[0]
     html_file_path = html_dir + html_file_name + '.html'
     save_str_to_file(html_file_path, html_content_str)
