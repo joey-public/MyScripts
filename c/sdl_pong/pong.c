@@ -1,26 +1,50 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
+//TODO setupPaddle(), setupBall, setupWall() functions
+//TODO make all game objects provate to main function, not gloabl (maybe use typedef?)
+
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 const int TRUE = 1;
 const int FALSE = 0;
-const int FPS_TARGET = 60; //frames per sec
+const int FPS_TARGET = 90; //frames per sec
 const float FRAME_TARGET_TIME = 1000/FPS_TARGET; //ms 
 
-struct ball {
+const float PADDLE_SPEED = 50;
+const int PADDLE_MIN_X = 0;
+const int PADDLE_MAX_X = SCREEN_WIDTH;
+const int PADDLE_WIDTH = 80;
+const int PADDLE_HEIGHT = 10;
+const int PADDLE_Y_POS = SCREEN_HEIGHT-PADDLE_HEIGHT-10;
+
+typedef struct fVector2d{
   float x;
   float y;
-  float width;
-  float height;
+} fVector2d;
+
+struct paddle {
+  SDL_Rect sprite_box;
+  fVector2d position;
+  int moving_left;
+  int moving_right;
+  float speed;
+} paddle;
+
+struct ball {
+  SDL_Rect sprite_box; //the box we render for this simple game its also the collsion box 
+  fVector2d position;
+  float speed;
 } ball;
+
 
 int init(SDL_Window** a_window, SDL_Renderer** a_renderer);
 int initSdl();
 int initWindow(SDL_Window** a_window);
 int initRenderer(SDL_Renderer**, SDL_Window* a_window);
 int setup();
+//int setupPaddle();
 int processInput(); //handle user input, return FALSE iff the game should quit
 int update(float a_delta_time);
 int render(SDL_Renderer* a_renderer);
@@ -82,10 +106,14 @@ int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window)
 
 int setup()
 {
-  ball.x = 20;
-  ball.y = 20;
-  ball.width = 15;
-  ball.height = 15;
+  ball.sprite_box.x = 20;
+  ball.sprite_box.y = 20;
+  ball.sprite_box.w = 15;
+  ball.sprite_box.h = 15;
+  paddle.sprite_box.x = (int) SCREEN_WIDTH/2;
+  paddle.sprite_box.y = PADDLE_Y_POS;
+  paddle.sprite_box.w = PADDLE_WIDTH;
+  paddle.sprite_box.h = PADDLE_HEIGHT;
   return TRUE;
 }
 
@@ -93,25 +121,47 @@ int processInput()
 {
   SDL_Event event;
   SDL_PollEvent(&event);
-  switch (event.type)
+  if(event.type==SDL_QUIT)
   {
-    case SDL_QUIT: 
-      return FALSE;
-      break;
-    case SDL_KEYDOWN:
-      if (event.key.keysym.sym == SDLK_ESCAPE)
-      {
+    return FALSE;
+  }
+  if(event.type==SDL_KEYDOWN)
+  {
+    switch(event.key.keysym.sym)
+    {
+      case SDLK_ESCAPE:
         return FALSE;
-      }
-      break;
+        break;
+      case SDLK_LEFT:
+        paddle.moving_left=TRUE;
+        break;
+      case SDLK_RIGHT:
+        paddle.moving_right=TRUE;
+        break;
+    }
   }
   return TRUE;
 }
 
 int update(float a_delta_time)
 {
-  ball.x += 20 * a_delta_time;
-  ball.y += 10 * a_delta_time;
+  ball.position.x += 40 * a_delta_time;
+  ball.position.y += 30 * a_delta_time;
+  ball.sprite_box.x = (int)ball.position.x;
+  ball.sprite_box.y = (int)ball.position.y;
+
+  if(paddle.moving_left==TRUE && paddle.moving_right==FALSE)
+  {
+    paddle.position.x -= PADDLE_SPEED * a_delta_time;
+    paddle.sprite_box.x = (int) paddle.position.x;
+  }
+  if(paddle.moving_left==FALSE && paddle.moving_right==TRUE)
+  {
+    paddle.position.x += PADDLE_SPEED * a_delta_time;
+    paddle.sprite_box.x = (int) paddle.position.x;
+  }
+//  paddle.sprite_box.x = (int)paddle.position.x;
+//  paddle.sprite_box.y = (int)paddle.position.y;
   return TRUE;
 }
 
@@ -120,14 +170,10 @@ int render(SDL_Renderer* a_renderer)
   //args -> (renderer, r, g, b, a)
   SDL_SetRenderDrawColor(a_renderer, 248,248,248,255);
   SDL_RenderClear(a_renderer);
-  SDL_Rect ball_rect = {
-  (int)ball.x,
-  (int)ball.y,
-  (int)ball.width,
-  (int)ball.height
-  };
+
   SDL_SetRenderDrawColor(a_renderer, 18,18,18,255);
-  SDL_RenderFillRect(a_renderer, &ball_rect);
+  SDL_RenderFillRect(a_renderer, &ball.sprite_box);
+  SDL_RenderFillRect(a_renderer, &paddle.sprite_box);
   SDL_RenderPresent(a_renderer);
   return TRUE;
 }

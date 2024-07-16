@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = SDL_tutorial.c
+OBJS = pong.c
 
 #CC specifies which compiler we're using
 #CC = g++ #for cpp
@@ -16,7 +16,7 @@ DEBUG_FLAGS = -g
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 
 #OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = ./build/SDL_tutorial 
+OBJ_NAME = ./build/pong
 
 #This is the target that compiles our executable
 all : $(OBJS)
