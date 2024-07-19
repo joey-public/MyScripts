@@ -4,16 +4,16 @@ import re
 
 def renumberMdFigures(md_file_str:str)->str:
     regex_pattern = r'\*\*Figure [0-9]+:\*\*'
-    md_file_str = re.sub(regex_pattern, '**Table #:**', md_file_str)
-    regex_pattern = r'\*\*Table #:\*\*'
+    md_file_str = re.sub(regex_pattern, '**Figure #:**', md_file_str)
+    regex_pattern = r'\*\*Figure #:\*\*'
     matches = re.finditer(regex_pattern, md_file_str)
     for i, m in enumerate(matches)
-        r_str = f'**Table {i}:**'
+        r_str = f'**Figure {i}:**'
         md_file_str = md_file_str[0:m.start()] + r_str + md_file_str[m.end():]
     return md_file_str
 
 def _parse_args(argv:list)->str:
-    usage_str = 'usage: python renumberMdFigureAndTables.py <md_file_path>'
+    usage_str = 'usage: python renumberMdFigureAnd.py <md_file_path>'
     if len(argv)!=2:
         printf(f'Error: Arguments Incorrect:\n    {usage_str}')
         return '' 
