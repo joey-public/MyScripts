@@ -25,7 +25,7 @@ HTML_FOOTER = """
 """
 
 def _parse_args(argv:list)->list:
-    usage_str = 'usage: python md2html.py <input.md>'
+    usage_str = 'usage: python md2html.py <input.md> <output_dir>'
     n_args=len(argv)
     expected_n_args = 3
     if not(n_args==expected_n_args):
