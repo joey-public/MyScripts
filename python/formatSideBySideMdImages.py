@@ -1,20 +1,42 @@
-import sys
+import sys 
 import os 
 import re
 
-def replaceMdImagePaths(md_file_str:str)->str:
+def _mdImage2Html(md_image_str)->str:
+    re_pat = r'\(.+\)'
+    image_path = re.search(re_pat, md_image_str).group(0)[1:-1]
+    re_pat = r'\[.+\]'
+    alt_txt = re.search(re_pat, md_image_str).group(0)[1:-1]
+    return fr'<img alt="{alt_txt}" src="{image_path}">'
+    
+## Will only wok with this patter 
+#**side-by-side**
+#
+#![alttext](img_path)
+#
+#![alttext](img_path)
+def formatSideBySideMdImages(md_file_str:str)->str:
     def _sub(match_obj)->str:
         m_str = match_obj.group(0)
-        re_pat = r'\(.+\)'
-        img_path_str = re.search(re_pat, m_str).group(0)[1:-1]
-        abs_img_path_str = os.path.abspath(img_path_str)
-        m_str = re.search(re_pat, f'({os.path.abspath(abs_img_path_str)})', m_str)
-        return m_str
-    regex_pattern = r'(!\[.+\]\(.+\))|(!\[\]\(.+\))'
-    return re.sub(regex_pattern, _sub, md_file_str)
+        lines = m_str.splitlines()
+        left_image_str = _mdImage2Html(lines[2])
+        right_image_str = _mdImage2Html(lines[4])
+        return fr'''
+<div class="row">
+  <div class="column">
+    {left_image_str}
+  </div>
+  <div class="column">
+    {right_image_str}
+  </div>
+</div>
+
+'''
+    regex_pattern = r'\*\*side-by-side\*\*\n\n!\[.+\]\(.+\)\n\n!\[.+\]\(.+\)\n\n'
+
 
 def _parse_args(argv:list)->str:
-    usage_str = 'usage: python replaceMdImagePaths.py <md_file_path>'
+    usage_str = 'usage: python formatSideBySideMdImages.py <md_file_path>'
     if len(argv)!=2:
         printf(f'Error: Arguments Incorrect:\n    {usage_str}')
         return '' 
@@ -33,7 +55,7 @@ def _main(argv:list)->None:
     with open(md_file_path, 'r', encoding='utf-8') as input_file:
         md_file_str = input_file.read()
     input_file.close()
-    md_file_str = renumberMdFigures(md_file_str)
+    md_file_str = formatSideBySideMdImages(md_file_str)
     formatted_md_file_path = os.path.splittext(md_file_path)[0] + '_formatted.md'
     with open(formatted_md_file_path, 'w', encoding='utf-8') as output_file:
         output_file.write(md_file_str)
