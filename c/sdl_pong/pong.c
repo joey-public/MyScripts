@@ -1,24 +1,29 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include "pong.h"
 
 //TODO setupPaddle(), setupBall, setupWall() functions
 //TODO make all game objects provate to main function, not gloabl (maybe use typedef?)
+//TODO: create close() fucntion that deletes everything
+//TODO: smooth out paddle movement
+//TODO: seperate paddle into its own file
+//TODO: seperte ball into its own file
 
-//Screen dimension constants
+//constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 const int TRUE = 1;
 const int FALSE = 0;
 const int FPS_TARGET = 90; //frames per sec
 const float FRAME_TARGET_TIME = 1000/FPS_TARGET; //ms 
-
-const float PADDLE_SPEED = 50;
+const float PADDLE_SPEED = 2000;
 const int PADDLE_MIN_X = 0;
 const int PADDLE_MAX_X = SCREEN_WIDTH;
 const int PADDLE_WIDTH = 80;
 const int PADDLE_HEIGHT = 10;
 const int PADDLE_Y_POS = SCREEN_HEIGHT-PADDLE_HEIGHT-10;
 
+//Types
 typedef struct fVector2d{
   float x;
   float y;
@@ -38,17 +43,6 @@ struct ball {
   float speed;
 } ball;
 
-
-int init(SDL_Window** a_window, SDL_Renderer** a_renderer);
-int initSdl();
-int initWindow(SDL_Window** a_window);
-int initRenderer(SDL_Renderer**, SDL_Window* a_window);
-int setup();
-//int setupPaddle();
-int processInput(); //handle user input, return FALSE iff the game should quit
-int update(float a_delta_time);
-int render(SDL_Renderer* a_renderer);
-//TODO: create close() fucntion that deletes everything
 
 int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
 {
@@ -110,7 +104,7 @@ int setup()
   ball.sprite_box.y = 20;
   ball.sprite_box.w = 15;
   ball.sprite_box.h = 15;
-  paddle.sprite_box.x = (int) SCREEN_WIDTH/2;
+  paddle.sprite_box.x = 0;
   paddle.sprite_box.y = PADDLE_Y_POS;
   paddle.sprite_box.w = PADDLE_WIDTH;
   paddle.sprite_box.h = PADDLE_HEIGHT;
@@ -125,7 +119,7 @@ int processInput()
   {
     return FALSE;
   }
-  if(event.type==SDL_KEYDOWN)
+  if(event.type==SDL_KEYDOWN)//some key was pressed
   {
     switch(event.key.keysym.sym)
     {
@@ -134,11 +128,20 @@ int processInput()
         break;
       case SDLK_LEFT:
         paddle.moving_left=TRUE;
+        paddle.moving_right=FALSE;
         break;
       case SDLK_RIGHT:
+        paddle.moving_left=FALSE;
         paddle.moving_right=TRUE;
         break;
+      default:
+        break;
     }
+  }
+  else//no keys were pressed
+  {
+    paddle.moving_left=FALSE;
+    paddle.moving_right=FALSE;
   }
   return TRUE;
 }
