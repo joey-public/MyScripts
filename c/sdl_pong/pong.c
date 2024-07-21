@@ -3,14 +3,6 @@
 //#include "pong.h"
 
 //TODOs
-//TODO setupPaddle(), setupBall, setupWall() functions
-//TODO make all game objects provate to main function, not gloabl (maybe use typedef?)
-//TODO: create close() fucntion that deletes everything
-//TODO: smooth out paddle movement
-//TODO: seperate paddle into its own file
-//TODO: seperte ball into its own file
-//TODO: make a types.h that has all the typedefs
-//TODO: move all constants to a seperate file
 
 //constants
 const int SCREEN_WIDTH = 640;
