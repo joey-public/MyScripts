@@ -1,13 +1,16 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
-#include "pong.h"
+//#include "pong.h"
 
+//TODOs
 //TODO setupPaddle(), setupBall, setupWall() functions
 //TODO make all game objects provate to main function, not gloabl (maybe use typedef?)
 //TODO: create close() fucntion that deletes everything
 //TODO: smooth out paddle movement
 //TODO: seperate paddle into its own file
 //TODO: seperte ball into its own file
+//TODO: make a types.h that has all the typedefs
+//TODO: move all constants to a seperate file
 
 //constants
 const int SCREEN_WIDTH = 640;
@@ -16,41 +19,54 @@ const int TRUE = 1;
 const int FALSE = 0;
 const int FPS_TARGET = 90; //frames per sec
 const float FRAME_TARGET_TIME = 1000/FPS_TARGET; //ms 
+//paddle constants                                               
 const float PADDLE_SPEED = 2000;
 const int PADDLE_MIN_X = 0;
-const int PADDLE_MAX_X = SCREEN_WIDTH;
+const int PADDLE_MAX_X = 640;
 const int PADDLE_WIDTH = 80;
 const int PADDLE_HEIGHT = 10;
-const int PADDLE_Y_POS = SCREEN_HEIGHT-PADDLE_HEIGHT-10;
+const int PADDLE_Y_POS = 480-PADDLE_HEIGHT-10;
+//ball constants                                               
 
-//Types
-typedef struct fVector2d{
-  float x;
-  float y;
-} fVector2d;
+//typedefs
+typedef struct GameInputState{
+  int left;
+  int right;
+  int left_and_right;
+  int none;
+}GameInputState;
 
-struct paddle {
-  SDL_Rect sprite_box;
-  fVector2d position;
-  int moving_left;
-  int moving_right;
-  float speed;
-} paddle;
-
-struct ball {
-  SDL_Rect sprite_box; //the box we render for this simple game its also the collsion box 
-  fVector2d position;
-  float speed;
-} ball;
-
-
-int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
+GameInputState GameInputStateSetup()
 {
-  int sdl_initilized = initSdl();
-  int sdl_window_initilized = initWindow(a_window);
-  int sdl_renderer_initilized = initRenderer(a_renderer, *a_window);
-  return sdl_initilized && sdl_window_initilized && sdl_renderer_initilized;
+  GameInputState gis;
+  gis.left = FALSE;
+  gis.right = FALSE;
+  return gis;
 }
+
+typedef struct Paddle {
+  SDL_Rect sprite_box;
+  float x_position;
+  float y_position;
+  float speed;
+} Paddle;
+
+Paddle PaddleSetup()
+{
+  Paddle paddle;
+  paddle.sprite_box.x = PADDLE_WIDTH/2;
+  paddle.sprite_box.x = PADDLE_Y_POS;
+  paddle.sprite_box.w = PADDLE_WIDTH;
+  paddle.sprite_box.h = PADDLE_HEIGHT;
+  return paddle;
+}
+
+typedef struct Ball {
+  SDL_Rect sprite_box;
+  float x_position;
+  float y_position;
+  float speed;
+}Ball;
 
 int initSdl()
 {
@@ -98,20 +114,15 @@ int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window)
   return TRUE;
 }
 
-int setup()
+int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
 {
-  ball.sprite_box.x = 20;
-  ball.sprite_box.y = 20;
-  ball.sprite_box.w = 15;
-  ball.sprite_box.h = 15;
-  paddle.sprite_box.x = 0;
-  paddle.sprite_box.y = PADDLE_Y_POS;
-  paddle.sprite_box.w = PADDLE_WIDTH;
-  paddle.sprite_box.h = PADDLE_HEIGHT;
-  return TRUE;
+  int sdl_initilized = initSdl();
+  int sdl_window_initilized = initWindow(a_window);
+  int sdl_renderer_initilized = initRenderer(a_renderer, *a_window);
+  return sdl_initilized && sdl_window_initilized && sdl_renderer_initilized;
 }
 
-int processInput()
+int processInput(GameInputState* a_game_input_ptr)
 {
   SDL_Event event;
   SDL_PollEvent(&event);
@@ -126,13 +137,17 @@ int processInput()
       case SDLK_ESCAPE:
         return FALSE;
         break;
+      case SDLK_LEFT & SDLK_RIGHT:
+        (*a_game_input_ptr).left = TRUE;
+        (*a_game_input_ptr).right = TRUE;
+        break;
       case SDLK_LEFT:
-        paddle.moving_left=TRUE;
-        paddle.moving_right=FALSE;
+        (*a_game_input_ptr).left = TRUE;
+        (*a_game_input_ptr).right = FALSE;
         break;
       case SDLK_RIGHT:
-        paddle.moving_left=FALSE;
-        paddle.moving_right=TRUE;
+        (*a_game_input_ptr).left= FALSE;
+        (*a_game_input_ptr).right = TRUE;
         break;
       default:
         break;
@@ -140,44 +155,9 @@ int processInput()
   }
   else//no keys were pressed
   {
-    paddle.moving_left=FALSE;
-    paddle.moving_right=FALSE;
+    (*a_game_input_ptr).left = FALSE;
+    (*a_game_input_ptr).right = FALSE;
   }
-  return TRUE;
-}
-
-int update(float a_delta_time)
-{
-  ball.position.x += 40 * a_delta_time;
-  ball.position.y += 30 * a_delta_time;
-  ball.sprite_box.x = (int)ball.position.x;
-  ball.sprite_box.y = (int)ball.position.y;
-
-  if(paddle.moving_left==TRUE && paddle.moving_right==FALSE)
-  {
-    paddle.position.x -= PADDLE_SPEED * a_delta_time;
-    paddle.sprite_box.x = (int) paddle.position.x;
-  }
-  if(paddle.moving_left==FALSE && paddle.moving_right==TRUE)
-  {
-    paddle.position.x += PADDLE_SPEED * a_delta_time;
-    paddle.sprite_box.x = (int) paddle.position.x;
-  }
-//  paddle.sprite_box.x = (int)paddle.position.x;
-//  paddle.sprite_box.y = (int)paddle.position.y;
-  return TRUE;
-}
-
-int render(SDL_Renderer* a_renderer)
-{
-  //args -> (renderer, r, g, b, a)
-  SDL_SetRenderDrawColor(a_renderer, 248,248,248,255);
-  SDL_RenderClear(a_renderer);
-
-  SDL_SetRenderDrawColor(a_renderer, 18,18,18,255);
-  SDL_RenderFillRect(a_renderer, &ball.sprite_box);
-  SDL_RenderFillRect(a_renderer, &paddle.sprite_box);
-  SDL_RenderPresent(a_renderer);
   return TRUE;
 }
 
@@ -191,11 +171,13 @@ int main( int argc, char* args[] )
   game_is_running = init(&main_window, &main_renderer);
   if (!game_is_running)
   {
-    printf("Setup Failed\n");
+    printf("SDL Setup Failed\n");
     return -1;
   }
   //main loop
-  game_is_running = setup();
+  Paddle main_paddle = PaddleSetup();
+  GameInputState game_input_state = GameInputStateSetup();
+ 
   while(game_is_running)
   {
     //while(!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time+FRAME_TARGET_TIME)); 
@@ -206,9 +188,7 @@ int main( int argc, char* args[] )
     }
     delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks();//look this up
-    game_is_running &= processInput(); 
-    game_is_running &= update(delta_time);
-    game_is_running &= render(main_renderer);
+    game_is_running &= processInput(&game_input_state); 
   }
   //destroy everything
   SDL_DestroyRenderer(main_renderer);
