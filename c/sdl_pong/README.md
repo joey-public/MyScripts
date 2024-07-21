@@ -6,9 +6,9 @@ A ball bouncees around the screen. The player controlls a paddle and hits the ba
 
 If the ball reached the bottom of the screen then its game over. 
 
+## Features
 
-
-## Have to Have 
+### Have to Have 
 
 - A paddle the player can move left and right
 - A ball that bounces around the screen
@@ -16,7 +16,8 @@ If the ball reached the bottom of the screen then its game over.
 - A sore counter/survive timer
 - A start Screen
 - A end Screen
-## Nice to Have 
+
+### Nice to Have 
 
 - A high score tracker
 - A pause screen
@@ -50,11 +51,12 @@ If the ball reached the bottom of the screen then its game over.
 | GameInputState | Object that holds the current state of the user input |                          |
 
 ## Tasks
-//TODO setupPaddle(), setupBall, setupWall() functions
-//TODO make all game objects provate to main function, not gloabl (maybe use typedef?)
-//TODO: create close() fucntion that deletes everything
-//TODO: smooth out paddle movement
-//TODO: seperate paddle into its own file
-//TODO: seperte ball into its own file
-//TODO: make a types.h that has all the typedefs
-//TODO: move all constants to a seperate file
+
+- TODO setupPaddle(), setupBall, setupWall() functions
+- TODO make all game objects provate to main function, not gloabl (maybe use typedef?)
+- TODO: create close() fucntion that deletes everything
+- TODO: smooth out paddle movement
+- TODO: seperate paddle into its own file
+- TODO: seperte ball into its own file
+- TODO: make a types.h that has all the typedefs
+- TODO: move all constants to a seperate file
