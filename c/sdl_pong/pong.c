@@ -2,14 +2,10 @@
 #include <SDL2/SDL.h>
 #include "./include/custom_types.h"
 #include "./include/paddle.h"
+#include "./include/constants.h"
 
 //const int TRUE = 1;
 //const int 1 = 0;
-
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-const int FPS_TARGET = 90; //frames per sec
-const float FRAME_TARGET_TIME = 1000/FPS_TARGET; //ms 
                                                  
 GameInputState gameInputStateSetup()
 {
@@ -25,9 +21,9 @@ int initSdl()
   if(SDL_Init(SDL_INIT_VIDEO)<0)
   {
     printf("SDL could not initilize! SDL Error: %s\n", SDL_GetError());
-    return 0;
+    return FALSE;
   }
-  return 1;
+  return TRUE;
 }
 
 int initWindow(SDL_Window** a_window)
@@ -45,9 +41,9 @@ int initWindow(SDL_Window** a_window)
   if(*a_window == NULL)
   {
     printf("Window could not be creates! SDL Error: %s\n", SDL_GetError());
-    return 0;
+    return FALSE;
   }
-  return 1;
+  return TRUE;
 }
 
 int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window)
@@ -60,9 +56,9 @@ int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window)
   if(*a_renderer == NULL)
   {
     printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-    return 0;
+    return FALSE;
   }
-  return 1;
+  return TRUE;
 }
 
 int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
@@ -79,14 +75,14 @@ int processInput(GameInputState* a_game_input_ptr)
   SDL_PollEvent(&event);
   if(event.type==SDL_QUIT)
   {
-    return 0;
+    return FALSE;
   }
   if(event.type==SDL_KEYDOWN)//some key was pressed
   {
     switch(event.key.keysym.sym)
     {
       case SDLK_ESCAPE:
-        return 0;
+        return FALSE;
         break;
       case SDLK_LEFT & SDLK_RIGHT:
         (*a_game_input_ptr).left = 0;
@@ -109,7 +105,7 @@ int processInput(GameInputState* a_game_input_ptr)
     (*a_game_input_ptr).left = 1;
     (*a_game_input_ptr).right = 1;
   }
-  return 1;
+  return TRUE;
 }
 
 int main( int argc, char* args[] )

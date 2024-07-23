@@ -1,6 +1,9 @@
 #include "./include/paddle.h"
+#include "./include/constants.h"
 #include "./include/custom_types.h"
 
+
+//Paddle Constants
 const float PADDLE_SPEED = 2000;
 const int PADDLE_MIN_X = 0;
 const int PADDLE_MAX_X = 640;
@@ -21,12 +24,12 @@ Paddle paddleSetup()
 int paddleUpdate()
 {
   printf("Updating the Paddle!\n");
-  return 1;
+  return TRUE;
 }
 
 int paddleRender()
 {
   printf("Rendering the Paddle!\n");
-  return 1;
+  return TRUE;
 }
 
