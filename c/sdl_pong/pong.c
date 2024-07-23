@@ -1,64 +1,23 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
-//#include "pong.h"
+#include "./include/custom_types.h"
+#include "./include/paddle.h"
 
-//TODOs
+//const int TRUE = 1;
+//const int 1 = 0;
 
-//constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
-const int TRUE = 1;
-const int FALSE = 0;
 const int FPS_TARGET = 90; //frames per sec
 const float FRAME_TARGET_TIME = 1000/FPS_TARGET; //ms 
-//paddle constants                                               
-const float PADDLE_SPEED = 2000;
-const int PADDLE_MIN_X = 0;
-const int PADDLE_MAX_X = 640;
-const int PADDLE_WIDTH = 80;
-const int PADDLE_HEIGHT = 10;
-const int PADDLE_Y_POS = 480-PADDLE_HEIGHT-10;
-//ball constants                                               
-
-//typedefs
-typedef struct GameInputState{
-  int left;
-  int right;
-  int left_and_right;
-  int none;
-}GameInputState;
-
-GameInputState GameInputStateSetup()
+                                                 
+GameInputState gameInputStateSetup()
 {
   GameInputState gis;
-  gis.left = FALSE;
-  gis.right = FALSE;
+  gis.left = 1;
+  gis.right = 1;
   return gis;
 }
-
-typedef struct Paddle {
-  SDL_Rect sprite_box;
-  float x_position;
-  float y_position;
-  float speed;
-} Paddle;
-
-Paddle PaddleSetup()
-{
-  Paddle paddle;
-  paddle.sprite_box.x = PADDLE_WIDTH/2;
-  paddle.sprite_box.x = PADDLE_Y_POS;
-  paddle.sprite_box.w = PADDLE_WIDTH;
-  paddle.sprite_box.h = PADDLE_HEIGHT;
-  return paddle;
-}
-
-typedef struct Ball {
-  SDL_Rect sprite_box;
-  float x_position;
-  float y_position;
-  float speed;
-}Ball;
 
 int initSdl()
 {
@@ -66,9 +25,9 @@ int initSdl()
   if(SDL_Init(SDL_INIT_VIDEO)<0)
   {
     printf("SDL could not initilize! SDL Error: %s\n", SDL_GetError());
-    return FALSE;
+    return 0;
   }
-  return TRUE;
+  return 1;
 }
 
 int initWindow(SDL_Window** a_window)
@@ -86,9 +45,9 @@ int initWindow(SDL_Window** a_window)
   if(*a_window == NULL)
   {
     printf("Window could not be creates! SDL Error: %s\n", SDL_GetError());
-    return FALSE;
+    return 0;
   }
-  return TRUE;
+  return 1;
 }
 
 int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window)
@@ -101,9 +60,9 @@ int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window)
   if(*a_renderer == NULL)
   {
     printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
-    return FALSE;
+    return 0;
   }
-  return TRUE;
+  return 1;
 }
 
 int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
@@ -120,26 +79,26 @@ int processInput(GameInputState* a_game_input_ptr)
   SDL_PollEvent(&event);
   if(event.type==SDL_QUIT)
   {
-    return FALSE;
+    return 0;
   }
   if(event.type==SDL_KEYDOWN)//some key was pressed
   {
     switch(event.key.keysym.sym)
     {
       case SDLK_ESCAPE:
-        return FALSE;
+        return 0;
         break;
       case SDLK_LEFT & SDLK_RIGHT:
-        (*a_game_input_ptr).left = TRUE;
-        (*a_game_input_ptr).right = TRUE;
+        (*a_game_input_ptr).left = 0;
+        (*a_game_input_ptr).right = 0;
         break;
       case SDLK_LEFT:
-        (*a_game_input_ptr).left = TRUE;
-        (*a_game_input_ptr).right = FALSE;
+        (*a_game_input_ptr).left = 0;
+        (*a_game_input_ptr).right = 1;
         break;
       case SDLK_RIGHT:
-        (*a_game_input_ptr).left= FALSE;
-        (*a_game_input_ptr).right = TRUE;
+        (*a_game_input_ptr).left= 1;
+        (*a_game_input_ptr).right = 0;
         break;
       default:
         break;
@@ -147,17 +106,17 @@ int processInput(GameInputState* a_game_input_ptr)
   }
   else//no keys were pressed
   {
-    (*a_game_input_ptr).left = FALSE;
-    (*a_game_input_ptr).right = FALSE;
+    (*a_game_input_ptr).left = 1;
+    (*a_game_input_ptr).right = 1;
   }
-  return TRUE;
+  return 1;
 }
 
 int main( int argc, char* args[] )
 {
   SDL_Window* main_window = NULL;
   SDL_Renderer* main_renderer = NULL;
-  int game_is_running = FALSE;
+  int game_is_running = 1;
   int last_frame_time = SDL_GetTicks();
   float delta_time = 0.0f;
   game_is_running = init(&main_window, &main_renderer);
@@ -167,8 +126,8 @@ int main( int argc, char* args[] )
     return -1;
   }
   //main loop
-  Paddle main_paddle = PaddleSetup();
-  GameInputState game_input_state = GameInputStateSetup();
+  Paddle main_paddle = paddleSetup();
+  GameInputState game_input_state = gameInputStateSetup();
  
   while(game_is_running)
   {
@@ -181,6 +140,10 @@ int main( int argc, char* args[] )
     delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks();//look this up
     game_is_running &= processInput(&game_input_state); 
+    //upadte
+    game_is_running &= paddleUpdate();
+    //render
+    game_is_running &= paddleRender();
   }
   //destroy everything
   SDL_DestroyRenderer(main_renderer);

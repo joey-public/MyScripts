@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = pong.c
+OBJS = pong.c paddle.c 
 
 #CC specifies which compiler we're using
 #CC = g++ #for cpp
@@ -13,7 +13,7 @@ COMPILER_FLAGS = -Wall -std=c99
 DEBUG_FLAGS = -g
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lSDL2 -lSDL2_image
+LINKER_FLAGS = -lSDL2 -lSDL2_image 
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = ./build/pong
