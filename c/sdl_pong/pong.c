@@ -84,17 +84,17 @@ int processInput(GameInputState* a_game_input_ptr)
       case SDLK_ESCAPE:
         return FALSE;
         break;
-      case SDLK_LEFT & SDLK_RIGHT:
-        (*a_game_input_ptr).left = 0;
-        (*a_game_input_ptr).right = 0;
-        break;
+//      case SDLK_LEFT & SDLK_RIGHT:
+//        (*a_game_input_ptr).left = FALSE;
+//        (*a_game_input_ptr).right = FALSE;
+//        break;
       case SDLK_LEFT:
-        (*a_game_input_ptr).left = 0;
-        (*a_game_input_ptr).right = 1;
+        (*a_game_input_ptr).left = TRUE;
+        (*a_game_input_ptr).right = FALSE;
         break;
       case SDLK_RIGHT:
-        (*a_game_input_ptr).left= 1;
-        (*a_game_input_ptr).right = 0;
+        (*a_game_input_ptr).left= FALSE;
+        (*a_game_input_ptr).right = TRUE;
         break;
       default:
         break;
@@ -145,7 +145,9 @@ int main( int argc, char* args[] )
     SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
     SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(main_renderer, &background);
+    //render the paddle
     game_is_running &= paddleRender(main_paddle, main_renderer);
+    //render the ball
     SDL_RenderPresent(main_renderer);
   }
   //destroy everything

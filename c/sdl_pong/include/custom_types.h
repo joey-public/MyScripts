@@ -13,7 +13,6 @@ typedef struct GameInputState{
 typedef struct Paddle {
   SDL_Rect sprite_box;
   float x_position;
-  float y_position;
   float speed;
 } Paddle;
 
