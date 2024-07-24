@@ -137,9 +137,16 @@ int main( int argc, char* args[] )
     last_frame_time = SDL_GetTicks();//look this up
     game_is_running &= processInput(&game_input_state); 
     //upadte
-    game_is_running &= paddleUpdate();
+    game_is_running &= paddleUpdate(&main_paddle, game_input_state, delta_time);
     //render
-    game_is_running &= paddleRender();
+    //SDL_SetRenderDrawColor(a_renderer, 0, 0, 0, 255);
+    //SDL_RenderClear(a_renderer);
+    //render backround screen 
+    SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
+    SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_RenderFillRect(main_renderer, &background);
+    game_is_running &= paddleRender(main_paddle, main_renderer);
+    SDL_RenderPresent(main_renderer);
   }
   //destroy everything
   SDL_DestroyRenderer(main_renderer);

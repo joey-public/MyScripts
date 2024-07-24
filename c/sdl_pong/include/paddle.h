@@ -11,7 +11,7 @@ extern const int PADDLE_Y_POS;
 
 Paddle paddleSetup();
 
-int paddleUpdate();
-int paddleRender();
+int paddleUpdate(Paddle* a_paddle, GameInputState a_current_input_state, float a_delta_time);
+int paddleRender(Paddle a_paddle, SDL_Renderer* a_renderer);
 
 #endif

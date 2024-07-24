@@ -15,21 +15,21 @@ Paddle paddleSetup()
 {
   Paddle paddle;
   paddle.sprite_box.x = PADDLE_WIDTH/2;
-  paddle.sprite_box.x = PADDLE_Y_POS;
+  paddle.sprite_box.y = PADDLE_Y_POS;
   paddle.sprite_box.w = PADDLE_WIDTH;
   paddle.sprite_box.h = PADDLE_HEIGHT;
   return paddle;
 }
 
-int paddleUpdate()
+int paddleUpdate(Paddle* a_paddle, GameInputState a_current_input_state, float a_delta_time)
 {
-  printf("Updating the Paddle!\n");
+//  (*a_paddle).sprite_box.x += PADDLE_SPEED * delta_time; 
   return TRUE;
 }
 
-int paddleRender()
+int paddleRender(Paddle a_paddle, SDL_Renderer* a_renderer)
 {
-  printf("Rendering the Paddle!\n");
+  SDL_SetRenderDrawColor(a_renderer, 0, 0, 0, 255);
+  SDL_RenderFillRect(a_renderer, &a_paddle.sprite_box);
   return TRUE;
 }
-
