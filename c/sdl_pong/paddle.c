@@ -25,29 +25,19 @@ Paddle paddleSetup()
 
 int paddleUpdate(Paddle* a_paddle, GameInputState a_current_input_state, float a_delta_time)
 {
-  int can_move_left = a_paddle->x_position > PADDLE_MIN_X;
-  int can_move_right = a_paddle->x_position < PADDLE_MAX_X;
   int moving_left = a_current_input_state.left & !a_current_input_state.right;  
   int moving_right = a_current_input_state.right & !a_current_input_state.left;  
   //(*a_paddle).x_position += PADDLE_SPEED*a_delta_time;
-  if(moving_left & can_move_left)
-  {
-    printf("move left\n");
-    a_paddle->x_position -= PADDLE_SPEED*a_delta_time;
+  if(moving_left){
+      a_paddle->x_position -= PADDLE_SPEED*a_delta_time;
   }
-  else if(moving_left & !can_move_left)
-  {
-    printf("TOO FAR LEFT!\n");
-    a_paddle->x_position = PADDLE_MIN_X;
-  }
-  else if(moving_right & can_move_right)
-  {
-    printf("move right\n");
+  if(moving_right){ 
     a_paddle->x_position += PADDLE_SPEED*a_delta_time;
   }
-  else if(moving_right & !can_move_right)
-  {
-    printf("TOO FAR RIGHT!\n");
+  if(a_paddle->x_position < PADDLE_MIN_X){
+    a_paddle->x_position = PADDLE_MIN_X;
+  }
+  if(a_paddle->x_position > PADDLE_MAX_X){
     a_paddle->x_position = PADDLE_MAX_X;
   }
   a_paddle->sprite_box.x = (int) (*a_paddle).x_position;
