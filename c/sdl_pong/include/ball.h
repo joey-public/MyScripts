@@ -5,6 +5,7 @@
 
 extern const int BALL_WIDTH;
 extern const int BALL_HEIGHT;
+extern const float BALL_VELOCITY_MAG;
 
 
 Ball ballSetup();

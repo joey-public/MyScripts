@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include "./include/custom_types.h"
 #include "./include/paddle.h"
@@ -97,6 +99,7 @@ int processInput(GameInputState* a_game_input_ptr)
 
 int main( int argc, char* args[] )
 {
+  srand(time(NULL));
   SDL_Window* main_window = NULL;
   SDL_Renderer* main_renderer = NULL;
   int game_is_running = 1;
