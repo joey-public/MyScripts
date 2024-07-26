@@ -13,14 +13,16 @@ typedef struct GameInputState{
 typedef struct Paddle {
   SDL_Rect sprite_box;
   float x_position;
-  float speed;
+  float y_position;
+  float y_velocity;
 } Paddle;
 
 typedef struct Ball {
   SDL_Rect sprite_box;
   float x_position;
   float y_position;
-  float speed;
+  float x_velocity;
+  float y_velocity;
 }Ball;
 
 #endif

@@ -1,0 +1,4 @@
+-Wall
+-std=c99
+-lSDL2
+-lSDL2_image

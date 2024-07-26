@@ -1,0 +1,54 @@
+[
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Wall",
+            "-std=c99",
+            "-o",
+            "./build/pong",
+            "paddle.c"
+        ],
+        "directory": "/home/joey/MyScripts/c/sdl_pong",
+        "file": "paddle.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Wall",
+            "-std=c99",
+            "-o",
+            "./build/pong",
+            "constants.c"
+        ],
+        "directory": "/home/joey/MyScripts/c/sdl_pong",
+        "file": "constants.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Wall",
+            "-std=c99",
+            "-o",
+            "./build/pong",
+            "pong.c"
+        ],
+        "directory": "/home/joey/MyScripts/c/sdl_pong",
+        "file": "pong.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Wall",
+            "-std=c99",
+            "-o",
+            "./build/pong",
+            "ball.c"
+        ],
+        "directory": "/home/joey/MyScripts/c/sdl_pong",
+        "file": "ball.c"
+    }
+]

@@ -14,12 +14,12 @@ const int PADDLE_MIN_X = 5;
 Paddle paddleSetup()
 {
   Paddle paddle;
-  paddle.x_position = SCREEN_WIDTH/2; 
+  paddle.x_position = SCREEN_WIDTH/2.0; 
   paddle.sprite_box.x = (int) SCREEN_WIDTH/2;
   paddle.sprite_box.y = PADDLE_Y_POS;
   paddle.sprite_box.w = PADDLE_WIDTH;
   paddle.sprite_box.h = PADDLE_HEIGHT;
-  paddle.speed = 0.0f; 
+  paddle.y_velocity= 0.0f; 
   return paddle;
 }
 
