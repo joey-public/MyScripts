@@ -97,6 +97,45 @@ int processInput(GameInputState* a_game_input_ptr)
   return TRUE;
 }
 
+int check_paddle_ball_colision(Paddle a_paddle, Ball a_ball)
+{
+  SDL_Rect r1 = a_ball.sprite_box;
+  SDL_Rect r2 = a_paddle.sprite_box;
+  int x_overlap = ((r1.x+r1.x) > r2.x) & (r1.x < (r2.x+r2.w));
+  int y_overlap = ((r1.y+r1.h) > r2.y) & (r1.y < (r2.y+r2.h));
+  return (x_overlap & y_overlap);
+}
+
+//return TRUE if the game should be played or False if its game over
+int update(Paddle* a_paddle, Ball* a_ball, GameInputState a_input_state, float a_delta_time)
+{
+  paddleUpdate(a_paddle, a_input_state, a_delta_time);
+  ballUpdate(a_ball, *a_paddle, a_delta_time);
+  //Handle Collisions between ball and paddle here
+  if(check_paddle_ball_colision(*a_paddle, *a_ball)){
+    a_ball->y_position = PADDLE_Y_POS-BALL_HEIGHT;
+    a_ball->y_velocity = -1 * a_ball->y_velocity;
+  }
+  //Handle the Game Case here:
+  int bottom_wall_collision = a_ball->y_position > SCREEN_HEIGHT-BALL_HEIGHT;
+  if(bottom_wall_collision){
+    return FALSE;
+  }
+  return TRUE;
+}
+
+int render(Paddle a_paddle, Ball a_ball, SDL_Renderer* a_renderer)
+{
+    int return_val = TRUE;
+    SDL_SetRenderDrawColor(a_renderer, 255, 255, 255, 255);
+    SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
+    SDL_RenderFillRect(a_renderer, &background);
+    return_val &= paddleRender(a_paddle, a_renderer);
+    return_val &= ballRender(a_ball, a_renderer);
+    SDL_RenderPresent(a_renderer);
+    return return_val;
+}
+
 int main( int argc, char* args[] )
 {
   srand(time(NULL));
@@ -123,19 +162,10 @@ int main( int argc, char* args[] )
     }
     delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks();//look this up
+    
     game_is_running &= processInput(&game_input_state); 
-    //upadte
-    game_is_running &= paddleUpdate(&main_paddle, game_input_state, delta_time);
-    game_is_running &= ballUpdate(&main_ball, main_paddle, delta_time);
-    //render
-    SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
-    SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
-    SDL_RenderFillRect(main_renderer, &background);
-    //render the paddle
-    game_is_running &= ballRender(main_ball, main_renderer);
-    game_is_running &= paddleRender(main_paddle, main_renderer);
-    //render the ball
-    SDL_RenderPresent(main_renderer);
+    game_is_running &= update(&main_paddle, &main_ball, game_input_state, delta_time);
+    game_is_running &= render(main_paddle, main_ball, main_renderer);
   }
   //destroy everything
   SDL_DestroyRenderer(main_renderer);

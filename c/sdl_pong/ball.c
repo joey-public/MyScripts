@@ -26,14 +26,6 @@ int _rand_int_range(int min, int max)
     return min + _rand_int(max+range);
 }
 
-int _check_paddle_collision(Ball a_ball, Paddle a_paddle){
-  SDL_Rect r1 = a_ball.sprite_box;
-  SDL_Rect r2 = a_paddle.sprite_box;
-  int x_overlap = ((r1.x+r1.x) > r2.x) & (r1.x < (r2.x+r2.w));
-  int y_overlap = ((r1.y+r1.h) > r2.y) & (r1.y < (r2.y+r2.h));
-  return (x_overlap & y_overlap);
-}
-
 Ball ballSetup()
 {
   Ball ball;
@@ -61,7 +53,6 @@ int ballUpdate(Ball* a_ball, Paddle a_paddle, float a_delta_time)
   int left_wall_collision = a_ball->x_position < 0; 
   int right_wall_collision = a_ball->x_position > SCREEN_WIDTH-BALL_WIDTH; 
   int top_wall_collision = a_ball->y_position < 0;
-  int bottom_wall_collision = a_ball->y_position > SCREEN_HEIGHT-BALL_HEIGHT;
   if(left_wall_collision){
     a_ball->x_position = 0;
     a_ball->x_velocity = -1 * a_ball->x_velocity;
@@ -73,13 +64,6 @@ int ballUpdate(Ball* a_ball, Paddle a_paddle, float a_delta_time)
   if(top_wall_collision){
     a_ball->y_position = 0;
     a_ball->y_velocity = -1 * a_ball->y_velocity;
-  }
-  if(_check_paddle_collision(*a_ball, a_paddle)){
-    a_ball->y_position = PADDLE_Y_POS-BALL_HEIGHT;
-    a_ball->y_velocity = -1 * a_ball->y_velocity;
-  }
-  if(bottom_wall_collision){//game over
-    return TRUE;
   }
   a_ball->sprite_box.x = (int) a_ball->x_position;
   a_ball->sprite_box.y = (int) a_ball->y_position;
