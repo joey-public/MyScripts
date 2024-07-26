@@ -125,8 +125,8 @@ int main( int argc, char* args[] )
     last_frame_time = SDL_GetTicks();//look this up
     game_is_running &= processInput(&game_input_state); 
     //upadte
-    game_is_running &= ballUpdate(&main_ball, delta_time);
     game_is_running &= paddleUpdate(&main_paddle, game_input_state, delta_time);
+    game_is_running &= ballUpdate(&main_ball, main_paddle, delta_time);
     //render
     SDL_SetRenderDrawColor(main_renderer, 255, 255, 255, 255);
     SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};

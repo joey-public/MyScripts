@@ -9,7 +9,7 @@ extern const float BALL_VELOCITY_MAG;
 
 
 Ball ballSetup();
-int ballUpdate(Ball* a_ball, float a_delta_time);
+int ballUpdate(Ball* a_ball, Paddle a_paddle, float a_delta_time);
 int ballRender(Ball a_ball, SDL_Renderer* a_renderer);
 
 #endif

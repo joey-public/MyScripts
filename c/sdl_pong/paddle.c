@@ -5,7 +5,7 @@
 
 //Paddle Constants
 const float PADDLE_SPEED = 2000;
-const int PADDLE_WIDTH = 80;
+const int PADDLE_WIDTH = 100;
 const int PADDLE_HEIGHT = 10;
 const int PADDLE_Y_POS = 480-PADDLE_HEIGHT-10;
 const int PADDLE_MAX_X = 640-PADDLE_WIDTH-5;

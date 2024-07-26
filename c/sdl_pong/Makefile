@@ -13,7 +13,7 @@ COMPILER_FLAGS = -Wall -std=c99
 DEBUG_FLAGS = -g
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lSDL2 -lSDL2_image 
+LINKER_FLAGS = -lm -lSDL2 -lSDL2_image 
 
 
 #OBJ_NAME specifies the name of our exectuable

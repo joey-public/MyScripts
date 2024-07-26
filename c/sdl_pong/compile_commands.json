@@ -7,10 +7,10 @@
             "-std=c99",
             "-o",
             "./build/pong",
-            "paddle.c"
+            "ball.c"
         ],
         "directory": "/home/joey/MyScripts/c/sdl_pong",
-        "file": "paddle.c"
+        "file": "ball.c"
     },
     {
         "arguments": [
@@ -46,9 +46,9 @@
             "-std=c99",
             "-o",
             "./build/pong",
-            "ball.c"
+            "paddle.c"
         ],
         "directory": "/home/joey/MyScripts/c/sdl_pong",
-        "file": "ball.c"
+        "file": "paddle.c"
     }
 ]
