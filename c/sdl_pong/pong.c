@@ -22,7 +22,7 @@ int check_paddle_ball_colision(Paddle a_paddle, Ball a_ball)
 }
 
 //return TRUE if the game should be played or False if its game over
-int update(Paddle* a_paddle, Ball* a_ball, GameInputState a_input_state, float a_delta_time)
+int update(Paddle* a_paddle, Ball* a_ball, GameInputState a_input_state, int* a_score, float a_delta_time)
 {
   paddleUpdate(a_paddle, a_input_state, a_delta_time);
   ballUpdate(a_ball, *a_paddle, a_delta_time);
@@ -30,11 +30,7 @@ int update(Paddle* a_paddle, Ball* a_ball, GameInputState a_input_state, float a
   if(check_paddle_ball_colision(*a_paddle, *a_ball)){
     a_ball->y_position = PADDLE_Y_POS-BALL_HEIGHT;
     a_ball->y_velocity = -1 * a_ball->y_velocity;
-  }
-  //Handle the Game Case here:
-  int bottom_wall_collision = a_ball->y_position > SCREEN_HEIGHT-BALL_HEIGHT;
-  if(bottom_wall_collision){
-    return FALSE;
+    (*a_score) ++;
   }
   return TRUE;
 }
@@ -58,8 +54,11 @@ int main( int argc, char* args[] )
   SDL_Renderer* main_renderer = NULL;
   int game_is_running = 1;
   int last_frame_time = SDL_GetTicks();
+  int score = 0;
   float delta_time = 0.0f;
   game_is_running = init(&main_window, &main_renderer);
+  enum states {start, play, stop};
+  enum states current_game_state = start;
   if (!game_is_running){
     printf("SDL Setup Failed\n");
     return -1;
@@ -77,10 +76,39 @@ int main( int argc, char* args[] )
     }
     delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks();//look this up
-    
-    game_is_running &= processInput(&game_input_state); 
-    game_is_running &= update(&main_paddle, &main_ball, game_input_state, delta_time);
-    game_is_running &= render(main_paddle, main_ball, main_renderer);
+                                     
+    switch(current_game_state)
+    {
+      case start:
+        SDL_Delay(250);//chill for 250 ms
+        current_game_state = play;
+        main_ball=ballSetup();
+        main_paddle=paddleSetup();
+        game_is_running &= render(main_paddle, main_ball, main_renderer);
+        current_game_state = play;
+        break;
+      case play:
+        game_is_running &= processInput(&game_input_state); 
+        game_is_running &= update(&main_paddle, &main_ball, game_input_state, &score, delta_time);
+        game_is_running &= render(main_paddle, main_ball, main_renderer);
+        //Handle the Game Case here:
+        int bottom_wall_collision = main_ball.y_position > SCREEN_HEIGHT-BALL_HEIGHT;//this collision is sometimes broken...
+        if(bottom_wall_collision){ 
+            printf("You Lose\n");
+            current_game_state=stop;
+        }
+        //printf("Score: %d\n", score);
+        break;
+      case stop:
+        SDL_Delay(250);//chill for 250 ms
+        main_ball=ballSetup();
+        main_paddle=paddleSetup();
+        game_is_running &= render(main_paddle, main_ball, main_renderer);
+        SDL_Delay(250);//chill for 250 ms
+        score = 0;
+        current_game_state = play;
+        break;
+    }
   }
   //destroy everything
   SDL_DestroyRenderer(main_renderer);

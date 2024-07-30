@@ -14,7 +14,8 @@ typedef struct Paddle {
   SDL_Rect sprite_box;
   float x_position;
   float y_position;
-  float y_velocity;
+  float x_velocity;
+  float x_acceleration;
 } Paddle;
 
 typedef struct Ball {

@@ -4,10 +4,11 @@
 GameInputState gameInputStateSetup()
 {
   GameInputState gis;
-  gis.left = 1;
-  gis.right = 1;
+  gis.left = FALSE;
+  gis.right = FALSE;
   return gis;
 }
+
 
 int processInput(GameInputState* a_game_input_ptr)
 {
@@ -23,19 +24,26 @@ int processInput(GameInputState* a_game_input_ptr)
         break;
       case SDLK_LEFT:
         (*a_game_input_ptr).left = TRUE;
-        (*a_game_input_ptr).right = FALSE;
         break;
       case SDLK_RIGHT:
-        (*a_game_input_ptr).left= FALSE;
         (*a_game_input_ptr).right = TRUE;
         break;
       default:
         break;
     }
   }
-  else{//no keys were pressed
-    (*a_game_input_ptr).left = 1;
-    (*a_game_input_ptr).right = 1;
+  else if(event.type==SDL_KEYUP){
+    switch(event.key.keysym.sym){
+      case SDLK_LEFT:
+        (*a_game_input_ptr).left = FALSE;
+        break;
+      case SDLK_RIGHT:
+        (*a_game_input_ptr).right = FALSE;
+        break;
+      default:
+        break;
+    }
   }
+  else{}//no keys were pressed
   return TRUE;
 }
