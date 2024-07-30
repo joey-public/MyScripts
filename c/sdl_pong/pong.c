@@ -2,13 +2,14 @@
 #include <time.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include "./include/custom_types.h"
 #include "./include/init_sdl.h"
 #include "./include/input_handler.h"
 #include "./include/paddle.h"
 #include "./include/ball.h"
 #include "./include/constants.h"
+#include "./include/audio_player.h"
                                                  
 
 
@@ -16,18 +17,19 @@ int check_paddle_ball_colision(Paddle a_paddle, Ball a_ball)
 {
   SDL_Rect r1 = a_ball.sprite_box;
   SDL_Rect r2 = a_paddle.sprite_box;
-  int x_overlap = ((r1.x+r1.x) > r2.x) & (r1.x < (r2.x+r2.w));
+  int x_overlap = ((r1.x+r1.w) > r2.x) & (r1.x < (r2.x+r2.w));
   int y_overlap = ((r1.y+r1.h) > r2.y) & (r1.y < (r2.y+r2.h));
   return (x_overlap & y_overlap);
 }
 
 //return TRUE if the game should be played or False if its game over
-int update(Paddle* a_paddle, Ball* a_ball, GameInputState a_input_state, int* a_score, float a_delta_time)
+int update(Paddle* a_paddle, Ball* a_ball, AudioPlayer a_audio_player, GameInputState a_input_state, int* a_score, float a_delta_time)
 {
   paddleUpdate(a_paddle, a_input_state, a_delta_time);
-  ballUpdate(a_ball, *a_paddle, a_delta_time);
+  ballUpdate(a_ball, *a_paddle, a_audio_player, a_delta_time);
   //Handle Collisions between ball and paddle here
   if(check_paddle_ball_colision(*a_paddle, *a_ball)){
+    Mix_PlayChannel(-1, a_audio_player.sound_ball_paddle_collision, 0);
     a_ball->y_position = PADDLE_Y_POS-BALL_HEIGHT;
     a_ball->y_velocity = -1 * a_ball->y_velocity;
     (*a_score) ++;
@@ -64,6 +66,7 @@ int main( int argc, char* args[] )
     return -1;
   }
   //main loop
+  AudioPlayer main_audio_player = audioPlayerSetup();
   Paddle main_paddle = paddleSetup();
   Ball main_ball = ballSetup();
   GameInputState game_input_state = gameInputStateSetup();
@@ -89,7 +92,7 @@ int main( int argc, char* args[] )
         break;
       case play:
         game_is_running &= processInput(&game_input_state); 
-        game_is_running &= update(&main_paddle, &main_ball, game_input_state, &score, delta_time);
+        game_is_running &= update(&main_paddle, &main_ball, main_audio_player, game_input_state, &score, delta_time);
         game_is_running &= render(main_paddle, main_ball, main_renderer);
         //Handle the Game Case here:
         int bottom_wall_collision = main_ball.y_position > SCREEN_HEIGHT-BALL_HEIGHT;//this collision is sometimes broken...
@@ -111,6 +114,7 @@ int main( int argc, char* args[] )
     }
   }
   //destroy everything
+  destroyAudioPlayer(&main_audio_player);
   SDL_DestroyRenderer(main_renderer);
   SDL_DestroyWindow(main_window);
   SDL_Quit();

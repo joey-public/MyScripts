@@ -4,8 +4,17 @@
 int initSdl()
 {
   //initilize SDL
-  if(SDL_Init(SDL_INIT_VIDEO)<0){
+  if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)<0){
     printf("SDL could not initilize! SDL Error: %s\n", SDL_GetError());
+    return FALSE;
+  }
+  return TRUE;
+}
+
+int initMixer(int a_sample_rate)
+{
+  if( Mix_OpenAudio(a_sample_rate, MIX_DEFAULT_FORMAT, 2, 2048) < 0){
+    printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError()); 
     return FALSE;
   }
   return TRUE;
@@ -44,7 +53,9 @@ int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window){
 int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
 {
   int sdl_initilized = initSdl();
+  int sdl_mixer_initilized = initMixer(44000);
   int sdl_window_initilized = initWindow(a_window);
   int sdl_renderer_initilized = initRenderer(a_renderer, *a_window);
-  return sdl_initilized && sdl_window_initilized && sdl_renderer_initilized;
+  return sdl_initilized &&sdl_mixer_initilized && sdl_window_initilized && sdl_renderer_initilized;
 }
+

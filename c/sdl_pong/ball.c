@@ -4,6 +4,7 @@
 #include "./include/paddle.h"
 #include <stdlib.h>
 #include <math.h>
+#include <SDL2/SDL_mixer.h>
 
 const int BALL_WIDTH = 20;//pixels
 const int BALL_HEIGHT = 20;//pixels
@@ -44,7 +45,7 @@ Ball ballSetup()
 //TODO: move wall and paddle collision detections outsode of the ball update method.
 //THe ball should just update its position and its sprite_box
 //collisions should be handeled in the top level update function, it just makes more sense.
-int ballUpdate(Ball* a_ball, Paddle a_paddle, float a_delta_time)
+int ballUpdate(Ball* a_ball, Paddle a_paddle, AudioPlayer a_audio_player, float a_delta_time)
 {
   //update the ball position
   a_ball->x_position += a_ball->x_velocity * a_delta_time;
@@ -54,14 +55,17 @@ int ballUpdate(Ball* a_ball, Paddle a_paddle, float a_delta_time)
   int right_wall_collision = a_ball->x_position > SCREEN_WIDTH-BALL_WIDTH; 
   int top_wall_collision = a_ball->y_position < 0;
   if(left_wall_collision){
+    Mix_PlayChannel(-1, a_audio_player.sound_ball_wall_collision, 0);
     a_ball->x_position = 0;
     a_ball->x_velocity = -1 * a_ball->x_velocity;
   }
   if(right_wall_collision){
+    Mix_PlayChannel(-1, a_audio_player.sound_ball_wall_collision, 0);
     a_ball->x_position = SCREEN_WIDTH-BALL_WIDTH;
     a_ball->x_velocity = -1 * a_ball->x_velocity;
   }
   if(top_wall_collision){
+    Mix_PlayChannel(-1, a_audio_player.sound_ball_wall_collision, 0);
     a_ball->y_position = 0;
     a_ball->y_velocity = -1 * a_ball->y_velocity;
   }

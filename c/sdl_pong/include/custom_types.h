@@ -2,6 +2,7 @@
 #define CUSTOM_TYPES_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 typedef struct GameInputState{
   int left;
@@ -25,6 +26,11 @@ typedef struct Ball {
   float x_velocity;
   float y_velocity;
 }Ball;
+
+typedef struct AudioPlayer {
+  Mix_Chunk* sound_ball_paddle_collision;
+  Mix_Chunk* sound_ball_wall_collision;
+}AudioPlayer;
 
 
 
