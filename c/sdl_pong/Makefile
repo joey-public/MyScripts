@@ -1,5 +1,5 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = pong.c constants.c paddle.c ball.c init_sdl.c input_handler.c audio_player.c
+OBJS = pong.c constants.c paddle.c ball.c init_sdl.c input_handler.c audio_player.c score_keeper.c
 
 #CC specifies which compiler we're using
 #CC = g++ #for cpp

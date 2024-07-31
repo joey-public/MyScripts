@@ -11,6 +11,7 @@
 #include "./include/ball.h"
 #include "./include/constants.h"
 #include "./include/audio_player.h"
+#include "./include/score_keeper.h"
                                                  
 
 ColorPallete setupColorPallete()
@@ -47,7 +48,7 @@ int update(Paddle* a_paddle, Ball* a_ball, AudioPlayer a_audio_player, GameInput
   return TRUE;
 }
 
-int render(Paddle a_paddle, Ball a_ball, SDL_Renderer* a_renderer, ColorPallete a_pallete)
+int render(Paddle a_paddle, Ball a_ball, ScoreKeeper a_score_keeper, ColorPallete a_pallete, SDL_Renderer* a_renderer)
 {
     int return_val = TRUE;
     SDL_Color bg_color = a_pallete.c1;//darkest color
@@ -56,26 +57,8 @@ int render(Paddle a_paddle, Ball a_ball, SDL_Renderer* a_renderer, ColorPallete 
     SDL_RenderFillRect(a_renderer, &background);
     return_val &= paddleRender(a_paddle, a_renderer, a_pallete);
     return_val &= ballRender(a_ball, a_renderer, a_pallete);
-    //start text rendering, gotta move this out of here 
-    TTF_Font* test_font;
-    int font_size = 28;
-    test_font = TTF_OpenFont("./assests/instruction/Instruction.ttf", font_size); 
-    SDL_Surface* test_surface = TTF_RenderText_Solid(test_font, "Hello!", a_pallete.c2); 
-    if(test_surface==NULL){
-      printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
-    }
-    SDL_Texture* test_texture = SDL_CreateTextureFromSurface(a_renderer, test_surface);
-    if(test_texture==NULL){
-      printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
-    }
-    SDL_FreeSurface(test_surface);
-    SDL_Color text_color = a_pallete.c2;//darkest color
-    SDL_SetRenderDrawColor(a_renderer, text_color.r, text_color.g, text_color.b, text_color.a);
-    SDL_RenderCopy(a_renderer, test_texture, NULL, NULL);
-    //end text rendering 
+    return_val &= scoreKeeperRender(a_score_keeper, a_renderer, a_pallete);
     SDL_RenderPresent(a_renderer);
-    
-
     return return_val;
 }
 
@@ -101,6 +84,7 @@ int main( int argc, char* args[] )
   Ball main_ball = ballSetup();
   GameInputState game_input_state = gameInputStateSetup();
   ColorPallete main_pallete = setupColorPallete();
+  ScoreKeeper main_score_keeper = scoreKeeperSetup(main_renderer, main_pallete);
   while(game_is_running){
     //while(!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time+FRAME_TARGET_TIME)); 
     int wait_time = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
@@ -117,13 +101,13 @@ int main( int argc, char* args[] )
         current_game_state = play;
         main_ball=ballSetup();
         main_paddle=paddleSetup();
-        game_is_running &= render(main_paddle, main_ball, main_renderer, main_pallete);
+        game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
         current_game_state = play;
         break;
       case play:
         game_is_running &= processInput(&game_input_state); 
         game_is_running &= update(&main_paddle, &main_ball, main_audio_player, game_input_state, &score, delta_time);
-        game_is_running &= render(main_paddle, main_ball, main_renderer, main_pallete);
+        game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
         //Handle the Game Case here:
         int bottom_wall_collision = main_ball.y_position > SCREEN_HEIGHT-BALL_HEIGHT;//this collision is sometimes broken...
         if(bottom_wall_collision){ 
@@ -136,7 +120,7 @@ int main( int argc, char* args[] )
         SDL_Delay(250);//chill for 250 ms
         main_ball=ballSetup();
         main_paddle=paddleSetup();
-        game_is_running &= render(main_paddle, main_ball, main_renderer, main_pallete);
+        game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
         SDL_Delay(250);//chill for 250 ms
         score = 0;
         current_game_state = play;
@@ -144,7 +128,8 @@ int main( int argc, char* args[] )
     }
   }
   //destroy everything
-  destroyAudioPlayer(&main_audio_player);
+  audioPlayerDestroy(&main_audio_player);
+  scoreKeeperDestroy(&main_score_keeper);
   SDL_DestroyRenderer(main_renderer);
   SDL_DestroyWindow(main_window);
   TTF_Quit();

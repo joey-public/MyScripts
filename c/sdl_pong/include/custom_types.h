@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 
 typedef struct GameInputState{
   int left;
@@ -41,5 +42,14 @@ typedef struct ColorPallete{
   SDL_Color c3;
 }ColorPallete;
 
+typedef struct ScoreKeeper{
+  int score;
+  int font_size;
+  char* score_cstr[4];
+  int x_position_px;
+  int y_position_px;
+  SDL_Texture* sprite;
+  TTF_Font* font;
+}ScoreKeeper;
 
 #endif

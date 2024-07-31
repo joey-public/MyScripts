@@ -16,7 +16,7 @@ AudioPlayer audioPlayerSetup()
   return audio_player;
 }
 
-void destroyAudioPlayer(AudioPlayer* a_audio_player)
+void audioPlayerDestroy(AudioPlayer* a_audio_player)
 {
   Mix_FreeChunk(a_audio_player->sound_ball_wall_collision);
   Mix_FreeChunk(a_audio_player->sound_ball_paddle_collision);

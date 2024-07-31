@@ -4,6 +4,6 @@
 #include "custom_types.h"
 
 AudioPlayer audioPlayerSetup();
-void destroyAudioPlayer(AudioPlayer* a_audio_player);
+void audioPlayerDestroy(AudioPlayer* a_audio_player);
 
 #endif
