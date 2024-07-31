@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 #include "./include/custom_types.h"
 #include "./include/init_sdl.h"
 #include "./include/input_handler.h"
@@ -21,6 +22,7 @@ ColorPallete setupColorPallete()
   p.c3.r = 205; p.c3.g = 219; p.c3.b = 87; p.c3.a = 255;
   return p;
 }
+
 int check_paddle_ball_colision(Paddle a_paddle, Ball a_ball)
 {
   SDL_Rect r1 = a_ball.sprite_box;
@@ -54,7 +56,26 @@ int render(Paddle a_paddle, Ball a_ball, SDL_Renderer* a_renderer, ColorPallete 
     SDL_RenderFillRect(a_renderer, &background);
     return_val &= paddleRender(a_paddle, a_renderer, a_pallete);
     return_val &= ballRender(a_ball, a_renderer, a_pallete);
+    //start text rendering, gotta move this out of here 
+    TTF_Font* test_font;
+    int font_size = 28;
+    test_font = TTF_OpenFont("./assests/instruction/Instruction.ttf", font_size); 
+    SDL_Surface* test_surface = TTF_RenderText_Solid(test_font, "Hello!", a_pallete.c2); 
+    if(test_surface==NULL){
+      printf( "Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError() );
+    }
+    SDL_Texture* test_texture = SDL_CreateTextureFromSurface(a_renderer, test_surface);
+    if(test_texture==NULL){
+      printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
+    }
+    SDL_FreeSurface(test_surface);
+    SDL_Color text_color = a_pallete.c2;//darkest color
+    SDL_SetRenderDrawColor(a_renderer, text_color.r, text_color.g, text_color.b, text_color.a);
+    SDL_RenderCopy(a_renderer, test_texture, NULL, NULL);
+    //end text rendering 
     SDL_RenderPresent(a_renderer);
+    
+
     return return_val;
 }
 
@@ -126,6 +147,8 @@ int main( int argc, char* args[] )
   destroyAudioPlayer(&main_audio_player);
   SDL_DestroyRenderer(main_renderer);
   SDL_DestroyWindow(main_window);
+  TTF_Quit();
+  Mix_Quit();
   SDL_Quit();
   printf("Thansks for playing :)\n");
   return 0;

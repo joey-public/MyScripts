@@ -20,6 +20,15 @@ int initMixer(int a_sample_rate)
   return TRUE;
 }
 
+int initTTF()
+{
+  if(TTF_Init()==-1){
+    printf( "SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError() );
+    return FALSE;    
+  }
+  return TRUE;
+}
+
 int initWindow(SDL_Window** a_window)
 {
   //pass a pointer to the main window (which has type SDL_Window*) 
@@ -54,8 +63,9 @@ int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
 {
   int sdl_initilized = initSdl();
   int sdl_mixer_initilized = initMixer(44000);
+  int sdl_ttf_initilized = initTTF();
   int sdl_window_initilized = initWindow(a_window);
   int sdl_renderer_initilized = initRenderer(a_renderer, *a_window);
-  return sdl_initilized &&sdl_mixer_initilized && sdl_window_initilized && sdl_renderer_initilized;
+  return sdl_initilized &&sdl_mixer_initilized && sdl_ttf_initilized && sdl_window_initilized && sdl_renderer_initilized;
 }
 
