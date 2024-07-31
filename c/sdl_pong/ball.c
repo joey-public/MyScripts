@@ -74,9 +74,10 @@ int ballUpdate(Ball* a_ball, Paddle a_paddle, AudioPlayer a_audio_player, float 
   return TRUE;
 }
 
-int ballRender(Ball a_ball, SDL_Renderer* a_renderer)
+int ballRender(Ball a_ball, SDL_Renderer* a_renderer, ColorPallete a_pallete)
 {
-  SDL_SetRenderDrawColor(a_renderer, 0, 0, 0, 255);
+  SDL_Color color = a_pallete.c0;
+  SDL_SetRenderDrawColor(a_renderer, color.r, color.g, color.b, color.a);
   SDL_RenderFillRect(a_renderer, &a_ball.sprite_box);
   return TRUE;
 }

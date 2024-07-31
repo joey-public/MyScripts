@@ -12,7 +12,15 @@
 #include "./include/audio_player.h"
                                                  
 
-
+ColorPallete setupColorPallete()
+{
+  ColorPallete p;
+  p.c0.r = 55;  p.c0.g = 86;  p.c0.b = 32; p.c0.a = 255;
+  p.c1.r = 109; p.c1.g = 142; p.c1.b = 52; p.c1.a = 255;
+  p.c2.r = 129; p.c2.g = 183; p.c2.b = 12; p.c2.a = 255;
+  p.c3.r = 205; p.c3.g = 219; p.c3.b = 87; p.c3.a = 255;
+  return p;
+}
 int check_paddle_ball_colision(Paddle a_paddle, Ball a_ball)
 {
   SDL_Rect r1 = a_ball.sprite_box;
@@ -37,14 +45,15 @@ int update(Paddle* a_paddle, Ball* a_ball, AudioPlayer a_audio_player, GameInput
   return TRUE;
 }
 
-int render(Paddle a_paddle, Ball a_ball, SDL_Renderer* a_renderer)
+int render(Paddle a_paddle, Ball a_ball, SDL_Renderer* a_renderer, ColorPallete a_pallete)
 {
     int return_val = TRUE;
-    SDL_SetRenderDrawColor(a_renderer, 255, 255, 255, 255);
+    SDL_Color bg_color = a_pallete.c1;//darkest color
+    SDL_SetRenderDrawColor(a_renderer, bg_color.r, bg_color.g, bg_color.b, bg_color.a);
     SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(a_renderer, &background);
-    return_val &= paddleRender(a_paddle, a_renderer);
-    return_val &= ballRender(a_ball, a_renderer);
+    return_val &= paddleRender(a_paddle, a_renderer, a_pallete);
+    return_val &= ballRender(a_ball, a_renderer, a_pallete);
     SDL_RenderPresent(a_renderer);
     return return_val;
 }
@@ -70,7 +79,7 @@ int main( int argc, char* args[] )
   Paddle main_paddle = paddleSetup();
   Ball main_ball = ballSetup();
   GameInputState game_input_state = gameInputStateSetup();
- 
+  ColorPallete main_pallete = setupColorPallete();
   while(game_is_running){
     //while(!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time+FRAME_TARGET_TIME)); 
     int wait_time = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
@@ -87,13 +96,13 @@ int main( int argc, char* args[] )
         current_game_state = play;
         main_ball=ballSetup();
         main_paddle=paddleSetup();
-        game_is_running &= render(main_paddle, main_ball, main_renderer);
+        game_is_running &= render(main_paddle, main_ball, main_renderer, main_pallete);
         current_game_state = play;
         break;
       case play:
         game_is_running &= processInput(&game_input_state); 
         game_is_running &= update(&main_paddle, &main_ball, main_audio_player, game_input_state, &score, delta_time);
-        game_is_running &= render(main_paddle, main_ball, main_renderer);
+        game_is_running &= render(main_paddle, main_ball, main_renderer, main_pallete);
         //Handle the Game Case here:
         int bottom_wall_collision = main_ball.y_position > SCREEN_HEIGHT-BALL_HEIGHT;//this collision is sometimes broken...
         if(bottom_wall_collision){ 
@@ -106,7 +115,7 @@ int main( int argc, char* args[] )
         SDL_Delay(250);//chill for 250 ms
         main_ball=ballSetup();
         main_paddle=paddleSetup();
-        game_is_running &= render(main_paddle, main_ball, main_renderer);
+        game_is_running &= render(main_paddle, main_ball, main_renderer, main_pallete);
         SDL_Delay(250);//chill for 250 ms
         score = 0;
         current_game_state = play;

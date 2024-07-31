@@ -33,5 +33,13 @@ typedef struct AudioPlayer {
 }AudioPlayer;
 
 
+typedef struct ColorPallete{
+//  SDL_Color dark = {r=55, g=88, b=32, a=255};
+  SDL_Color c0;
+  SDL_Color c1;
+  SDL_Color c2;
+  SDL_Color c3;
+}ColorPallete;
+
 
 #endif

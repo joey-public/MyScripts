@@ -62,10 +62,11 @@ int paddleUpdate(Paddle* a_paddle, GameInputState a_current_input_state, float a
   return TRUE;
 }
 
-int paddleRender(Paddle a_paddle, SDL_Renderer* a_renderer)
+int paddleRender(Paddle a_paddle, SDL_Renderer* a_renderer, ColorPallete a_pallete)
 {
 //  printf("Paddle Y pos = %d\n", a_paddle.sprite_box.y);
-  SDL_SetRenderDrawColor(a_renderer, 0, 0, 0, 255);
+  SDL_Color color = a_pallete.c0;
+  SDL_SetRenderDrawColor(a_renderer, color.r, color.g, color.b, color.a);
   SDL_RenderFillRect(a_renderer, &a_paddle.sprite_box);
   return TRUE;
 }
