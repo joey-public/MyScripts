@@ -34,16 +34,18 @@ int check_paddle_ball_colision(Paddle a_paddle, Ball a_ball)
 }
 
 //return TRUE if the game should be played or False if its game over
-int update(Paddle* a_paddle, Ball* a_ball, AudioPlayer a_audio_player, GameInputState a_input_state, int* a_score, float a_delta_time)
+int update(Paddle* a_paddle, Ball* a_ball, ScoreKeeper* a_score_keeper, AudioPlayer a_audio_player, GameInputState a_input_state, int* a_score, float a_delta_time, SDL_Renderer* a_renderer, ColorPallete a_pallete)
 {
   paddleUpdate(a_paddle, a_input_state, a_delta_time);
   ballUpdate(a_ball, *a_paddle, a_audio_player, a_delta_time);
+  scoreKeeperUpdate(a_score_keeper, a_delta_time, a_renderer, a_pallete);
   //Handle Collisions between ball and paddle here
   if(check_paddle_ball_colision(*a_paddle, *a_ball)){
     Mix_PlayChannel(-1, a_audio_player.sound_ball_paddle_collision, 0);
     a_ball->y_position = PADDLE_Y_POS-BALL_HEIGHT;
     a_ball->y_velocity = -1 * a_ball->y_velocity;
-    (*a_score) ++;
+    a_score_keeper->score ++;
+//    (*a_score) ++;
   }
   return TRUE;
 }
@@ -101,12 +103,13 @@ int main( int argc, char* args[] )
         current_game_state = play;
         main_ball=ballSetup();
         main_paddle=paddleSetup();
+        main_score_keeper = scoreKeeperSetup(main_renderer, main_pallete);
         game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
         current_game_state = play;
         break;
       case play:
         game_is_running &= processInput(&game_input_state); 
-        game_is_running &= update(&main_paddle, &main_ball, main_audio_player, game_input_state, &score, delta_time);
+        game_is_running &= update(&main_paddle, &main_ball, &main_score_keeper, main_audio_player, game_input_state, &score, delta_time, main_renderer, main_pallete);
         game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
         //Handle the Game Case here:
         int bottom_wall_collision = main_ball.y_position > SCREEN_HEIGHT-BALL_HEIGHT;//this collision is sometimes broken...
@@ -120,6 +123,7 @@ int main( int argc, char* args[] )
         SDL_Delay(250);//chill for 250 ms
         main_ball=ballSetup();
         main_paddle=paddleSetup();
+        main_score_keeper = scoreKeeperSetup(main_renderer, main_pallete);
         game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
         SDL_Delay(250);//chill for 250 ms
         score = 0;

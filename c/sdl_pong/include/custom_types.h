@@ -45,7 +45,8 @@ typedef struct ColorPallete{
 typedef struct ScoreKeeper{
   int score;
   int font_size;
-  char* score_cstr[4];
+  int update_score;
+  char score_cstr[4];
   int x_position_px;
   int y_position_px;
   SDL_Texture* sprite;

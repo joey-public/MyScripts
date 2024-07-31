@@ -8,7 +8,9 @@
 
 const int BALL_WIDTH = 20;//pixels
 const int BALL_HEIGHT = 20;//pixels
-const float BALL_VELOCITY_MAG = 150;
+const float BALL_VELOCITY_MAG = 400;
+const float BALL_VELOCITY_X_MIN= 100;
+const float BALL_VELOCITY_X_MAX= 200;
 
 //https://stackoverflow.com/questions/2999075/generate-a-random-number-within-range/2999130#2999130
 int _rand_int(int n) 
@@ -32,9 +34,8 @@ Ball ballSetup()
   Ball ball;
   ball.x_position = _rand_int(SCREEN_WIDTH);
   ball.y_position = 0;
-  int variation = (int) 0.1f * BALL_VELOCITY_MAG;
-  ball.x_velocity = _rand_int_range(BALL_VELOCITY_MAG-variation, BALL_VELOCITY_MAG+variation);
-  ball.y_velocity = sqrt(pow(BALL_VELOCITY_MAG,2) + pow(ball.x_velocity, 2));
+  ball.x_velocity = _rand_int_range(BALL_VELOCITY_X_MIN, BALL_VELOCITY_X_MAX);
+  ball.y_velocity = sqrt(pow(BALL_VELOCITY_MAG,2) - pow(ball.x_velocity, 2));
   ball.sprite_box.x = (int) ball.x_position; 
   ball.sprite_box.y = (int) ball.y_position; 
   ball.sprite_box.w = BALL_WIDTH;
