@@ -13,10 +13,10 @@
 #include "./include/audio_player.h"
 #include "./include/score_keeper.h"
 
-//#define USE_EMSCRIPTEN
+#define USE_EMSCRIPTEN
 
 #ifdef USE_EMSCRIPTEN
-  #define FPS 30
+  #define FPS 24 
   #define EM_INF_LOOP 1
   #include <emscripten.h>
 #endif
@@ -79,7 +79,6 @@ void main_loop_iter(void* a)
   if(args->current_game_state == START){
     SDL_Delay(250);//chill for 250 ms
     ballSetup(&(args->ball));
-//    args->score_keeper = scoreKeeperSetup(args->renderer, args->color_pallete);
     args->game_is_running &= render(args->paddle, args->ball, args->score_keeper , args->color_pallete,args->renderer);
     args->current_game_state = PLAY;
   }
@@ -144,12 +143,12 @@ int main( int argc, char* args[] )
   loop_args.delta_time = 0.0f;
   loop_args.game_is_running = FALSE;
   loop_args.current_game_state = 0;
-//#ifdef USE_EMSCRIPTEN 
-//  emscripten_set_main_loop_arg(main_loop_iter, &loop_args, FPS, EM_INF_LOOP);
-//#else
+#ifdef USE_EMSCRIPTEN 
+  loop_args.delta_time = 1.0/FPS;
+  emscripten_set_main_loop_arg(main_loop_iter, &loop_args, FPS, EM_INF_LOOP);
+#else
   main_loop(&loop_args);
-//#endif
-
+#endif
   //destroy everything
   audioPlayerDestroy(&(loop_args.audio_player));
   scoreKeeperDestroy(&(loop_args.score_keeper));

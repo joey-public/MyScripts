@@ -1,5 +1,6 @@
 #OBJS specifies which files to compile as part of the project
 OBJS = pong.c constants.c paddle.c ball.c init_sdl.c input_handler.c audio_player.c score_keeper.c
+WEB_OBJS = web_pong.c constants.c paddle.c ball.c init_sdl.c input_handler.c audio_player.c score_keeper.c
 
 #CC specifies which compiler we're using
 #CC = g++ #for cpp
@@ -30,6 +31,9 @@ run :
 rundb :
 	gdb $(OBJ_NAME)
 web:
-	emcc $(OBJS) -o ./build/web_pong.html -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -sUSE_SDL_MIXER=2 --preload-file ./assests/
+	emcc $(WEB_OBJS) -o ./build/web_pong.html -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -sUSE_SDL_MIXER=2 --preload-file ./assests/
+webrun:
+	emcc $(WEB_OBJS) -o ./build/web_pong.html -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -sUSE_SDL_MIXER=2 --preload-file ./assests/
+	emrun ./build/web_pong.html
 clean : 
 	rm ./build/*

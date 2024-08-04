@@ -53,4 +53,18 @@ typedef struct ScoreKeeper{
   TTF_Font* font;
 }ScoreKeeper;
 
+typedef struct MainLoopArgs {
+  SDL_Window* window;
+  SDL_Renderer* renderer;
+  AudioPlayer audio_player;
+  GameInputState game_input_state;
+  ColorPallete color_pallete;
+  ScoreKeeper score_keeper;
+  Ball ball;
+  Paddle paddle;
+  float delta_time;
+  int game_is_running; 
+  int current_game_state;
+}MainLoopArgs;
+
 #endif
