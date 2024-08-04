@@ -15,11 +15,13 @@ int processInput(GameInputState* a_game_input_ptr)
   SDL_Event event;
   SDL_PollEvent(&event);
   if(event.type==SDL_QUIT){
+    printf("The X button was pressed, Quitting the Game \n");
     return FALSE;
   }
   if(event.type==SDL_KEYDOWN){//some key was pressed
     switch(event.key.keysym.sym){
       case SDLK_ESCAPE:
+        printf("Escape button was pressed, Quitting the Game \n");
         return FALSE;
         break;
       case SDLK_LEFT:

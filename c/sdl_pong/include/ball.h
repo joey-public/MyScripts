@@ -8,7 +8,8 @@ extern const int BALL_HEIGHT;
 extern const float BALL_VELOCITY_MAG;
 
 
-Ball ballSetup();
+Ball ballCreate();
+void ballSetup(Ball* ball);
 int ballUpdate(Ball* a_ball, Paddle a_paddle, AudioPlayer a_audio_player, float a_delta_time);
 int ballRender(Ball a_ball, SDL_Renderer* a_renderer, ColorPallete a_pallete);
 

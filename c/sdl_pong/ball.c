@@ -1,7 +1,6 @@
 #include "./include/ball.h"
 #include "./include/constants.h"
 #include "./include/custom_types.h"
-#include "./include/paddle.h"
 #include <stdlib.h>
 #include <math.h>
 #include <SDL2/SDL_mixer.h>
@@ -29,18 +28,23 @@ int _rand_int_range(int min, int max)
     return min + _rand_int(max+range);
 }
 
-Ball ballSetup()
+Ball ballCreate()
 {
   Ball ball;
-  ball.x_position = _rand_int(SCREEN_WIDTH);
-  ball.y_position = 0;
-  ball.x_velocity = _rand_int_range(BALL_VELOCITY_X_MIN, BALL_VELOCITY_X_MAX);
-  ball.y_velocity = sqrt(pow(BALL_VELOCITY_MAG,2) - pow(ball.x_velocity, 2));
-  ball.sprite_box.x = (int) ball.x_position; 
-  ball.sprite_box.y = (int) ball.y_position; 
-  ball.sprite_box.w = BALL_WIDTH;
-  ball.sprite_box.h = BALL_HEIGHT;
+  ballSetup(&ball);  
   return ball;
+}
+
+void ballSetup(Ball* ball)
+{
+  ball->x_position = _rand_int(SCREEN_WIDTH);
+  ball->y_position = 0;
+  ball->x_velocity = _rand_int_range(BALL_VELOCITY_X_MIN, BALL_VELOCITY_X_MAX);
+  ball->y_velocity = sqrt(pow(BALL_VELOCITY_MAG,2) - pow(ball->x_velocity, 2));
+  ball->sprite_box.x = (int) ball->x_position; 
+  ball->sprite_box.y = (int) ball->y_position; 
+  ball->sprite_box.w = BALL_WIDTH;
+  ball->sprite_box.h = BALL_HEIGHT;
 }
 
 //TODO: move wall and paddle collision detections outsode of the ball update method.

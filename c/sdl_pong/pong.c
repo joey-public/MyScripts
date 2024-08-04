@@ -13,7 +13,7 @@
 #include "./include/audio_player.h"
 #include "./include/score_keeper.h"
 
-#define USE_EMSCRIPTEN
+//#define USE_EMSCRIPTEN
 
 #ifdef USE_EMSCRIPTEN
   #define FPS 30
@@ -92,18 +92,16 @@ void main_loop_iter(void* a)
   const int START = 0;
   const int PLAY = 1;
   const int STOP = 2;
-  printf("State: %d\n", args->current_game_state);
   if(args->current_game_state == START){
     SDL_Delay(250);//chill for 250 ms
-    args->ball=ballSetup();
-    args->paddle=paddleSetup();
-    args->score_keeper = scoreKeeperSetup(args->renderer, args->color_pallete);
+    ballSetup(&(args->ball));
+//    args->score_keeper = scoreKeeperSetup(args->renderer, args->color_pallete);
     args->game_is_running &= render(args->paddle, args->ball, args->score_keeper , args->color_pallete,args->renderer);
     args->current_game_state = PLAY;
   }
   else if (args->current_game_state == PLAY){
-    args->game_is_running &= processInput(&args->game_input_state); 
-    args->game_is_running &= update(&args->paddle, &args->ball, &args->score_keeper , 
+    args->game_is_running &= processInput(&(args->game_input_state)); 
+    args->game_is_running &= update(&(args->paddle), &(args->ball), &(args->score_keeper), 
                               args->audio_player, args->game_input_state, 
                               args->delta_time, args->renderer, args->color_pallete);
     args->game_is_running &= render(args->paddle, args->ball, args->score_keeper , args->color_pallete,args->renderer);
@@ -116,12 +114,10 @@ void main_loop_iter(void* a)
   }
   else{
     SDL_Delay(250);//chill for 250 ms
-    args->ball=ballSetup();
-    args->paddle=paddleSetup();
-    args->score_keeper = scoreKeeperSetup(args->renderer, args->color_pallete);
     args->game_is_running &= render(args->paddle, args->ball, args->score_keeper, args->color_pallete,args->renderer);
+    (args->score_keeper).score = 0;
     SDL_Delay(250);//chill for 250 ms
-    args->current_game_state = PLAY;
+    args->current_game_state = START;
   }
 }
 
@@ -144,40 +140,37 @@ void main_loop(MainLoopArgs* args)
 
 int main( int argc, char* args[] )
 {
-  //initalize sdl stuff
   srand(time(NULL));
-  SDL_Window* main_window = NULL;
-  SDL_Renderer* main_renderer = NULL;
+  //initalize sdl stuff
+  MainLoopArgs loop_args;
+  loop_args.window = NULL;
+  loop_args.renderer = NULL;
   int sdl_initilized = FALSE;
-  sdl_initilized = init(&main_window, &main_renderer);
+  sdl_initilized = init(&(loop_args.window), &(loop_args.renderer));
   if (!sdl_initilized){
     printf("SDL Setup Failed\n");
     return -1;
   }
-  //setup game objects
-  MainLoopArgs loop_args;
-  loop_args.window = main_window;
-  loop_args.renderer = main_renderer;
   loop_args.audio_player = audioPlayerSetup();
   loop_args.game_input_state = gameInputStateSetup();
   loop_args.color_pallete = setupColorPallete();
-  loop_args.score_keeper = scoreKeeperSetup(main_renderer, loop_args.color_pallete);
-  loop_args.ball = ballSetup();
+  loop_args.score_keeper = scoreKeeperSetup(loop_args.renderer, loop_args.color_pallete);
+  loop_args.ball = ballCreate();
   loop_args.paddle = paddleSetup();
   loop_args.delta_time = 0.0f;
   loop_args.game_is_running = FALSE;
   loop_args.current_game_state = 0;
-#ifdef USE_EMSCRIPTEN 
-  emscripten_set_main_loop_arg(main_loop_iter, &loop_args, FPS, EM_INF_LOOP);
-#else
+//#ifdef USE_EMSCRIPTEN 
+//  emscripten_set_main_loop_arg(main_loop_iter, &loop_args, FPS, EM_INF_LOOP);
+//#else
   main_loop(&loop_args);
-#endif
+//#endif
 
   //destroy everything
-  audioPlayerDestroy(&loop_args.audio_player);
-  scoreKeeperDestroy(&loop_args.score_keeper);
-  SDL_DestroyRenderer(main_renderer);
-  SDL_DestroyWindow(main_window);
+  audioPlayerDestroy(&(loop_args.audio_player));
+  scoreKeeperDestroy(&(loop_args.score_keeper));
+  SDL_DestroyRenderer(loop_args.renderer);
+  SDL_DestroyWindow(loop_args.window);
   TTF_Quit();
   Mix_Quit();
   SDL_Quit();
