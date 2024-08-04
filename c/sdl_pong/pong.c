@@ -12,7 +12,30 @@
 #include "./include/constants.h"
 #include "./include/audio_player.h"
 #include "./include/score_keeper.h"
+
+#define USE_EMSCRIPTEN
+
+#ifdef USE_EMSCRIPTEN
+  #define FPS 30
+  #define EM_INF_LOOP 1
+  #include <emscripten.h>
+#endif
+
                                                  
+typedef struct MainLoopArgs {
+  SDL_Window* window;
+  SDL_Renderer* renderer;
+  AudioPlayer audio_player;
+  GameInputState game_input_state;
+  ColorPallete color_pallete;
+  ScoreKeeper score_keeper;
+  Ball ball;
+  Paddle paddle;
+  float delta_time;
+  int game_is_running; 
+  int current_game_state;
+  
+}MainLoopArgs;
 
 ColorPallete setupColorPallete()
 {
@@ -34,7 +57,7 @@ int check_paddle_ball_colision(Paddle a_paddle, Ball a_ball)
 }
 
 //return TRUE if the game should be played or False if its game over
-int update(Paddle* a_paddle, Ball* a_ball, ScoreKeeper* a_score_keeper, AudioPlayer a_audio_player, GameInputState a_input_state, int* a_score, float a_delta_time, SDL_Renderer* a_renderer, ColorPallete a_pallete)
+int update(Paddle* a_paddle, Ball* a_ball, ScoreKeeper* a_score_keeper, AudioPlayer a_audio_player, GameInputState a_input_state, float a_delta_time, SDL_Renderer* a_renderer, ColorPallete a_pallete)
 {
   paddleUpdate(a_paddle, a_input_state, a_delta_time);
   ballUpdate(a_ball, *a_paddle, a_audio_player, a_delta_time);
@@ -45,7 +68,6 @@ int update(Paddle* a_paddle, Ball* a_ball, ScoreKeeper* a_score_keeper, AudioPla
     a_ball->y_position = PADDLE_Y_POS-BALL_HEIGHT;
     a_ball->y_velocity = -1 * a_ball->y_velocity;
     a_score_keeper->score ++;
-//    (*a_score) ++;
   }
   return TRUE;
 }
@@ -64,76 +86,96 @@ int render(Paddle a_paddle, Ball a_ball, ScoreKeeper a_score_keeper, ColorPallet
     return return_val;
 }
 
-int main( int argc, char* args[] )
+void main_loop_iter(void* a)
 {
-  srand(time(NULL));
-  SDL_Window* main_window = NULL;
-  SDL_Renderer* main_renderer = NULL;
-  int game_is_running = 1;
-  int last_frame_time = SDL_GetTicks();
-  int score = 0;
-  float delta_time = 0.0f;
-  game_is_running = init(&main_window, &main_renderer);
-  enum states {start, play, stop};
-  enum states current_game_state = start;
-  if (!game_is_running){
-    printf("SDL Setup Failed\n");
-    return -1;
+  MainLoopArgs* args = a;
+  const int START = 0;
+  const int PLAY = 1;
+  const int STOP = 2;
+  printf("State: %d\n", args->current_game_state);
+  if(args->current_game_state == START){
+    SDL_Delay(250);//chill for 250 ms
+    args->ball=ballSetup();
+    args->paddle=paddleSetup();
+    args->score_keeper = scoreKeeperSetup(args->renderer, args->color_pallete);
+    args->game_is_running &= render(args->paddle, args->ball, args->score_keeper , args->color_pallete,args->renderer);
+    args->current_game_state = PLAY;
   }
-  //main loop
-  AudioPlayer main_audio_player = audioPlayerSetup();
-  Paddle main_paddle = paddleSetup();
-  Ball main_ball = ballSetup();
-  GameInputState game_input_state = gameInputStateSetup();
-  ColorPallete main_pallete = setupColorPallete();
-  ScoreKeeper main_score_keeper = scoreKeeperSetup(main_renderer, main_pallete);
-  while(game_is_running){
+  else if (args->current_game_state == PLAY){
+    args->game_is_running &= processInput(&args->game_input_state); 
+    args->game_is_running &= update(&args->paddle, &args->ball, &args->score_keeper , 
+                              args->audio_player, args->game_input_state, 
+                              args->delta_time, args->renderer, args->color_pallete);
+    args->game_is_running &= render(args->paddle, args->ball, args->score_keeper , args->color_pallete,args->renderer);
+    //Handle the Game Case here:
+    int bottom_wall_collision = args->ball.y_position > SCREEN_HEIGHT-BALL_HEIGHT;//this collision is sometimes broken...
+    if(bottom_wall_collision){ 
+        printf("You Lose\n");
+        args->current_game_state=STOP;
+    }
+  }
+  else{
+    SDL_Delay(250);//chill for 250 ms
+    args->ball=ballSetup();
+    args->paddle=paddleSetup();
+    args->score_keeper = scoreKeeperSetup(args->renderer, args->color_pallete);
+    args->game_is_running &= render(args->paddle, args->ball, args->score_keeper, args->color_pallete,args->renderer);
+    SDL_Delay(250);//chill for 250 ms
+    args->current_game_state = PLAY;
+  }
+}
+
+void main_loop(MainLoopArgs* args)
+{
+  args->game_is_running = TRUE;
+  int last_frame_time = SDL_GetTicks();
+  args->current_game_state = 0;
+  while(args->game_is_running){
     //while(!SDL_TICKS_PASSED(SDL_GetTicks(), last_frame_time+FRAME_TARGET_TIME)); 
     int wait_time = FRAME_TARGET_TIME - (SDL_GetTicks() - last_frame_time);
     if(wait_time > 0 && wait_time <= FRAME_TARGET_TIME){
         SDL_Delay(wait_time);
     }
-    delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
+    args->delta_time = (SDL_GetTicks() - last_frame_time) / 1000.0f;
     last_frame_time = SDL_GetTicks();//look this up
-                                     
-    switch(current_game_state)
-    {
-      case start:
-        SDL_Delay(250);//chill for 250 ms
-        current_game_state = play;
-        main_ball=ballSetup();
-        main_paddle=paddleSetup();
-        main_score_keeper = scoreKeeperSetup(main_renderer, main_pallete);
-        game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
-        current_game_state = play;
-        break;
-      case play:
-        game_is_running &= processInput(&game_input_state); 
-        game_is_running &= update(&main_paddle, &main_ball, &main_score_keeper, main_audio_player, game_input_state, &score, delta_time, main_renderer, main_pallete);
-        game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
-        //Handle the Game Case here:
-        int bottom_wall_collision = main_ball.y_position > SCREEN_HEIGHT-BALL_HEIGHT;//this collision is sometimes broken...
-        if(bottom_wall_collision){ 
-            printf("You Lose\n");
-            current_game_state=stop;
-        }
-        //printf("Score: %d\n", score);
-        break;
-      case stop:
-        SDL_Delay(250);//chill for 250 ms
-        main_ball=ballSetup();
-        main_paddle=paddleSetup();
-        main_score_keeper = scoreKeeperSetup(main_renderer, main_pallete);
-        game_is_running &= render(main_paddle, main_ball, main_score_keeper, main_pallete,main_renderer);
-        SDL_Delay(250);//chill for 250 ms
-        score = 0;
-        current_game_state = play;
-        break;
-    }
+    main_loop_iter(args);
+  }//end while loop
+}//end function
+
+int main( int argc, char* args[] )
+{
+  //initalize sdl stuff
+  srand(time(NULL));
+  SDL_Window* main_window = NULL;
+  SDL_Renderer* main_renderer = NULL;
+  int sdl_initilized = FALSE;
+  sdl_initilized = init(&main_window, &main_renderer);
+  if (!sdl_initilized){
+    printf("SDL Setup Failed\n");
+    return -1;
   }
+  //setup game objects
+  MainLoopArgs loop_args;
+  loop_args.window = main_window;
+  loop_args.renderer = main_renderer;
+  loop_args.audio_player = audioPlayerSetup();
+  loop_args.game_input_state = gameInputStateSetup();
+  loop_args.color_pallete = setupColorPallete();
+  loop_args.score_keeper = scoreKeeperSetup(main_renderer, loop_args.color_pallete);
+  loop_args.ball = ballSetup();
+  loop_args.paddle = paddleSetup();
+  loop_args.delta_time = 0.0f;
+  loop_args.game_is_running = FALSE;
+  loop_args.current_game_state = 0;
+#ifdef USE_EMSCRIPTEN 
+  emscripten_set_main_loop_arg(main_loop_iter, &loop_args, FPS, EM_INF_LOOP);
+#else
+  main_loop(&loop_args);
+#endif
+
   //destroy everything
-  audioPlayerDestroy(&main_audio_player);
-  scoreKeeperDestroy(&main_score_keeper);
+  audioPlayerDestroy(&loop_args.audio_player);
+  scoreKeeperDestroy(&loop_args.score_keeper);
   SDL_DestroyRenderer(main_renderer);
   SDL_DestroyWindow(main_window);
   TTF_Quit();

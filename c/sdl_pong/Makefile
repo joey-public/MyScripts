@@ -29,5 +29,7 @@ run :
 	$(OBJ_NAME)
 rundb :
 	gdb $(OBJ_NAME)
+web:
+	emcc $(OBJS) -o ./build/web_pong.html -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -sUSE_SDL_MIXER=2 --preload-file ./assests/
 clean : 
 	rm ./build/*
