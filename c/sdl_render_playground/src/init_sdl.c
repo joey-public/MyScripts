@@ -2,11 +2,7 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_ttf.h>
 #include "init_sdl.h"
-
-#define TRUE 1
-#define FALSE 0
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#include "constants.h"
 
 #define MIXER_FS 44000
 

@@ -1,0 +1,44 @@
+[
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Wall",
+            "-std=c99",
+            "-I./include",
+            "-o",
+            "./build/main",
+            "src/init_sdl.c"
+        ],
+        "directory": "/home/joey/MyScripts/c/sdl_test",
+        "file": "src/init_sdl.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Wall",
+            "-std=c99",
+            "-I./include",
+            "-o",
+            "./build/main",
+            "src/constants.c"
+        ],
+        "directory": "/home/joey/MyScripts/c/sdl_test",
+        "file": "src/constants.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Wall",
+            "-std=c99",
+            "-I./include",
+            "-o",
+            "./build/main",
+            "src/main.c"
+        ],
+        "directory": "/home/joey/MyScripts/c/sdl_test",
+        "file": "src/main.c"
+    }
+]

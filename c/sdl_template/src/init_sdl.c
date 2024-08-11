@@ -1,5 +1,10 @@
-#include "./include/init_sdl.h"
-#include "./include/constants.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
+#include "init_sdl.h"
+#include "constants.h"
+
+#define MIXER_FS 44000
 
 int initSdl()
 {
@@ -62,7 +67,7 @@ int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window){
 int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
 {
   int sdl_initilized = initSdl();
-  int sdl_mixer_initilized = initMixer(44000);
+  int sdl_mixer_initilized = initMixer(MIXER_FS);
   int sdl_ttf_initilized = initTTF();
   int sdl_window_initilized = initWindow(a_window);
   int sdl_renderer_initilized = initRenderer(a_renderer, *a_window);
