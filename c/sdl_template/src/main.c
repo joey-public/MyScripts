@@ -30,5 +30,11 @@ int main(void)
     return -1;
   }
   main_loop();
+  //destroy everything
+  SDL_DestroyRenderer(main_renderer);
+  SDL_DestroyWindow(main_window);
+  TTF_Quit();
+  Mix_Quit();
+  SDL_Quit();
   return 0;
 }

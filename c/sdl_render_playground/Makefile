@@ -17,3 +17,9 @@ LINKER_FLAGS = -lm -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 $(TARGET): $(SRC_FILES)
 	$(CC) $(SRC_FILES) $(COMPILER_FLAGS) $(INCLUDE_FLAGS) $(LINKER_FLAGS) -o $(TARGET) 
 
+vim: $(SRC_FILES)
+	$(CC) $(SRC_FILES) $(COMPILER_FLAGS) $(INCLUDE_FLAGS) $(LINKER_FLAGS) -o $(TARGET) 
+	./build/main
+
+
+

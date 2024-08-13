@@ -13,34 +13,94 @@ typedef struct Line {
   uint16_t x0, y0, x1, y1;
 }Line;
 
-typedef struct Circle {
-  uint16_t center, radius;
-}Circle;
-
-//void draw_circle(SDL_Renderer *ap_renderer, Circle a_circle, SDL_Color a_color; uint8_t a_num_points)
-//{
-//   ; 
-//}
-
 void set_render_draw_color(SDL_Renderer *ap_renderer, SDL_Color a_c)
 {
     SDL_SetRenderDrawColor(ap_renderer, a_c.r, a_c.g, a_c.b, a_c.a);
 }
 
+void draw_circle_naive(SDL_Renderer *ap_renderer, float a, float b, float r)
+{
+    uint8_t xmin = 0;
+    uint8_t xmax = SCREEN_WIDTH;
+    uint8_t ymin = 0;
+    uint8_t ymax = SCREEN_HEIGHT;
+    set_render_draw_color(ap_renderer, C_BLACK);
+//////////////////    printf("Drawing a circle:\n\tr=%d\n\tx,y=%d,%d\n", r, a, b);
+    for(int i = xmin; i < xmax; i++)
+    {
+        for(int j = ymin; j < ymax; j++)
+        {
+            //equation of a circle: 0 = (x-a)^2 + (y-b)^2 - r^2
+            float fc = (i-a)*(i-a) + (j-b)*(j-b) - r*r;
+//            printf("%f\n",fc);
+            if(fc <= 0)
+            { 
+                SDL_RenderDrawPoint(ap_renderer, i, j); 
+                printf("Hello\n");
+            }
+        }
+    }
+    set_render_draw_color(ap_renderer, C_WHITE);
+}
+
+void draw_map(SDL_Renderer *ap_renderer)
+{
+  #define TILE_SIZE 32
+  #define ROWS 14
+  #define COLS 19
+  #define DRAW_GRID 1
+  SDL_Rect tile_rect;
+  tile_rect.w = TILE_SIZE;
+  tile_rect.h = TILE_SIZE;
+  uint8_t world_map[ROWS][COLS] = {
+      {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+      {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+  };
+  //draw the world
+  for(int i=0; i<ROWS; i++)
+  {
+      for(int j=0; j<COLS; j++)
+      {
+          tile_rect.x = j*TILE_SIZE;
+          tile_rect.y = i*TILE_SIZE;
+          if(world_map[i][j] == 1)
+          {
+              set_render_draw_color(ap_renderer, C_BLACK);
+              SDL_RenderFillRect(ap_renderer, &tile_rect);
+              set_render_draw_color(ap_renderer, C_WHITE);
+          }
+          if(DRAW_GRID==TRUE)
+          {
+              set_render_draw_color(ap_renderer, C_GREY);
+              SDL_RenderDrawRect(ap_renderer, &tile_rect);
+              set_render_draw_color(ap_renderer, C_WHITE);
+          }
+      }
+  }
+}
+
+
+
 void render(SDL_Renderer* ap_renderer)
 {
     set_render_draw_color(ap_renderer, C_WHITE);
+    SDL_RenderClear(ap_renderer);
     SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(ap_renderer, &background);
-    Line l = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-    set_render_draw_color(ap_renderer, C_BLACK);
-    //SDL_RenderDrawLine(ap_renderer, l.x0, l.y0, l.x1, l.y1);
-    set_render_draw_color(ap_renderer, C_GREY);
-    //SDL_RenderDrawPoint(ap_renderer, 10,100);
-    set_render_draw_color(ap_renderer, C_BLACK);
-    SDL_Point quad[4] = {{10,10},{10,20},{20,10},{20,20}}; 
-    SDL_RenderDrawPoints(ap_renderer, quad, 4);
-        
+    //draw_map(ap_renderer);   
+    draw_circle_naive(ap_renderer, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 16);
     SDL_RenderPresent(ap_renderer);
 }
 
@@ -70,5 +130,11 @@ int main(void)
     return -1;
   }
   main_loop(main_renderer);
+  //destroy everything
+  SDL_DestroyRenderer(main_renderer);
+  SDL_DestroyWindow(main_window);
+  TTF_Quit();
+  Mix_Quit();
+  SDL_Quit();
   return 0;
 }
