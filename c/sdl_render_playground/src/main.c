@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
@@ -18,29 +19,70 @@ void set_render_draw_color(SDL_Renderer *ap_renderer, SDL_Color a_c)
     SDL_SetRenderDrawColor(ap_renderer, a_c.r, a_c.g, a_c.b, a_c.a);
 }
 
+//line drawing
+void draw_line_naive(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
+{
+    float y;
+    int x;
+    for(x=x0; x<=x1; x++)
+    {
+        y = y0 + (x-x0)*(y1-y0)/(x1-x0);
+        SDL_RenderDrawPoint(ap_renderer, x, round(y));
+    }
+}
+
+void draw_line_naive2(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
+{
+    float m, y;
+    int dx, dy, x;
+    dx = x1-x0;
+    dy = y1-y0;
+    m = dy/dx;
+    y = y0+0.5;
+    for(x=x0; x<=x1; x++)
+    {
+        SDL_RenderDrawPoint(ap_renderer, x, floor(y));
+        y = y + m;
+    }
+}
+
+void draw_line_midpoint(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
+{
+   int dx, dy, d, incE, incNE, x, y;
+   dx = x1-x0;
+   dy = y1-y0;
+   d = 2*dy-dx;
+   incE = 2*dy;
+   incNE = 2*(dy-dx);
+   y = y0;
+   for(x=x0; x<=x1; x++)
+   {
+       SDL_RenderDrawPoint(ap_renderer, x, y);
+       if(d>0)
+       {
+            d = d + incNE;
+            y = y + 1;
+       }
+       else
+       {
+            d = d + incE;
+       }
+   }
+}
+
+//circle drawing
 void draw_circle_naive(SDL_Renderer *ap_renderer, float a, float b, float r)
 {
-    uint8_t xmin = 0;
-    uint8_t xmax = SCREEN_WIDTH;
-    uint8_t ymin = 0;
-    uint8_t ymax = SCREEN_HEIGHT;
+    float y;
+    int xmin, xmax, x;
     set_render_draw_color(ap_renderer, C_BLACK);
-//////////////////    printf("Drawing a circle:\n\tr=%d\n\tx,y=%d,%d\n", r, a, b);
-    for(int i = xmin; i < xmax; i++)
+    xmin = a - r;
+    xmax = a + r;
+    for(x=xmin; x<=xmax; x++)
     {
-        for(int j = ymin; j < ymax; j++)
-        {
-            //equation of a circle: 0 = (x-a)^2 + (y-b)^2 - r^2
-            float fc = (i-a)*(i-a) + (j-b)*(j-b) - r*r;
-//            printf("%f\n",fc);
-            if(fc <= 0)
-            { 
-                SDL_RenderDrawPoint(ap_renderer, i, j); 
-                printf("Hello\n");
-            }
-        }
+        y = sqrt(pow(r,2)+pow(x,2))-b;
+        SDL_RenderDrawPoint(ap_renderer, x, round(y));
     }
-    set_render_draw_color(ap_renderer, C_WHITE);
 }
 
 void draw_map(SDL_Renderer *ap_renderer)
@@ -91,16 +133,18 @@ void draw_map(SDL_Renderer *ap_renderer)
   }
 }
 
-
-
 void render(SDL_Renderer* ap_renderer)
 {
     set_render_draw_color(ap_renderer, C_WHITE);
     SDL_RenderClear(ap_renderer);
     SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(ap_renderer, &background);
-    //draw_map(ap_renderer);   
-    draw_circle_naive(ap_renderer, SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 16);
+    set_render_draw_color(ap_renderer, C_BLACK);
+    draw_line_naive(ap_renderer, 32, 32, 64, 64); 
+    draw_line_naive2(ap_renderer, 32, 64, 64, 96); 
+    draw_line_midpoint(ap_renderer, 32, 96, 64, 128); 
+//    draw_circle_naive(ap_renderer, 100, 100, 50);
+    draw_map(ap_renderer);   
     SDL_RenderPresent(ap_renderer);
 }
 
