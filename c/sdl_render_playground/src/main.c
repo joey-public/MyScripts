@@ -8,6 +8,7 @@
 
 const SDL_Color C_WHITE= {235,235,235,255};
 const SDL_Color C_GREY= {107,107,107,255};
+const SDL_Color C_GREY2= {200,200,200,0};
 const SDL_Color C_BLACK= {20,20,20,255};
 
 typedef struct Line {
@@ -19,85 +20,107 @@ void set_render_draw_color(SDL_Renderer *ap_renderer, SDL_Color a_c)
     SDL_SetRenderDrawColor(ap_renderer, a_c.r, a_c.g, a_c.b, a_c.a);
 }
 
-//line drawing
+void draw_grid(SDL_Renderer *ap_renderer, uint8_t grid_size)
+{
+  int rows = SCREEN_HEIGHT / grid_size;
+  int cols = SCREEN_WIDTH / grid_size;
+  SDL_Rect tile_rect;
+  tile_rect.x = 0;
+  tile_rect.y = 0;
+  tile_rect.w = grid_size;
+  tile_rect.h = grid_size;
+  set_render_draw_color(ap_renderer, C_GREY2);
+  for(int i=0; i<rows; i++)
+  {
+      for(int j=0; j<cols; j++)
+      {
+          tile_rect.x = j*grid_size;
+          tile_rect.y = i*grid_size;
+          SDL_RenderDrawRect(ap_renderer, &tile_rect);
+      }
+  }
+}
+
+//not working for x1<=x0
 void draw_line_naive(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
 {
-    float y;
-    int x;
-    for(x=x0; x<=x1; x++)
-    {
-        y = y0 + (x-x0)*(y1-y0)/(x1-x0);
-        SDL_RenderDrawPoint(ap_renderer, x, round(y));
-    }
-}
-
-void draw_line_naive2(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
-{
-    float m, y;
-    int dx, dy, x;
-    dx = x1-x0;
+    int x, y;
+    float dx, dy, m;
     dy = y1-y0;
+    dx = x1-x0;
     m = dy/dx;
-    y = y0+0.5;
-    for(x=x0; x<=x1; x++)
+    for(x = x0; x < x1; x++)
     {
-        SDL_RenderDrawPoint(ap_renderer, x, floor(y));
-        y = y + m;
+        y = round(m*(x-x0)+y0);
+        SDL_RenderDrawPoint(ap_renderer, x, y);
     }
 }
 
-void draw_line_midpoint(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
+//implementation of bresenham line algo with floating point math operations
+void draw_line_bersenham_float_math(SDL_Renderer *ap_renderer,int x0, int y0, int x1, int y1) 
 {
-   int dx = x1-x0;
-   int dy = y1-y0;
-   int k = dy / abs(dy); //normalized to always be +/-1
-   int d = 2*dy-dx;
-   int incE = 2*dy;
-   int incNE = 2*(dy-dx);
-   int x = x0;
-   int y = y0;
-   for(int i=x0; i<=x1; i++)
-   {
-       SDL_RenderDrawPoint(ap_renderer, x, y);
-       x += 1;
-       if(k*d>0)
-       {
-            d = d + incNE;
-            y += k*1;
-       }
-       else
-       {
-            d = d + incE;
-       }
-   }
-}
-
-//circle drawing
-void draw_circle_naive(SDL_Renderer *ap_renderer, float a, float b, float r)
-{
-  SDL_Rect bbox;
-  int x, y;
-  bbox.w = 2*r;
-  bbox.h = 2*r;
-  bbox.x = a-r;
-  bbox.y = b-r;
-  set_render_draw_color(ap_renderer, C_GREY);
-  SDL_RenderDrawRect(ap_renderer, &bbox);
-  set_render_draw_color(ap_renderer, C_BLACK);
-  for(int i=0; i <= 2*r; i++) //draw line from bottom left to top right of bbox
-  {
-      x = bbox.x+i;
-      y = bbox.y+2*r-i;
-      SDL_RenderDrawPoint(ap_renderer, x, y);
-  }
-  for(int i=0; i <= 2*r; i++)//draw a line from top left to bottom right of bbox
-  {
-      x = bbox.x+i;
-      y = bbox.y+i;
-      SDL_RenderDrawPoint(ap_renderer, x, y);
-  }
+    float b, m, fxy;
+    int x, y;
+    m = (float) (y1-y0) / (x1-x0);
+    b = y0 - m*x0;
+    y = y0;
+    for(x = x0; x <= x1; x++)
+    {
+        fxy = m*x - (y+0.5) + b; //find the mindpoint 
+        if(fxy > 0)
+        {
+            y++;
+        }
+        SDL_RenderDrawPoint(ap_renderer, x, y);
+    }
 
 }
+void draw_line_bresenham(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
+{
+    int dx = x1 - x0;
+    int dy = y1 - y0;
+    int D = 2*dy - dx;
+    //x and y are the current pixel
+    int x = x0;
+    int y = y0;
+    while(x != x1)
+    {
+        if(D > 0)
+        {
+            y++;
+            D = D + 2*dx;
+        }
+        else
+        {
+            D = D - 2*dy;
+        }
+        SDL_RenderDrawPoint(ap_renderer, x, y);
+        x++;
+    }
+   
+}
+
+void test_draw_line_bresenham(SDL_Renderer *ap_renderer)
+{
+    draw_grid(ap_renderer, 20);
+    set_render_draw_color(ap_renderer, C_BLACK);
+//  draw_line_bresenham(ap_renderer, 20, 20, 120, 200); //slope = +0.5
+//    draw_line_bresenham(ap_renderer, 20, 20, 120, 80); //slope = +1.0
+    int x0 = 60;
+    int y0 = 60;
+    int step = 20;
+//    draw_line_naive(ap_renderer, x0, y0, x0-step, y0-step);
+//    draw_line_naive(ap_renderer, x0, y0, x0-step, y0);
+//    draw_line_naive(ap_renderer, x0, y0, x0-step, y0+step);
+//    draw_line_naive(ap_renderer, x0, y0, x0, y0-step);
+//    draw_line_naive(ap_renderer, x0, y0, x0, y0+step);
+//    draw_line_naive(ap_renderer, x0, y0, x0+step, y0-step);
+//    draw_line_naive(ap_renderer, x0, y0, x0+step, y0);
+//    draw_line_naive(ap_renderer, x0, y0, x0+step, y0+step);
+    draw_line_bersenham_float_math(ap_renderer, x0, y0, x0+step, y0+step);
+
+}
+
 
 void draw_map(SDL_Renderer *ap_renderer)
 {
@@ -153,11 +176,7 @@ void render(SDL_Renderer* ap_renderer)
     SDL_RenderClear(ap_renderer);
     SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(ap_renderer, &background);
-    set_render_draw_color(ap_renderer, C_BLACK);
-//    draw_line_naive(ap_renderer, 32, 32, 64, 64); 
-//    draw_line_naive2(ap_renderer, 32, 64, 64, 96); 
-    draw_line_midpoint(ap_renderer, 32, 96, 64, 128); 
-    draw_line_midpoint(ap_renderer, 100, 100, 120, 50); 
+    test_draw_line_bresenham(ap_renderer);
 //    draw_circle_naive(ap_renderer, 100, 100, 50);
 //    draw_map(ap_renderer);   
     SDL_RenderPresent(ap_renderer);
