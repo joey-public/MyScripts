@@ -48,20 +48,22 @@ void draw_line_naive2(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
 
 void draw_line_midpoint(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y1)
 {
-   int dx, dy, d, incE, incNE, x, y;
-   dx = x1-x0;
-   dy = y1-y0;
-   d = 2*dy-dx;
-   incE = 2*dy;
-   incNE = 2*(dy-dx);
-   y = y0;
-   for(x=x0; x<=x1; x++)
+   int dx = x1-x0;
+   int dy = y1-y0;
+   int k = dy / abs(dy); //normalized to always be +/-1
+   int d = 2*dy-dx;
+   int incE = 2*dy;
+   int incNE = 2*(dy-dx);
+   int x = x0;
+   int y = y0;
+   for(int i=x0; i<=x1; i++)
    {
        SDL_RenderDrawPoint(ap_renderer, x, y);
-       if(d>0)
+       x += 1;
+       if(k*d>0)
        {
             d = d + incNE;
-            y = y + 1;
+            y += k*1;
        }
        else
        {
@@ -73,16 +75,28 @@ void draw_line_midpoint(SDL_Renderer *ap_renderer, int x0, int y0, int x1, int y
 //circle drawing
 void draw_circle_naive(SDL_Renderer *ap_renderer, float a, float b, float r)
 {
-    float y;
-    int xmin, xmax, x;
-    set_render_draw_color(ap_renderer, C_BLACK);
-    xmin = a - r;
-    xmax = a + r;
-    for(x=xmin; x<=xmax; x++)
-    {
-        y = sqrt(pow(r,2)+pow(x,2))-b;
-        SDL_RenderDrawPoint(ap_renderer, x, round(y));
-    }
+  SDL_Rect bbox;
+  int x, y;
+  bbox.w = 2*r;
+  bbox.h = 2*r;
+  bbox.x = a-r;
+  bbox.y = b-r;
+  set_render_draw_color(ap_renderer, C_GREY);
+  SDL_RenderDrawRect(ap_renderer, &bbox);
+  set_render_draw_color(ap_renderer, C_BLACK);
+  for(int i=0; i <= 2*r; i++) //draw line from bottom left to top right of bbox
+  {
+      x = bbox.x+i;
+      y = bbox.y+2*r-i;
+      SDL_RenderDrawPoint(ap_renderer, x, y);
+  }
+  for(int i=0; i <= 2*r; i++)//draw a line from top left to bottom right of bbox
+  {
+      x = bbox.x+i;
+      y = bbox.y+i;
+      SDL_RenderDrawPoint(ap_renderer, x, y);
+  }
+
 }
 
 void draw_map(SDL_Renderer *ap_renderer)
@@ -140,11 +154,12 @@ void render(SDL_Renderer* ap_renderer)
     SDL_Rect background = {0,0,SCREEN_WIDTH, SCREEN_HEIGHT};
     SDL_RenderFillRect(ap_renderer, &background);
     set_render_draw_color(ap_renderer, C_BLACK);
-    draw_line_naive(ap_renderer, 32, 32, 64, 64); 
-    draw_line_naive2(ap_renderer, 32, 64, 64, 96); 
+//    draw_line_naive(ap_renderer, 32, 32, 64, 64); 
+//    draw_line_naive2(ap_renderer, 32, 64, 64, 96); 
     draw_line_midpoint(ap_renderer, 32, 96, 64, 128); 
+    draw_line_midpoint(ap_renderer, 100, 100, 120, 50); 
 //    draw_circle_naive(ap_renderer, 100, 100, 50);
-    draw_map(ap_renderer);   
+//    draw_map(ap_renderer);   
     SDL_RenderPresent(ap_renderer);
 }
 
