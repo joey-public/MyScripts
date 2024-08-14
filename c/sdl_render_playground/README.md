@@ -38,9 +38,8 @@ Where if:
 - $f(x,y) > 0$ then the point $(x,y)$ lyes **above the line**
 - $f(x,y) < 0$ then the point $(x,y)$ lyes **below the line**
 
-
-
-
+https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+http://members.chello.at/~easyfilter/bresenham.html
 
 ## Drawing a Circle with SDL
 
