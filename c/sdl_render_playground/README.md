@@ -52,3 +52,5 @@ Look up the midpoint circle algo
 https://lodev.org/cgtutor/raycasting.html
 
 https://lodev.org/cgtutor/index.html
+
+https://timallanwheeler.com/blog/2023/04/01/wolfenstein-3d-raycasting-in-c/

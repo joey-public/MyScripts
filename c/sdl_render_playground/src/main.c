@@ -8,7 +8,7 @@
 
 const SDL_Color C_WHITE= {235,235,235,255};
 const SDL_Color C_GREY= {107,107,107,255};
-const SDL_Color C_GREY2= {200,200,200,0};
+const SDL_Color C_GREY2= {200,200,200,120};
 const SDL_Color C_BLACK= {20,20,20,255};
 
 typedef struct Line {
@@ -213,9 +213,14 @@ void render(SDL_Renderer* ap_renderer)
     draw_filled_rect(ap_renderer, 50, 150, 50, 50);
     draw_filled_rect(ap_renderer, 100, 200, 50, 50);
     draw_circle(ap_renderer, 100, 100, 50);
-    draw_filled_circle(ap_renderer, 250, 100, 50);
     draw_ellipse(ap_renderer, 400, 100, 450, 300);
     draw_ellipse(ap_renderer, 400, 100, 600, 150);
+    int xm, ym; //x and y position of the mouse
+    Uint32 buttons = SDL_GetMouseState(&xm, &ym);
+    SDL_Rect cursor_point = {xm-1, ym-1, 3, 3};
+    SDL_RenderFillRect(ap_renderer, &cursor_point); 
+    set_render_draw_color(ap_renderer, C_GREY2);
+    draw_circle(ap_renderer, xm, ym, 32);
 //    draw_map(ap_renderer);   
     SDL_RenderPresent(ap_renderer);
 }
@@ -246,6 +251,8 @@ int main(void)
     printf("SDL Setup Failed\n");
     return -1;
   }
+  SDL_SetRenderDrawBlendMode(main_renderer, SDL_BLENDMODE_BLEND); //endables alpha blending
+  SDL_ShowCursor(0);//turn off the cursor
   main_loop(main_renderer);
   //destroy everything
   SDL_DestroyRenderer(main_renderer);
