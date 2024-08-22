@@ -10,8 +10,9 @@
 
 const SDL_Color C_WHITE= {235,235,235,255};
 const SDL_Color C_GREY= {107,107,107,255};
-const SDL_Color C_GREY2= {200,200,200,0};
+const SDL_Color C_GREY2= {200,200,200,100};
 const SDL_Color C_BLACK= {20,20,20,255};
+const SDL_Color C_ALPHA= {0,0,0,0};
 
 const uint8_t TOOL_2H_PENCIL = 0;
 const uint8_t TOOL_HB_PENCIL = 1;
@@ -97,10 +98,12 @@ void setup(SDL_Renderer *ap_renderer)
     int access = SDL_TEXTUREACCESS_TARGET;
     g_state.drawing_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH, SCREEN_HEIGHT); 
     set_render_target(ap_renderer, g_state.drawing_texture);
-    set_render_draw_color(ap_renderer, C_WHITE);
+    set_render_draw_color(ap_renderer, C_ALPHA);
     SDL_RenderClear(ap_renderer);
     g_state.grid_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH, SCREEN_HEIGHT); 
     set_render_target(ap_renderer, g_state.grid_texture);
+    set_render_draw_color(ap_renderer, C_ALPHA);
+    SDL_RenderClear(ap_renderer);
     set_render_draw_color(ap_renderer, C_BLACK);
     draw_grid(ap_renderer, 80);
     g_state.refrence_texture = NULL;
@@ -112,6 +115,9 @@ void setup(SDL_Renderer *ap_renderer)
     g_state.xmo = 0;
     g_state.ymo = 0;
     SDL_ShowCursor(0);//turn off the cursor
+    SDL_SetRenderDrawBlendMode(ap_renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(g_state.drawing_texture, SDL_BLENDMODE_BLEND); 
+    SDL_SetTextureBlendMode(g_state.grid_texture, SDL_BLENDMODE_BLEND); 
 }
 
 void update(SDL_Event *e)
