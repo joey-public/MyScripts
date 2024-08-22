@@ -9,18 +9,20 @@
 #include "util.h"
 
 
+#define TOOL_2H_PENCIL  0
+#define TOOL_HB_PENCIL  1
+#define TOOL_2B_PENCIL  2
+#define TOOL_ERASER  3
+
 const uint8_t BORDER_WIDTH = 5;//px
+const uint8_t GRID_SIZE = 40;//px
 
 const SDL_Color C_WHITE= {235,235,235,255};
-const SDL_Color C_GREY= {107,107,107,255};
-const SDL_Color C_GREY2= {200,200,200,100};
+const SDL_Color C_GREY= {164,164,164,255};
+const SDL_Color C_GREY2= {92,92,92,255};
 const SDL_Color C_BLACK= {20,20,20,255};
 const SDL_Color C_ALPHA= {0,0,0,0};
 
-const uint8_t TOOL_2H_PENCIL = 0;
-const uint8_t TOOL_HB_PENCIL = 1;
-const uint8_t TOOL_2B_PENCIL = 2;
-const uint8_t TOOL_ERASER = 3;
 const uint8_t ZOOM_MODE_IN = 0;
 const uint8_t ZOOM_MODE_OUT = 1;
 const uint8_t ZOOM_SCALE = 2;
@@ -102,21 +104,76 @@ void draw_cursor(SDL_Renderer *ap_renderer, int a_circle_r, SDL_Color a_point_co
     }
 }
 
+void draw_pen_stroke(SDL_Renderer *ap_renderer)
+{
+    int xm, ym;
+    SDL_GetMouseState(&xm, &ym);
+    set_render_target(ap_renderer, g_state.drawing_texture);
+    switch(g_state.tool_type)
+    {
+        case TOOL_2H_PENCIL:
+            set_render_draw_color(ap_renderer, C_GREY);
+            break;
+        case TOOL_HB_PENCIL:
+            set_render_draw_color(ap_renderer, C_GREY2);
+            break;
+        case TOOL_2B_PENCIL:
+            set_render_draw_color(ap_renderer, C_BLACK);
+            break;
+        case TOOL_ERASER:
+            set_render_draw_color(ap_renderer, C_ALPHA);
+            break;
+    }
+    int offset=(SCREEN_HEIGHT + 2*BORDER_WIDTH); 
+    float scale = 1.0f;
+    int x0, y0, x1, y1;
+    if(g_state.zoom_mode==ZOOM_MODE_IN)
+    {
+        scale = scale / ZOOM_SCALE;
+        x0 = (scale * (g_state.xmo)) + g_state.zoom_rect.x; 
+        x1 = (scale * xm) + g_state.zoom_rect.x;
+        y0 = (scale * (g_state.ymo - offset)) + g_state.zoom_rect.y; 
+        y1 = (scale * (ym - offset)) + g_state.zoom_rect.y;
+    }
+    else
+    {
+        x0 = g_state.xmo;
+        x1 = xm;
+        y0 = g_state.ymo - offset;
+        y1 = ym - offset;
+    }
+    SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
+    g_state.xmo = xm; g_state.ymo = ym;
+}
+
 void setup(SDL_Renderer *ap_renderer)
 {
-//    create_empty_sdl_texture(ap_renderer, g_state.drawing_texture, SCREEN_WIDTH, SCREEN_HEIGHT); 
-//    create_empty_sdl_texture(ap_renderer, g_state.grid_texture, SCREEN_WIDTH, SCREEN_HEIGHT); 
+    //set the renderers blend mode to make sure transparency works
+    SDL_SetRenderDrawBlendMode(ap_renderer, SDL_BLENDMODE_BLEND);
+    //these variables control how textures are created
     uint32_t fmt = SDL_PIXELFORMAT_RGBA32;
     int access = SDL_TEXTUREACCESS_TARGET;
+    /*
+     * setup the global drawing texture. possible could create a canvas struct if it makes thigs easier
+     * - create the texture, and make sure that it works
+     * - set the blend mode so tranparency works
+     * - set render target the the new texture and fill the screen to be all transparent by default.
+    */
     g_state.drawing_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH, SCREEN_HEIGHT); 
     if(g_state.drawing_texture==NULL)
     {
-        printf("Error Creating Border texture: %s\n", SDL_GetError());
+        printf("Error Creating Drawing texture: %s\n", SDL_GetError());
     }
     SDL_SetTextureBlendMode(g_state.drawing_texture, SDL_BLENDMODE_BLEND); 
     set_render_target(ap_renderer, g_state.drawing_texture);
     set_render_draw_color(ap_renderer, C_ALPHA);
     SDL_RenderClear(ap_renderer);
+    /*
+     * Setup the global grid texture, could make a grid struct for neatness 
+     * - create the texture, and make sure that it works
+     * - set the blend mode so tranparency works
+     * - Draw the the grid as all tranparent first, then the grid lines.
+    */
     g_state.grid_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH, SCREEN_HEIGHT); 
     if(g_state.grid_texture==NULL)
     {
@@ -127,7 +184,13 @@ void setup(SDL_Renderer *ap_renderer)
     set_render_draw_color(ap_renderer, C_ALPHA);
     SDL_RenderClear(ap_renderer);
     set_render_draw_color(ap_renderer, C_GREY2);
-    draw_grid(ap_renderer, 80);
+    draw_grid(ap_renderer, GRID_SIZE);
+    /*
+     * Setup the border texture
+     * - create the texture, and make sure that it works
+     * - set the blend mode so tranparency works
+     * - draw the borders  
+    */
     g_state.border_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH+2*BORDER_WIDTH, 2*SCREEN_HEIGHT+3*BORDER_WIDTH);
     if(g_state.border_texture==NULL)
     {
@@ -156,6 +219,9 @@ void setup(SDL_Renderer *ap_renderer)
     r.x = SCREEN_WIDTH + BORDER_WIDTH; r.y=0;
     r.w = BORDER_WIDTH; r.h = 2*SCREEN_HEIGHT+3*BORDER_WIDTH;
     SDL_RenderFillRect(ap_renderer, &r);
+    /*
+     * Setp the rest of the global variables, may want to rething things since there are a lot of these...
+    */
     g_state.refrence_texture = NULL;
     g_state.tool_type = TOOL_2H_PENCIL;
     g_state.zoom_mode = ZOOM_MODE_OUT;
@@ -169,8 +235,8 @@ void setup(SDL_Renderer *ap_renderer)
     g_state.zoom_rect.y = 0;
     g_state.zoom_rect.w = SCREEN_WIDTH / ZOOM_SCALE;
     g_state.zoom_rect.h = SCREEN_HEIGHT / ZOOM_SCALE;
-    //draw the borders
-    SDL_SetRenderDrawBlendMode(ap_renderer, SDL_BLENDMODE_BLEND);
+    //set the render target back to default
+    set_render_target(ap_renderer, NULL);
 }
 
 void update(SDL_Renderer *ap_renderer, SDL_Event *e, float delta_time)
@@ -184,15 +250,19 @@ void update(SDL_Renderer *ap_renderer, SDL_Event *e, float delta_time)
                g_state.tool_width = !g_state.tool_width; 
                break;
             case SDLK_1:
+               printf("selecting 2h pencil\n");
                g_state.tool_type = TOOL_2H_PENCIL; 
                break;
             case SDLK_2:
+               printf("selecting hb pencil\n");
                g_state.tool_type = TOOL_HB_PENCIL; 
                break;
             case SDLK_3:
+               printf("Selecting 2b pencil\n");
                g_state.tool_type = TOOL_2B_PENCIL; 
                break;
             case SDLK_e:
+               printf("Selecting Eraser\n");
                g_state.tool_type = TOOL_ERASER; 
                break;
             case SDLK_g:
@@ -271,30 +341,14 @@ void update(SDL_Renderer *ap_renderer, SDL_Event *e, float delta_time)
 
 void render(SDL_Renderer *ap_renderer)
 {
-    int xm, ym;
-    SDL_GetMouseState(&xm, &ym);
     SDL_Rect dr;
     dr.x = BORDER_WIDTH;
     dr.w = SCREEN_WIDTH; 
     dr.h = SCREEN_HEIGHT;
-    
     //render to the draw texture
     if(g_state.pen_down)
     {
-        set_render_target(ap_renderer, g_state.drawing_texture);
-        set_render_draw_color(ap_renderer, C_BLACK);
-        int offset=(SCREEN_HEIGHT + 2*BORDER_WIDTH); 
-        float scale = 1;
-        if(g_state.zoom_mode==ZOOM_MODE_IN)
-        {
-            scale = scale / ZOOM_SCALE;
-        }
-        int x0 = (scale * (g_state.xmo)) + g_state.zoom_rect.x; 
-        int x1 = (scale * xm) + g_state.zoom_rect.x;
-        int y0 = (scale * (g_state.ymo - offset)) + g_state.zoom_rect.y; 
-        int y1 = (scale * (ym - offset)) + g_state.zoom_rect.y;
-        SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
-        g_state.xmo = xm; g_state.ymo = ym;
+        draw_pen_stroke(ap_renderer);
     }
     //render the textures to the main window
     set_render_target(ap_renderer, NULL);
@@ -376,14 +430,16 @@ int main(void)
   SDL_Window* main_window = NULL;
   SDL_Renderer* main_renderer = NULL;
   int sdl_initilized = initilizeSdl(&main_window, &main_renderer, SCREEN_WIDTH + 2*BORDER_WIDTH, 2*SCREEN_HEIGHT+3*BORDER_WIDTH);
-  if(!sdl_initilized){
-    printf("SDL Setup Failed\n");
-    return -1;
+  if(!sdl_initilized)
+  {
+      printf("SDL Setup Failed\n");
+      return -1;
   }
   setup(main_renderer);
-  if(SDL_RenderTargetSupported(main_renderer))
+  if(!SDL_RenderTargetSupported(main_renderer))
   {
-      printf("The main renderer does support rendering to targets...\n");
+      printf("The main renderer does not support rendering to targets...\n");
+      return -1;
   }
   main_loop(main_renderer);
   //destroy everything
