@@ -8,6 +8,9 @@
 #include "init_sdl.h"
 #include "util.h"
 
+
+const uint8_t BORDER_WIDTH = 5;//px
+
 const SDL_Color C_WHITE= {235,235,235,255};
 const SDL_Color C_GREY= {107,107,107,255};
 const SDL_Color C_GREY2= {200,200,200,100};
@@ -20,6 +23,7 @@ const uint8_t TOOL_2B_PENCIL = 2;
 const uint8_t TOOL_ERASER = 3;
 const uint8_t ZOOM_MODE_IN = 0;
 const uint8_t ZOOM_MODE_OUT = 1;
+const uint8_t ZOOM_SCALE = 2;
 const uint8_t GRID_MODE_OFF = 0;
 const uint8_t GRID_MODE_ON = 1;
 const uint8_t WIDTH_MODE_THIN = 0;
@@ -29,6 +33,7 @@ typedef struct Globals {
     SDL_Texture *drawing_texture;
     SDL_Texture *grid_texture;
     SDL_Texture *refrence_texture; 
+    SDL_Texture *border_texture; 
     uint8_t tool_type;
     uint8_t zoom_mode;
     uint8_t grid_mode;
@@ -38,24 +43,6 @@ typedef struct Globals {
 }Globals;
 
 Globals g_state;
-
-bool create_empty_sdl_texture(SDL_Renderer *ap_renderer, SDL_Texture *t, int width, int height)
-{
-    if(t!=NULL)
-    {
-        printf("Texture already exits...\n");
-        return false;
-    }
-    uint32_t fmt = SDL_PIXELFORMAT_RGBA8888;
-    int access = SDL_TEXTUREACCESS_TARGET;
-    t = SDL_CreateTexture(ap_renderer, fmt, access, width, height); 
-    if(t == NULL)
-    {
-         printf("Error When Creating Blank Texture: %s\n", SDL_GetError());
-         return false;
-    }
-    return true;
-}
 
 void set_render_target(SDL_Renderer *ap_renderer, SDL_Texture *ap_texture)
 {
@@ -97,15 +84,53 @@ void setup(SDL_Renderer *ap_renderer)
     uint32_t fmt = SDL_PIXELFORMAT_RGBA32;
     int access = SDL_TEXTUREACCESS_TARGET;
     g_state.drawing_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH, SCREEN_HEIGHT); 
+    if(g_state.drawing_texture==NULL)
+    {
+        printf("Error Creating Border texture: %s\n", SDL_GetError());
+    }
+    SDL_SetTextureBlendMode(g_state.drawing_texture, SDL_BLENDMODE_BLEND); 
     set_render_target(ap_renderer, g_state.drawing_texture);
     set_render_draw_color(ap_renderer, C_ALPHA);
     SDL_RenderClear(ap_renderer);
     g_state.grid_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH, SCREEN_HEIGHT); 
+    if(g_state.grid_texture==NULL)
+    {
+        printf("Error Creating Border texture: %s\n", SDL_GetError());
+    }
+    SDL_SetTextureBlendMode(g_state.grid_texture, SDL_BLENDMODE_BLEND); 
     set_render_target(ap_renderer, g_state.grid_texture);
     set_render_draw_color(ap_renderer, C_ALPHA);
     SDL_RenderClear(ap_renderer);
     set_render_draw_color(ap_renderer, C_BLACK);
     draw_grid(ap_renderer, 80);
+    g_state.border_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH+2*BORDER_WIDTH, 2*SCREEN_HEIGHT+3*BORDER_WIDTH);
+    if(g_state.border_texture==NULL)
+    {
+        printf("Error Creating Border texture: %s\n", SDL_GetError());
+    }
+    SDL_SetTextureBlendMode(g_state.border_texture, SDL_BLENDMODE_BLEND); 
+    set_render_target(ap_renderer, g_state.border_texture);
+    set_render_draw_color(ap_renderer, C_ALPHA);
+    SDL_RenderClear(ap_renderer);
+    set_render_draw_color(ap_renderer, C_BLACK);
+    SDL_Rect r;
+    //the left border rect
+    r.x = 0; r.y = 0;
+    r.w = BORDER_WIDTH; r.h = 2*SCREEN_HEIGHT+3*BORDER_WIDTH;
+    SDL_RenderFillRect(ap_renderer, &r);
+    //the top border
+    r.w = SCREEN_WIDTH+2*BORDER_WIDTH; r.h = BORDER_WIDTH;
+    SDL_RenderFillRect(ap_renderer, &r);
+    //the middle border
+    r.y = SCREEN_HEIGHT+BORDER_WIDTH;
+    SDL_RenderFillRect(ap_renderer, &r);
+    //the bottom border
+    r.y = 2*(SCREEN_HEIGHT+BORDER_WIDTH);
+    SDL_RenderFillRect(ap_renderer, &r);
+    //the right border
+    r.x = SCREEN_WIDTH + BORDER_WIDTH; r.y=0;
+    r.w = BORDER_WIDTH; r.h = 2*SCREEN_HEIGHT+3*BORDER_WIDTH;
+    SDL_RenderFillRect(ap_renderer, &r);
     g_state.refrence_texture = NULL;
     g_state.tool_type = TOOL_2H_PENCIL;
     g_state.zoom_mode = ZOOM_MODE_OUT;
@@ -114,13 +139,12 @@ void setup(SDL_Renderer *ap_renderer)
     g_state.pen_down = false;
     g_state.xmo = 0;
     g_state.ymo = 0;
+    //draw the borders
     SDL_ShowCursor(0);//turn off the cursor
     SDL_SetRenderDrawBlendMode(ap_renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetTextureBlendMode(g_state.drawing_texture, SDL_BLENDMODE_BLEND); 
-    SDL_SetTextureBlendMode(g_state.grid_texture, SDL_BLENDMODE_BLEND); 
 }
 
-void update(SDL_Event *e)
+void update(SDL_Renderer *ap_renderer, SDL_Event *e)
 {
     if(e==0){return;}//just return if there was no input this frame
     if(e->type==SDL_KEYUP)
@@ -153,6 +177,10 @@ void update(SDL_Event *e)
     else if(e->type==SDL_MOUSEBUTTONDOWN)
     {
         g_state.pen_down = true;
+        //draw to the drawing_texture
+        set_render_target(ap_renderer, g_state.drawing_texture);
+        set_render_draw_color(ap_renderer, C_BLACK);
+        SDL_RenderFillRect(ap_renderer, &(SDL_Rect) {0,0,40,40});
     }
     else if(e->type==SDL_MOUSEBUTTONUP)
     {
@@ -163,32 +191,41 @@ void update(SDL_Event *e)
 void render(SDL_Renderer *ap_renderer)
 {
     int xm, ym;
-    Uint32 buttons = SDL_GetMouseState(&xm, &ym);
-    //render the grid 
-    //render the drawing
-    set_render_target(ap_renderer, g_state.drawing_texture);
-    set_render_draw_color(ap_renderer, C_BLACK);
-    if(g_state.pen_down)
-    {
-        SDL_RenderDrawLine(ap_renderer, g_state.xmo, g_state.ymo, xm, ym);
-    }
-
+    SDL_GetMouseState(&xm, &ym);
+    SDL_Rect dr;
+    dr.x = BORDER_WIDTH;
+    dr.w = SCREEN_WIDTH; 
+    dr.h = SCREEN_HEIGHT;
     //render the textures
     set_render_target(ap_renderer, NULL);
     set_render_draw_color(ap_renderer, C_WHITE);
     SDL_RenderClear(ap_renderer);
-    SDL_RenderCopy(ap_renderer, g_state.drawing_texture, NULL, NULL);
+    SDL_RenderCopy(ap_renderer, g_state.border_texture, NULL, NULL);
+    //render the top screen
+    dr.y = 0;
+    SDL_RenderCopy(ap_renderer, g_state.drawing_texture, NULL, &dr);
     if(g_state.grid_mode == GRID_MODE_ON)
     {
-        SDL_RenderCopy(ap_renderer, g_state.grid_texture, NULL, NULL);
+        SDL_RenderCopy(ap_renderer, g_state.grid_texture, NULL, &dr);
     }
+    //render the bottom screen
+    dr.y = SCREEN_HEIGHT + 2*BORDER_WIDTH;
+    if(g_state.zoom_mode == ZOOM_MODE_IN)
+    {
+        dr.w = ZOOM_SCALE * dr.w;
+        dr.h = ZOOM_SCALE * dr.h;
+    }
+    SDL_RenderCopy(ap_renderer, g_state.drawing_texture, NULL, &dr);
+    if(g_state.grid_mode == GRID_MODE_ON)
+    {
+        SDL_RenderCopy(ap_renderer, g_state.grid_texture, NULL, &dr);
+    }
+    //render the cursor
     int cr = 24;
     if(g_state.pen_down){cr=12;}
     draw_cursor(ap_renderer, cr, C_BLACK, C_GREY2);
     //swap screen buffers
     SDL_RenderPresent(ap_renderer);
-    g_state.xmo = xm;
-    g_state.ymo = ym;
 }
 
 bool iterate_main_loop(SDL_Renderer *ap_renderer, float delta_time)
@@ -209,7 +246,7 @@ bool iterate_main_loop(SDL_Renderer *ap_renderer, float delta_time)
                 return false;
         }
     }
-    update(&e);
+    update(ap_renderer, &e);
     render(ap_renderer);
     return true;
 }
@@ -236,8 +273,7 @@ int main(void)
 {
   SDL_Window* main_window = NULL;
   SDL_Renderer* main_renderer = NULL;
-  if(!initSdl()){return -1;}
-  int sdl_initilized = init(&main_window, &main_renderer);
+  int sdl_initilized = initilizeSdl(&main_window, &main_renderer, SCREEN_WIDTH + 2*BORDER_WIDTH, 2*SCREEN_HEIGHT+3*BORDER_WIDTH);
   if(!sdl_initilized){
     printf("SDL Setup Failed\n");
     return -1;

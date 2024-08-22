@@ -8,7 +8,8 @@ int init(SDL_Window** a_window, SDL_Renderer** a_renderer);
 int initSdl();
 int initMixer(int a_sample_rate);
 int initTTF();
-int initWindow(SDL_Window** a_window);
+int initWindow(SDL_Window** a_window, int a_width, int a_height);
 int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window);
+int initilizeSdl(SDL_Window** a_window, SDL_Renderer** a_renderer, int a_width, int a_height);
 
 #endif

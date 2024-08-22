@@ -34,7 +34,7 @@ int initTTF()
   return TRUE;
 }
 
-int initWindow(SDL_Window** a_window)
+int initWindow(SDL_Window** a_window, int a_width, int a_height)
 {
   //pass a pointer to the main window (which has type SDL_Window*) 
   //sojust a pointer to a pointer
@@ -43,8 +43,8 @@ int initWindow(SDL_Window** a_window)
   *a_window = SDL_CreateWindow("FuntimeDrawGame", 
                               SDL_WINDOWPOS_CENTERED, 
                               SDL_WINDOWPOS_CENTERED, 
-                              SCREEN_WIDTH, 
-                              SCREEN_HEIGHT, 
+                              a_width, 
+                              a_height, 
                               SDL_WINDOW_SHOWN);
   if(*a_window == NULL){
     printf("Window could not be creates! SDL Error: %s\n", SDL_GetError());
@@ -64,12 +64,12 @@ int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window){
   return TRUE;
 }
 
-int init(SDL_Window** a_window, SDL_Renderer** a_renderer)
+int initilizeSdl(SDL_Window** a_window, SDL_Renderer** a_renderer, int a_width, int a_height)
 {
   int sdl_initilized = initSdl();
   int sdl_mixer_initilized = initMixer(MIXER_FS);
   int sdl_ttf_initilized = initTTF();
-  int sdl_window_initilized = initWindow(a_window);
+  int sdl_window_initilized = initWindow(a_window, a_width, a_height);
   int sdl_renderer_initilized = initRenderer(a_renderer, *a_window);
   return sdl_initilized &&sdl_mixer_initilized && sdl_ttf_initilized && sdl_window_initilized && sdl_renderer_initilized;
 }
