@@ -56,7 +56,7 @@ int initWindow(SDL_Window** a_window)
 int initRenderer(SDL_Renderer** a_renderer, SDL_Window* a_window){
   *a_renderer = SDL_CreateRenderer(a_window, 
                                   -1, 
-                                  SDL_RENDERER_ACCELERATED); 
+                                  SDL_RENDERER_TARGETTEXTURE); 
   if(*a_renderer == NULL){
     printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
     return FALSE;
