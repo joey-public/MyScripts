@@ -30,6 +30,8 @@ const uint8_t GRID_MODE_OFF = 0;
 const uint8_t GRID_MODE_ON = 1;
 const uint8_t WIDTH_MODE_THIN = 0;
 const uint8_t WIDTH_MODE_THICK = 1;
+const uint8_t REF_MODE_IMG = 0;
+const uint8_t REF_MODE_DRAW = 1;
 
 const uint8_t SCROLL_DIR_NONE = 0;
 const uint8_t SCROLL_DIR_UP = 1;
@@ -45,6 +47,7 @@ typedef struct Globals {
     SDL_Texture *border_texture; 
     uint8_t tool_type;
     uint8_t zoom_mode;
+    uint8_t ref_mode;
     uint8_t grid_mode;
     uint8_t tool_width;
     uint8_t scoll_direction;
@@ -222,7 +225,42 @@ void setup(SDL_Renderer *ap_renderer)
     /*
      * Setp the rest of the global variables, may want to rething things since there are a lot of these...
     */
-    g_state.refrence_texture = NULL;
+    g_state.refrence_texture= SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH, SCREEN_HEIGHT); 
+    if(g_state.refrence_texture==NULL)
+    {
+        printf("Error Creating refrecne texture: %s\n", SDL_GetError());
+    }
+    SDL_SetTextureBlendMode(g_state.refrence_texture, SDL_BLENDMODE_BLEND); 
+    set_render_target(ap_renderer, g_state.refrence_texture);
+    set_render_draw_color(ap_renderer, C_ALPHA);
+    SDL_RenderClear(ap_renderer);
+    SDL_Texture *temp_tex = NULL;
+    SDL_Surface *temp_surf = IMG_Load("./assets/ref_test.png");
+    if(temp_surf == NULL)
+    {
+        printf("Unable to load refrece image: %s\n", IMG_GetError());
+    }
+    else
+    {
+        temp_tex = SDL_CreateTextureFromSurface(ap_renderer, temp_surf);
+        if(temp_tex==NULL)
+        {
+            printf("Unable to convert surface to texture: %s\n", SDL_GetError());
+        }
+        else
+        {
+            int w, h;
+            SDL_QueryTexture(temp_tex, NULL, NULL, &w, &h);
+            printf("Temp Texture is %d by %d px\n", w, h);
+            SDL_Rect dest;
+            dest.x =0; dest.y = 0;
+            dest.w = SCREEN_WIDTH; dest.h = SCREEN_HEIGHT;
+            //possible test differnt scale modes here
+            SDL_RenderCopy(ap_renderer, temp_tex, NULL, &dest); 
+        }
+        SDL_FreeSurface(temp_surf);
+        SDL_DestroyTexture(temp_tex);
+    }
     g_state.tool_type = TOOL_2H_PENCIL;
     g_state.zoom_mode = ZOOM_MODE_OUT;
     g_state.grid_mode = GRID_MODE_OFF;
@@ -235,6 +273,7 @@ void setup(SDL_Renderer *ap_renderer)
     g_state.zoom_rect.y = 0;
     g_state.zoom_rect.w = SCREEN_WIDTH / ZOOM_SCALE;
     g_state.zoom_rect.h = SCREEN_HEIGHT / ZOOM_SCALE;
+    g_state.ref_mode = REF_MODE_DRAW;
     //set the render target back to default
     set_render_target(ap_renderer, NULL);
 }
@@ -282,6 +321,9 @@ void update(SDL_Renderer *ap_renderer, SDL_Event *e, float delta_time)
                break;
             case SDLK_d:
                g_state.scoll_direction = SCROLL_DIR_NONE;
+               break;
+            case SDLK_r:
+               g_state.ref_mode = !g_state.ref_mode;
                break;
         }
     }
@@ -357,7 +399,14 @@ void render(SDL_Renderer *ap_renderer)
     SDL_RenderCopy(ap_renderer, g_state.border_texture, NULL, NULL);
     //render the top screen
     dr.y = 0;
-    SDL_RenderCopy(ap_renderer, g_state.drawing_texture, NULL, &dr);
+    if((g_state.ref_mode == REF_MODE_IMG) & (g_state.refrence_texture != NULL))
+    {
+        SDL_RenderCopy(ap_renderer, g_state.refrence_texture, NULL, &dr);
+    }
+    else
+    {
+        SDL_RenderCopy(ap_renderer, g_state.drawing_texture, NULL, &dr);
+    }
     if(g_state.grid_mode == GRID_MODE_ON)
     {
         SDL_RenderCopy(ap_renderer, g_state.grid_texture, NULL, &dr);
@@ -445,6 +494,8 @@ int main(void)
   //destroy everything
   SDL_DestroyTexture(g_state.drawing_texture);
   SDL_DestroyTexture(g_state.grid_texture);
+  SDL_DestroyTexture(g_state.border_texture);
+  SDL_DestroyTexture(g_state.refrence_texture);
   SDL_DestroyRenderer(main_renderer);
   SDL_DestroyWindow(main_window);
   TTF_Quit();
