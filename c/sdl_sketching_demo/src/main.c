@@ -29,6 +29,13 @@ const uint8_t GRID_MODE_ON = 1;
 const uint8_t WIDTH_MODE_THIN = 0;
 const uint8_t WIDTH_MODE_THICK = 1;
 
+const uint8_t SCROLL_DIR_NONE = 0;
+const uint8_t SCROLL_DIR_UP = 1;
+const uint8_t SCROLL_DIR_DOWN = 2;
+const uint8_t SCROLL_DIR_LEFT = 3;
+const uint8_t SCROLL_DIR_RIGHT = 4;
+const uint8_t SCROLL_SPEED = 4;
+
 typedef struct Globals {
     SDL_Texture *drawing_texture;
     SDL_Texture *grid_texture;
@@ -38,6 +45,8 @@ typedef struct Globals {
     uint8_t zoom_mode;
     uint8_t grid_mode;
     uint8_t tool_width;
+    uint8_t scoll_direction;
+    SDL_Rect zoom_rect;
     bool pen_down;
     int xmo, ymo;
 }Globals;
@@ -152,30 +161,35 @@ void setup(SDL_Renderer *ap_renderer)
     g_state.zoom_mode = ZOOM_MODE_OUT;
     g_state.grid_mode = GRID_MODE_OFF;
     g_state.tool_width = WIDTH_MODE_THIN;
+    g_state.scoll_direction = SCROLL_DIR_NONE;
     g_state.pen_down = false;
     g_state.xmo = 0;
     g_state.ymo = 0;
+    g_state.zoom_rect.x = 0;
+    g_state.zoom_rect.y = 0;
+    g_state.zoom_rect.w = SCREEN_WIDTH / ZOOM_SCALE;
+    g_state.zoom_rect.h = SCREEN_HEIGHT / ZOOM_SCALE;
     //draw the borders
     SDL_SetRenderDrawBlendMode(ap_renderer, SDL_BLENDMODE_BLEND);
 }
 
-void update(SDL_Renderer *ap_renderer, SDL_Event *e)
+void update(SDL_Renderer *ap_renderer, SDL_Event *e, float delta_time)
 {
     if(e==0){return;}//just return if there was no input this frame
     if(e->type==SDL_KEYUP)
     {
         switch(e->key.keysym.sym)
         {
-            case SDLK_w:
+            case SDLK_TAB:
                g_state.tool_width = !g_state.tool_width; 
                break;
-            case SDLK_a:
+            case SDLK_1:
                g_state.tool_type = TOOL_2H_PENCIL; 
                break;
-            case SDLK_s:
+            case SDLK_2:
                g_state.tool_type = TOOL_HB_PENCIL; 
                break;
-            case SDLK_d:
+            case SDLK_3:
                g_state.tool_type = TOOL_2B_PENCIL; 
                break;
             case SDLK_e:
@@ -186,6 +200,56 @@ void update(SDL_Renderer *ap_renderer, SDL_Event *e)
                break;
             case SDLK_z:
                g_state.zoom_mode = !g_state.zoom_mode; 
+               break;
+            case SDLK_w:
+               g_state.scoll_direction = SCROLL_DIR_NONE;
+               break;
+            case SDLK_s:
+               g_state.scoll_direction = SCROLL_DIR_NONE;
+               break;
+            case SDLK_a:
+               g_state.scoll_direction = SCROLL_DIR_NONE;
+               break;
+            case SDLK_d:
+               g_state.scoll_direction = SCROLL_DIR_NONE;
+               break;
+        }
+    }
+    else if(e->type == SDL_KEYDOWN & g_state.zoom_mode == ZOOM_MODE_IN)
+    {
+        switch(e->key.keysym.sym)
+        {
+            case SDLK_s:
+               g_state.scoll_direction = SCROLL_DIR_UP;
+               g_state.zoom_rect.y += SCROLL_SPEED;
+               if (g_state.zoom_rect.y + SCREEN_HEIGHT/ZOOM_SCALE > SCREEN_HEIGHT)
+               {
+                   g_state.zoom_rect.y = SCREEN_HEIGHT/ZOOM_SCALE;
+               }
+               break;
+            case SDLK_w:
+               g_state.scoll_direction = SCROLL_DIR_DOWN;
+               g_state.zoom_rect.y -= SCROLL_SPEED;
+               if (g_state.zoom_rect.y < 0)
+               {
+                   g_state.zoom_rect.y = 0;
+               }
+               break;
+            case SDLK_a:
+               g_state.scoll_direction = SCROLL_DIR_LEFT;
+               g_state.zoom_rect.x -= SCROLL_SPEED;
+               if (g_state.zoom_rect.x < 0)
+               {
+                   g_state.zoom_rect.x = 0;
+               }
+               break;
+            case SDLK_d:
+               g_state.scoll_direction = SCROLL_DIR_RIGHT;
+               g_state.zoom_rect.x += SCROLL_SPEED;
+               if (g_state.zoom_rect.x+SCREEN_WIDTH/ZOOM_SCALE > SCREEN_WIDTH)
+               {
+                   g_state.zoom_rect.x = SCREEN_WIDTH/ZOOM_SCALE;
+               }
                break;
         }
     }
@@ -213,6 +277,7 @@ void render(SDL_Renderer *ap_renderer)
     dr.x = BORDER_WIDTH;
     dr.w = SCREEN_WIDTH; 
     dr.h = SCREEN_HEIGHT;
+    
     //render to the draw texture
     if(g_state.pen_down)
     {
@@ -224,10 +289,10 @@ void render(SDL_Renderer *ap_renderer)
         {
             scale = scale / ZOOM_SCALE;
         }
-        int x0 = scale * g_state.xmo; 
-        int x1 = scale * xm;
-        int y0 = scale * (g_state.ymo-offset); 
-        int y1 = scale * (ym-offset);
+        int x0 = (scale * (g_state.xmo)) + g_state.zoom_rect.x; 
+        int x1 = (scale * xm) + g_state.zoom_rect.x;
+        int y0 = (scale * (g_state.ymo - offset)) + g_state.zoom_rect.y; 
+        int y1 = (scale * (ym - offset)) + g_state.zoom_rect.y;
         SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
         g_state.xmo = xm; g_state.ymo = ym;
     }
@@ -245,15 +310,17 @@ void render(SDL_Renderer *ap_renderer)
     }
     //render the bottom screen
     dr.y = SCREEN_HEIGHT + 2*BORDER_WIDTH;
+    g_state.zoom_rect.w = SCREEN_WIDTH;
+    g_state.zoom_rect.h = SCREEN_HEIGHT;
     if(g_state.zoom_mode == ZOOM_MODE_IN)
     {
-        dr.w = ZOOM_SCALE * dr.w;
-        dr.h = ZOOM_SCALE * dr.h;
+          g_state.zoom_rect.w = SCREEN_WIDTH/ZOOM_SCALE;
+          g_state.zoom_rect.h = SCREEN_HEIGHT/ZOOM_SCALE;
     }
-    SDL_RenderCopy(ap_renderer, g_state.drawing_texture, NULL, &dr);
+    SDL_RenderCopy(ap_renderer, g_state.drawing_texture, &g_state.zoom_rect, &dr);
     if(g_state.grid_mode == GRID_MODE_ON)
     {
-        SDL_RenderCopy(ap_renderer, g_state.grid_texture, NULL, &dr);
+        SDL_RenderCopy(ap_renderer, g_state.grid_texture, &g_state.zoom_rect, &dr);
     }
     //render the cursor
     int cr = 24;
@@ -281,7 +348,7 @@ bool iterate_main_loop(SDL_Renderer *ap_renderer, float delta_time)
                 return false;
         }
     }
-    update(ap_renderer, &e);
+    update(ap_renderer, &e, delta_time);
     render(ap_renderer);
     return true;
 }

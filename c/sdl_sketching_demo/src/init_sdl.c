@@ -73,4 +73,3 @@ int initilizeSdl(SDL_Window** a_window, SDL_Renderer** a_renderer, int a_width, 
   int sdl_renderer_initilized = initRenderer(a_renderer, *a_window);
   return sdl_initilized &&sdl_mixer_initilized && sdl_ttf_initilized && sdl_window_initilized && sdl_renderer_initilized;
 }
-
