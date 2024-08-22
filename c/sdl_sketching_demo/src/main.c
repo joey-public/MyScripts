@@ -53,9 +53,17 @@ void set_render_target(SDL_Renderer *ap_renderer, SDL_Texture *ap_texture)
     }
 }
 
+bool point_is_in_draw_area(int x, int y)
+{
+    int xmin = BORDER_WIDTH;
+    int xmax = SCREEN_WIDTH+BORDER_WIDTH;
+    int ymin = SCREEN_HEIGHT+2*BORDER_WIDTH;
+    int ymax = 2*SCREEN_HEIGHT+2*BORDER_WIDTH;
+    return (x > xmin & x < xmax & y > ymin & y < ymax);
+}
+
 void draw_grid(SDL_Renderer *ap_renderer, int grid_size)
 {
-    set_render_draw_color(ap_renderer, C_BLACK);
     for(int i = 0; i <= SCREEN_WIDTH; i+=grid_size)
     {
         SDL_RenderDrawLine(ap_renderer, i, 0, i, SCREEN_HEIGHT);
@@ -70,11 +78,19 @@ void draw_cursor(SDL_Renderer *ap_renderer, int a_circle_r, SDL_Color a_point_co
 {
     int xm, ym; //x and y position of the mouse
     Uint32 buttons = SDL_GetMouseState(&xm, &ym);
-    SDL_Rect cursor_point = {xm-1, ym-1, 3, 3};
-    set_render_draw_color(ap_renderer, a_point_color);
-    SDL_RenderFillRect(ap_renderer, &cursor_point); 
-    set_render_draw_color(ap_renderer, a_circle_color);
-    draw_circle(ap_renderer, xm, ym, a_circle_r);
+    if(point_is_in_draw_area(xm, ym))
+    {
+        SDL_ShowCursor(0);//turn off the cursor
+        SDL_Rect cursor_point = {xm-1, ym-1, 3, 3};
+        set_render_draw_color(ap_renderer, a_point_color);
+        SDL_RenderFillRect(ap_renderer, &cursor_point); 
+        set_render_draw_color(ap_renderer, a_circle_color);
+        draw_circle(ap_renderer, xm, ym, a_circle_r);
+    }
+    else
+    {
+        SDL_ShowCursor(1);
+    }
 }
 
 void setup(SDL_Renderer *ap_renderer)
@@ -101,7 +117,7 @@ void setup(SDL_Renderer *ap_renderer)
     set_render_target(ap_renderer, g_state.grid_texture);
     set_render_draw_color(ap_renderer, C_ALPHA);
     SDL_RenderClear(ap_renderer);
-    set_render_draw_color(ap_renderer, C_BLACK);
+    set_render_draw_color(ap_renderer, C_GREY2);
     draw_grid(ap_renderer, 80);
     g_state.border_texture = SDL_CreateTexture(ap_renderer, fmt, access, SCREEN_WIDTH+2*BORDER_WIDTH, 2*SCREEN_HEIGHT+3*BORDER_WIDTH);
     if(g_state.border_texture==NULL)
@@ -140,7 +156,6 @@ void setup(SDL_Renderer *ap_renderer)
     g_state.xmo = 0;
     g_state.ymo = 0;
     //draw the borders
-    SDL_ShowCursor(0);//turn off the cursor
     SDL_SetRenderDrawBlendMode(ap_renderer, SDL_BLENDMODE_BLEND);
 }
 
@@ -176,16 +191,18 @@ void update(SDL_Renderer *ap_renderer, SDL_Event *e)
     }
     else if(e->type==SDL_MOUSEBUTTONDOWN)
     {
-        g_state.pen_down = true;
-        //draw to the drawing_texture
-        set_render_target(ap_renderer, g_state.drawing_texture);
-        set_render_draw_color(ap_renderer, C_BLACK);
-        SDL_RenderFillRect(ap_renderer, &(SDL_Rect) {0,0,40,40});
+        if(point_is_in_draw_area(e->button.x, e->button.y))
+        {
+            g_state.pen_down = true;
+            g_state.xmo = e->button.x;
+            g_state.ymo = e->button.y;
+        }
     }
     else if(e->type==SDL_MOUSEBUTTONUP)
     {
         g_state.pen_down = false;
     }
+    
 }
 
 void render(SDL_Renderer *ap_renderer)
@@ -196,7 +213,25 @@ void render(SDL_Renderer *ap_renderer)
     dr.x = BORDER_WIDTH;
     dr.w = SCREEN_WIDTH; 
     dr.h = SCREEN_HEIGHT;
-    //render the textures
+    //render to the draw texture
+    if(g_state.pen_down)
+    {
+        set_render_target(ap_renderer, g_state.drawing_texture);
+        set_render_draw_color(ap_renderer, C_BLACK);
+        int offset=(SCREEN_HEIGHT + 2*BORDER_WIDTH); 
+        float scale = 1;
+        if(g_state.zoom_mode==ZOOM_MODE_IN)
+        {
+            scale = scale / ZOOM_SCALE;
+        }
+        int x0 = scale * g_state.xmo; 
+        int x1 = scale * xm;
+        int y0 = scale * (g_state.ymo-offset); 
+        int y1 = scale * (ym-offset);
+        SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
+        g_state.xmo = xm; g_state.ymo = ym;
+    }
+    //render the textures to the main window
     set_render_target(ap_renderer, NULL);
     set_render_draw_color(ap_renderer, C_WHITE);
     SDL_RenderClear(ap_renderer);
