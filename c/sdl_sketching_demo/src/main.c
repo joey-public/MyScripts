@@ -9,6 +9,17 @@
 
 #define CANVAS_WIDTH 320
 #define CANVAS_HEIGHT 240
+#define BORDER_WIDTH 5//px
+#define REFRENCE_SCREEN_X BORDER_WIDTH
+#define REFRENCE_SCREEN_Y BORDER_WIDTH
+#define WINDOW_WIDTH 2*BORDER_WIDTH + REFRENCE_SCREEN_WIDTH
+#define WINDOW_HEIGHT 3*BORDER_WIDTH + REFRENCE_SCREEN_HEIGHT + CANVAS_HEIGHT
+
+const int REFRENCE_SCREEN_WIDTH = CANVAS_WIDTH * 1.5;
+const int REFRENCE_SCREEN_HEIGHT = CANVAS_HEIGHT * 1.5;
+const int CANVAS_X = BORDER_WIDTH + REFRENCE_SCREEN_WIDTH/2 - CANVAS_WIDTH/2; 
+const int CANVAS_Y = 2*BORDER_WIDTH + REFRENCE_SCREEN_HEIGHT;
+
 #define FPS_TARGET 240
 #define FRAME_TARGET_TIME 1000/FPS_TARGET
 
@@ -17,7 +28,6 @@
 #define TOOL_2B_PENCIL  2
 #define TOOL_ERASER  3
 
-const uint8_t BORDER_WIDTH = 5;//px
 const uint8_t GRID_SIZE = 40;//px
 
 const SDL_Color C_WHITE= {235,235,235,255};
@@ -44,10 +54,10 @@ const uint8_t SCROLL_DIR_RIGHT = 4;
 const uint8_t SCROLL_SPEED = 4;
 
 typedef struct Globals {
-    SDL_Texture *drawing_texture;
-    SDL_Texture *grid_texture;
-    SDL_Texture *refrence_texture; 
-    SDL_Texture *border_texture; 
+    SDL_Texture *drawing_texture; //drawing that can be displayed over the top or bottom screen
+    SDL_Texture *grid_texture; //grid that can be displayed over the top or bottom screen
+    SDL_Texture *refrence_texture; //hold a refrence image you can try to draw
+    SDL_Texture *backround_texture;//gets drawn first behind everything else 
     uint8_t tool_type;
     uint8_t zoom_mode;
     uint8_t ref_mode;
@@ -72,10 +82,10 @@ void set_render_target(SDL_Renderer *ap_renderer, SDL_Texture *ap_texture)
 
 bool point_is_in_draw_area(int x, int y)
 {
-    int xmin = BORDER_WIDTH;
-    int xmax = CANVAS_WIDTH+BORDER_WIDTH;
-    int ymin = CANVAS_HEIGHT+2*BORDER_WIDTH;
-    int ymax = 2*CANVAS_HEIGHT+2*BORDER_WIDTH;
+    int xmin = CANVAS_X;
+    int xmax = CANVAS_X + CANVAS_WIDTH;
+    int ymin = CANVAS_Y;
+    int ymax = CANVAS_Y + CANVAS_HEIGHT;
     return (x > xmin & x < xmax & y > ymin & y < ymax);
 }
 
@@ -112,9 +122,6 @@ void draw_cursor(SDL_Renderer *ap_renderer, int a_circle_r, SDL_Color a_point_co
 
 void draw_pen_stroke(SDL_Renderer *ap_renderer)
 {
-    int xm, ym;
-    SDL_GetMouseState(&xm, &ym);
-    set_render_target(ap_renderer, g_state.drawing_texture);
     switch(g_state.tool_type)
     {
         case TOOL_2H_PENCIL:
@@ -130,24 +137,22 @@ void draw_pen_stroke(SDL_Renderer *ap_renderer)
             set_render_draw_color(ap_renderer, C_ALPHA);
             break;
     }
-    int offset=(CANVAS_HEIGHT + 2*BORDER_WIDTH); 
-    float scale = 1.0f;
-    int x0, y0, x1, y1;
+    int xm ,ym, x0, y0, x1, y1;
+    float scale;
+    SDL_GetMouseState(&xm, &ym);
+    x0 = g_state.xmo - CANVAS_X;
+    x1 = xm - CANVAS_X;
+    y0 = g_state.ymo - CANVAS_Y;
+    y1 = ym - CANVAS_Y;
     if(g_state.zoom_mode==ZOOM_MODE_IN)
     {
-        scale = scale / ZOOM_SCALE;
-        x0 = (scale * (g_state.xmo)) + g_state.zoom_rect.x; 
-        x1 = (scale * xm) + g_state.zoom_rect.x;
-        y0 = (scale * (g_state.ymo - offset)) + g_state.zoom_rect.y; 
-        y1 = (scale * (ym - offset)) + g_state.zoom_rect.y;
+        scale = 1.0f / ZOOM_SCALE;
+        x0 = (scale * x0) + g_state.zoom_rect.x; 
+        x1 = (scale * x1) + g_state.zoom_rect.x;
+        y0 = (scale * y0) + g_state.zoom_rect.y; 
+        y1 = (scale * y1) + g_state.zoom_rect.y;
     }
-    else
-    {
-        x0 = g_state.xmo;
-        x1 = xm;
-        y0 = g_state.ymo - offset;
-        y1 = ym - offset;
-    }
+    set_render_target(ap_renderer, g_state.drawing_texture);
     SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
     g_state.xmo = xm; g_state.ymo = ym;
 }
@@ -193,42 +198,12 @@ void setup(SDL_Renderer *ap_renderer)
     draw_grid(ap_renderer, GRID_SIZE);
     /*
      * Setup the border texture
-     * - create the texture, and make sure that it works
-     * - set the blend mode so tranparency works
-     * - draw the borders  
     */
-    g_state.border_texture = SDL_CreateTexture(ap_renderer, fmt, access, CANVAS_WIDTH+2*BORDER_WIDTH, 2*CANVAS_HEIGHT+3*BORDER_WIDTH);
-    if(g_state.border_texture==NULL)
-    {
-        printf("Error Creating Border texture: %s\n", SDL_GetError());
-    }
-    SDL_SetTextureBlendMode(g_state.border_texture, SDL_BLENDMODE_BLEND); 
-    set_render_target(ap_renderer, g_state.border_texture);
-    set_render_draw_color(ap_renderer, C_ALPHA);
-    SDL_RenderClear(ap_renderer);
-    set_render_draw_color(ap_renderer, C_BLACK);
-    SDL_Rect r;
-    //the left border rect
-    r.x = 0; r.y = 0;
-    r.w = BORDER_WIDTH; r.h = 2*CANVAS_HEIGHT+3*BORDER_WIDTH;
-    SDL_RenderFillRect(ap_renderer, &r);
-    //the top border
-    r.w = CANVAS_WIDTH+2*BORDER_WIDTH; r.h = BORDER_WIDTH;
-    SDL_RenderFillRect(ap_renderer, &r);
-    //the middle border
-    r.y = CANVAS_HEIGHT+BORDER_WIDTH;
-    SDL_RenderFillRect(ap_renderer, &r);
-    //the bottom border
-    r.y = 2*(CANVAS_HEIGHT+BORDER_WIDTH);
-    SDL_RenderFillRect(ap_renderer, &r);
-    //the right border
-    r.x = CANVAS_WIDTH + BORDER_WIDTH; r.y=0;
-    r.w = BORDER_WIDTH; r.h = 2*CANVAS_HEIGHT+3*BORDER_WIDTH;
-    SDL_RenderFillRect(ap_renderer, &r);
+    g_state.backround_texture = NULL;
     /*
      * Setp the rest of the global variables, may want to rething things since there are a lot of these...
     */
-    g_state.refrence_texture= SDL_CreateTexture(ap_renderer, fmt, access, CANVAS_WIDTH, CANVAS_HEIGHT); 
+    g_state.refrence_texture= SDL_CreateTexture(ap_renderer, fmt, access, REFRENCE_SCREEN_WIDTH, REFRENCE_SCREEN_HEIGHT); 
     if(g_state.refrence_texture==NULL)
     {
         printf("Error Creating refrecne texture: %s\n", SDL_GetError());
@@ -254,10 +229,10 @@ void setup(SDL_Renderer *ap_renderer)
         {
             int w, h;
             SDL_QueryTexture(temp_tex, NULL, NULL, &w, &h);
-            printf("Temp Texture is %d by %d px\n", w, h);
             SDL_Rect dest;
             dest.x =0; dest.y = 0;
-            dest.w = CANVAS_WIDTH; dest.h = CANVAS_HEIGHT;
+            dest.w = REFRENCE_SCREEN_WIDTH; 
+            dest.h = REFRENCE_SCREEN_HEIGHT;
             //possible test differnt scale modes here
             SDL_RenderCopy(ap_renderer, temp_tex, NULL, &dest); 
         }
@@ -386,22 +361,23 @@ void update(SDL_Renderer *ap_renderer, SDL_Event *e, float delta_time)
 
 void render(SDL_Renderer *ap_renderer)
 {
-    SDL_Rect dr;
-    dr.x = BORDER_WIDTH;
-    dr.w = CANVAS_WIDTH; 
-    dr.h = CANVAS_HEIGHT;
-    //render to the draw texture
+    //render to the draw texture with pencil stokes
     if(g_state.pen_down)
     {
         draw_pen_stroke(ap_renderer);
     }
     //render the textures to the main window
     set_render_target(ap_renderer, NULL);
+    //render the backround/border first
+    SDL_Rect dr;
+    dr.x = REFRENCE_SCREEN_X;
+    dr.y = REFRENCE_SCREEN_Y;
+    dr.w = REFRENCE_SCREEN_WIDTH; 
+    dr.h = REFRENCE_SCREEN_HEIGHT;
     set_render_draw_color(ap_renderer, C_WHITE);
     SDL_RenderClear(ap_renderer);
-    SDL_RenderCopy(ap_renderer, g_state.border_texture, NULL, NULL);
-    //render the top screen
-    dr.y = BORDER_WIDTH;
+    //SDL_RenderCopy(ap_renderer, g_state.border_texture, NULL, NULL);
+    //render the top screen second
     if((g_state.ref_mode == REF_MODE_IMG) & (g_state.refrence_texture != NULL))
     {
         SDL_RenderCopy(ap_renderer, g_state.refrence_texture, NULL, &dr);
@@ -414,8 +390,11 @@ void render(SDL_Renderer *ap_renderer)
     {
         SDL_RenderCopy(ap_renderer, g_state.grid_texture, NULL, &dr);
     }
-    //render the bottom screen
-    dr.y = CANVAS_HEIGHT + 2*BORDER_WIDTH;
+    //render the bottom screen third
+    dr.x = CANVAS_X;
+    dr.y = CANVAS_Y;
+    dr.w = CANVAS_WIDTH;
+    dr.h = CANVAS_HEIGHT;
     g_state.zoom_rect.w = CANVAS_WIDTH;
     g_state.zoom_rect.h = CANVAS_HEIGHT;
     if(g_state.zoom_mode == ZOOM_MODE_IN)
@@ -428,7 +407,7 @@ void render(SDL_Renderer *ap_renderer)
     {
         SDL_RenderCopy(ap_renderer, g_state.grid_texture, &g_state.zoom_rect, &dr);
     }
-    //render the cursor
+    //render the cursor last on top of everything else
     int cr = 24;
     if(g_state.pen_down){cr=12;}
     draw_cursor(ap_renderer, cr, C_BLACK, C_GREY2);
@@ -481,7 +460,7 @@ int main(void)
 {
   SDL_Window* main_window = NULL;
   SDL_Renderer* main_renderer = NULL;
-  int sdl_initilized = initilizeSdl(&main_window, &main_renderer, CANVAS_WIDTH + 2*BORDER_WIDTH, 2*CANVAS_HEIGHT+3*BORDER_WIDTH);
+  int sdl_initilized = initilizeSdl(&main_window, &main_renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
   if(!sdl_initilized)
   {
       printf("SDL Setup Failed\n");
@@ -497,7 +476,7 @@ int main(void)
   //destroy everything
   SDL_DestroyTexture(g_state.drawing_texture);
   SDL_DestroyTexture(g_state.grid_texture);
-  SDL_DestroyTexture(g_state.border_texture);
+  SDL_DestroyTexture(g_state.backround_texture);
   SDL_DestroyTexture(g_state.refrence_texture);
   SDL_DestroyRenderer(main_renderer);
   SDL_DestroyWindow(main_window);
