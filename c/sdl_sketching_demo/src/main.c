@@ -9,16 +9,17 @@
 
 #define CANVAS_WIDTH 320
 #define CANVAS_HEIGHT 240
-#define BORDER_WIDTH 5//px
+#define BORDER_WIDTH 25//px
+#define SCREEN_SEPERATION 5//px
 #define REFRENCE_SCREEN_X BORDER_WIDTH
 #define REFRENCE_SCREEN_Y BORDER_WIDTH
 #define WINDOW_WIDTH 2*BORDER_WIDTH + REFRENCE_SCREEN_WIDTH
-#define WINDOW_HEIGHT 3*BORDER_WIDTH + REFRENCE_SCREEN_HEIGHT + CANVAS_HEIGHT
+#define WINDOW_HEIGHT 2*BORDER_WIDTH + SCREEN_SEPERATION + REFRENCE_SCREEN_HEIGHT + CANVAS_HEIGHT
 
 const int REFRENCE_SCREEN_WIDTH = CANVAS_WIDTH * 1.5;
 const int REFRENCE_SCREEN_HEIGHT = CANVAS_HEIGHT * 1.5;
 const int CANVAS_X = BORDER_WIDTH + REFRENCE_SCREEN_WIDTH/2 - CANVAS_WIDTH/2; 
-const int CANVAS_Y = 2*BORDER_WIDTH + REFRENCE_SCREEN_HEIGHT;
+const int CANVAS_Y = BORDER_WIDTH + SCREEN_SEPERATION + REFRENCE_SCREEN_HEIGHT;
 
 #define FPS_TARGET 240
 #define FRAME_TARGET_TIME 1000/FPS_TARGET
@@ -91,14 +92,18 @@ bool point_is_in_draw_area(int x, int y)
 
 void draw_grid(SDL_Renderer *ap_renderer, int grid_size)
 {
+    //vertical gridlines
     for(int i = 0; i <= CANVAS_WIDTH; i+=grid_size)
     {
         SDL_RenderDrawLine(ap_renderer, i, 0, i, CANVAS_HEIGHT);
     }
+    SDL_RenderDrawLine(ap_renderer, CANVAS_WIDTH-1, 0, CANVAS_WIDTH-1, CANVAS_HEIGHT);
+    //vertical gridlines
     for(int i = 0; i <= CANVAS_HEIGHT; i+=grid_size)
     {
         SDL_RenderDrawLine(ap_renderer, 0, i, CANVAS_WIDTH, i);
     }
+    SDL_RenderDrawLine(ap_renderer, 0, CANVAS_HEIGHT-1, CANVAS_WIDTH, CANVAS_HEIGHT-1);
 }
 
 void draw_cursor(SDL_Renderer *ap_renderer, int a_circle_r, SDL_Color a_point_color, SDL_Color a_circle_color)
