@@ -205,6 +205,20 @@ void setup(SDL_Renderer *ap_renderer)
      * Setup the border texture
     */
     g_state.backround_texture = NULL;
+    SDL_Surface *s = IMG_Load("./assets/bkgnd.png"); 
+    if(s == NULL)
+    {
+        printf("Unable to load refrece image: %s\n", IMG_GetError());
+    }
+    else
+    {
+        g_state.backround_texture = SDL_CreateTextureFromSurface(ap_renderer, s);
+        if(g_state.backround_texture == NULL)
+        {
+            printf("Unable to convert surface to texture: %s\n", SDL_GetError());
+        }
+        SDL_FreeSurface(s);
+    }
     /*
      * Setp the rest of the global variables, may want to rething things since there are a lot of these...
     */
@@ -381,6 +395,7 @@ void render(SDL_Renderer *ap_renderer)
     dr.h = REFRENCE_SCREEN_HEIGHT;
     set_render_draw_color(ap_renderer, C_WHITE);
     SDL_RenderClear(ap_renderer);
+    SDL_RenderCopy(ap_renderer, g_state.backround_texture, NULL, NULL);
     //SDL_RenderCopy(ap_renderer, g_state.border_texture, NULL, NULL);
     //render the top screen second
     if((g_state.ref_mode == REF_MODE_IMG) & (g_state.refrence_texture != NULL))
