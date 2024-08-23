@@ -4,10 +4,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
-#include "constants.h"
 #include "init_sdl.h"
 #include "util.h"
 
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
+#define FPS_TARGET 240
+#define FRAME_TARGET_TIME 1000/FPS_TARGET
 
 #define TOOL_2H_PENCIL  0
 #define TOOL_HB_PENCIL  1
@@ -398,7 +401,7 @@ void render(SDL_Renderer *ap_renderer)
     SDL_RenderClear(ap_renderer);
     SDL_RenderCopy(ap_renderer, g_state.border_texture, NULL, NULL);
     //render the top screen
-    dr.y = 0;
+    dr.y = BORDER_WIDTH;
     if((g_state.ref_mode == REF_MODE_IMG) & (g_state.refrence_texture != NULL))
     {
         SDL_RenderCopy(ap_renderer, g_state.refrence_texture, NULL, &dr);
