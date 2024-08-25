@@ -16,20 +16,21 @@
 #define WINDOW_WIDTH 2*BORDER_WIDTH + REFRENCE_SCREEN_WIDTH
 #define WINDOW_HEIGHT 2*BORDER_WIDTH + SCREEN_SEPERATION + REFRENCE_SCREEN_HEIGHT + CANVAS_HEIGHT
 
+#define FPS_TARGET 240
+#define FRAME_TARGET_TIME 1000/FPS_TARGET
+
+#define TOOL_2H_PENCIL 0
+#define TOOL_HB_PENCIL 1
+#define TOOL_2B_PENCIL 2
+#define TOOL_ERASER 3
+
+#define GRID_SIZE 40//px
+                       
 const int REFRENCE_SCREEN_WIDTH = CANVAS_WIDTH * 1.5;
 const int REFRENCE_SCREEN_HEIGHT = CANVAS_HEIGHT * 1.5;
 const int CANVAS_X = BORDER_WIDTH + REFRENCE_SCREEN_WIDTH/2 - CANVAS_WIDTH/2; 
 const int CANVAS_Y = BORDER_WIDTH + SCREEN_SEPERATION + REFRENCE_SCREEN_HEIGHT;
 
-#define FPS_TARGET 240
-#define FRAME_TARGET_TIME 1000/FPS_TARGET
-
-#define TOOL_2H_PENCIL  0
-#define TOOL_HB_PENCIL  1
-#define TOOL_2B_PENCIL  2
-#define TOOL_ERASER  3
-
-const uint8_t GRID_SIZE = 40;//px
 
 const SDL_Color C_WHITE= {235,235,235,255};
 const SDL_Color C_GREY= {164,164,164,255};
@@ -37,22 +38,25 @@ const SDL_Color C_GREY2= {92,92,92,255};
 const SDL_Color C_BLACK= {20,20,20,255};
 const SDL_Color C_ALPHA= {0,0,0,0};
 
-const uint8_t ZOOM_MODE_IN = 0;
-const uint8_t ZOOM_MODE_OUT = 1;
-const uint8_t ZOOM_SCALE = 2;
-const uint8_t GRID_MODE_OFF = 0;
-const uint8_t GRID_MODE_ON = 1;
-const uint8_t WIDTH_MODE_THIN = 0;
-const uint8_t WIDTH_MODE_THICK = 1;
-const uint8_t REF_MODE_IMG = 0;
-const uint8_t REF_MODE_DRAW = 1;
+#define  ZOOM_MODE_IN 0
+#define  ZOOM_MODE_OUT 1
+#define  ZOOM_SCALE 2
 
-const uint8_t SCROLL_DIR_NONE = 0;
-const uint8_t SCROLL_DIR_UP = 1;
-const uint8_t SCROLL_DIR_DOWN = 2;
-const uint8_t SCROLL_DIR_LEFT = 3;
-const uint8_t SCROLL_DIR_RIGHT = 4;
-const uint8_t SCROLL_SPEED = 4;
+#define  GRID_MODE_OFF 0
+#define  GRID_MODE_ON 1
+
+#define  WIDTH_MODE_THIN 0
+#define  WIDTH_MODE_THICK 1
+
+#define  REF_MODE_IMG 0
+#define  REF_MODE_DRAW 1
+
+#define  SCROLL_DIR_NONE 0
+#define  SCROLL_DIR_UP 1
+#define  SCROLL_DIR_DOWN 2
+#define  SCROLL_DIR_LEFT 3
+#define  SCROLL_DIR_RIGHT 4
+#define  SCROLL_SPEED 4
 
 typedef struct Globals {
     SDL_Texture *drawing_texture; //drawing that can be displayed over the top or bottom screen
@@ -72,14 +76,6 @@ typedef struct Globals {
 
 Globals g_state;
 
-void set_render_target(SDL_Renderer *ap_renderer, SDL_Texture *ap_texture)
-{
-    int result = SDL_SetRenderTarget(ap_renderer, ap_texture);
-    if(result == -1)
-    {
-        printf("Error Setting The render Target\n");
-    }
-}
 
 bool point_is_in_draw_area(int x, int y)
 {
@@ -109,7 +105,7 @@ void draw_grid(SDL_Renderer *ap_renderer, int grid_size)
 void draw_cursor(SDL_Renderer *ap_renderer, int a_circle_r, SDL_Color a_point_color, SDL_Color a_circle_color)
 {
     int xm, ym; //x and y position of the mouse
-    Uint32 buttons = SDL_GetMouseState(&xm, &ym);
+     SDL_GetMouseState(&xm, &ym);
     if(point_is_in_draw_area(xm, ym))
     {
         SDL_ShowCursor(0);//turn off the cursor
@@ -171,9 +167,6 @@ void setup(SDL_Renderer *ap_renderer)
     int access = SDL_TEXTUREACCESS_TARGET;
     /*
      * setup the global drawing texture. possible could create a canvas struct if it makes thigs easier
-     * - create the texture, and make sure that it works
-     * - set the blend mode so tranparency works
-     * - set render target the the new texture and fill the screen to be all transparent by default.
     */
     g_state.drawing_texture = SDL_CreateTexture(ap_renderer, fmt, access, CANVAS_WIDTH, CANVAS_HEIGHT); 
     if(g_state.drawing_texture==NULL)
@@ -186,9 +179,6 @@ void setup(SDL_Renderer *ap_renderer)
     SDL_RenderClear(ap_renderer);
     /*
      * Setup the global grid texture, could make a grid struct for neatness 
-     * - create the texture, and make sure that it works
-     * - set the blend mode so tranparency works
-     * - Draw the the grid as all tranparent first, then the grid lines.
     */
     g_state.grid_texture = SDL_CreateTexture(ap_renderer, fmt, access, CANVAS_WIDTH, CANVAS_HEIGHT); 
     if(g_state.grid_texture==NULL)
@@ -202,25 +192,11 @@ void setup(SDL_Renderer *ap_renderer)
     set_render_draw_color(ap_renderer, C_GREY2);
     draw_grid(ap_renderer, GRID_SIZE);
     /*
-     * Setup the border texture
+     * Setup the Backround texture
     */
-    g_state.backround_texture = NULL;
-    SDL_Surface *s = IMG_Load("./assets/bkgnd.png"); 
-    if(s == NULL)
-    {
-        printf("Unable to load refrece image: %s\n", IMG_GetError());
-    }
-    else
-    {
-        g_state.backround_texture = SDL_CreateTextureFromSurface(ap_renderer, s);
-        if(g_state.backround_texture == NULL)
-        {
-            printf("Unable to convert surface to texture: %s\n", SDL_GetError());
-        }
-        SDL_FreeSurface(s);
-    }
+    g_state.backround_texture = load_texture_form_path(ap_renderer, "./assets/bkgnd.png");
     /*
-     * Setp the rest of the global variables, may want to rething things since there are a lot of these...
+     * Setup the Refrence Texture
     */
     g_state.refrence_texture= SDL_CreateTexture(ap_renderer, fmt, access, REFRENCE_SCREEN_WIDTH, REFRENCE_SCREEN_HEIGHT); 
     if(g_state.refrence_texture==NULL)
@@ -231,33 +207,19 @@ void setup(SDL_Renderer *ap_renderer)
     set_render_target(ap_renderer, g_state.refrence_texture);
     set_render_draw_color(ap_renderer, C_ALPHA);
     SDL_RenderClear(ap_renderer);
-    SDL_Texture *temp_tex = NULL;
-    SDL_Surface *temp_surf = IMG_Load("./assets/ref_test.png");
-    if(temp_surf == NULL)
-    {
-        printf("Unable to load refrece image: %s\n", IMG_GetError());
-    }
-    else
-    {
-        temp_tex = SDL_CreateTextureFromSurface(ap_renderer, temp_surf);
-        if(temp_tex==NULL)
-        {
-            printf("Unable to convert surface to texture: %s\n", SDL_GetError());
-        }
-        else
-        {
-            int w, h;
-            SDL_QueryTexture(temp_tex, NULL, NULL, &w, &h);
-            SDL_Rect dest;
-            dest.x =0; dest.y = 0;
-            dest.w = REFRENCE_SCREEN_WIDTH; 
-            dest.h = REFRENCE_SCREEN_HEIGHT;
-            //possible test differnt scale modes here
-            SDL_RenderCopy(ap_renderer, temp_tex, NULL, &dest); 
-        }
-        SDL_FreeSurface(temp_surf);
-        SDL_DestroyTexture(temp_tex);
-    }
+    SDL_Texture *temp_tex = load_texture_form_path(ap_renderer, "./assets/ref_test.png");
+    int w, h;
+    SDL_QueryTexture(temp_tex, NULL, NULL, &w, &h);
+    SDL_Rect dest;
+    dest.x =0; dest.y = 0;
+    dest.w = REFRENCE_SCREEN_WIDTH; 
+    dest.h = REFRENCE_SCREEN_HEIGHT;
+    //possible test differnt scale modes here
+    SDL_RenderCopy(ap_renderer, temp_tex, NULL, &dest); 
+    SDL_DestroyTexture(temp_tex);
+    /*
+     * Setp the rest of the global variables, may want to rething things since there are a lot of these...
+    */
     g_state.tool_type = TOOL_2H_PENCIL;
     g_state.zoom_mode = ZOOM_MODE_OUT;
     g_state.grid_mode = GRID_MODE_OFF;
@@ -375,7 +337,6 @@ void update(SDL_Renderer *ap_renderer, SDL_Event *e, float delta_time)
     {
         g_state.pen_down = false;
     }
-    
 }
 
 void render(SDL_Renderer *ap_renderer)
