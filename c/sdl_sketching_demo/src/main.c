@@ -76,7 +76,6 @@ typedef struct Globals {
 
 Globals g_state;
 
-
 bool point_is_in_draw_area(int x, int y)
 {
     int xmin = CANVAS_X;
