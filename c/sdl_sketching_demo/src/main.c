@@ -452,6 +452,9 @@ int main(void)
       printf("The main renderer does not support rendering to targets...\n");
       return -1;
   }
+  printf("Full Screen Size= %dx%d px\n", WINDOW_WIDTH, WINDOW_HEIGHT);
+  printf("Bottom Screen Rect x,y=%d,%d w,h=%d,%d\n", CANVAS_X, CANVAS_Y, CANVAS_WIDTH, CANVAS_HEIGHT);
+  printf("Top Screen Rect x,y=%d,%d w,h=%d,%d\n", REFRENCE_SCREEN_X, REFRENCE_SCREEN_Y, REFRENCE_SCREEN_WIDTH, REFRENCE_SCREEN_HEIGHT);
   main_loop(main_renderer);
   //destroy everything
   SDL_DestroyTexture(g_state.drawing_texture);
