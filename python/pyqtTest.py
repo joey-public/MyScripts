@@ -109,38 +109,45 @@ class ButtonMenu(QWidget):
         load_btn.setCheckable(True)
         load_btn.clicked.connect(self.load_btn_clicked)
 
-        btn1 = QPushButton('btn1')
-        btn1.setCheckable(True)
-        btn1.clicked.connect(self.btn1_clicked)
+        save_btn = QPushButton('save_btn')
+        save_btn.setCheckable(True)
+        save_btn.clicked.connect(self.save_btn_clicked)
 
         btn_h_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         
         btn_menue_layout.addWidget(load_btn)
-        btn_menue_layout.addWidget(btn1)
+        btn_menue_layout.addWidget(save_btn)
 
         self.config_editor = config_editor
         self.config_editor.setText('Hello World!')
 #        btn_menue_layout.addWidget(btn_h_spacer)
-        
-
         self.setLayout(btn_menue_layout)
+
+    def _is_valid_txt_or_json_file(self, path:str)->bool:
+        file_name, file_extionsion = os.path.splitext(path)
+        if not(file_extionsion == '.txt' or file_extionsion == '.json'):
+            return False
+        return True
 
     def load_btn_clicked(self):
         file_path, msg = QFileDialog.getOpenFileName(self, 'Open File')
-
         if not(os.path.exists(file_path)):
-            print('Please Select a File that Exists')
-        file_name, file_extionsion = os.path.splitext(file_path)
-        if not(file_extionsion == '.txt' or file_extionsion == '.json'):
-            print('Can Only open txt or json files')
+            return 
+        if not(self._is_valid_txt_or_json_file(file_path)):
+            return 
         with open(file_path, 'r') as file:
             file_text_str = file.read()
         self.config_editor.setText(file_text_str)
-        
-           
 
-    def btn1_clicked(self):
-        print('btn1_clicked!')
+    def save_btn_clicked(self):
+        print('save_btn_clicked!')
+        print(self.config_editor.toPlainText())
+        file_path, msg = QFileDialog.getSaveFileName(self, 'Save File')
+        if not(self._is_valid_txt_or_json_file(file_path)):
+            return 
+        content = self.config_editor.toPlainText()
+        with open(file_path, 'w', encoding='utf-8', errors='xmlcharrefreplace') as output_file:
+            output_file.write(content)
 
         
 if __name__ == '__main__':
