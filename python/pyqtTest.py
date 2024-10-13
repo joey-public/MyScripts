@@ -11,10 +11,14 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QSpacerItem,
     QSizePolicy,
+    QFileDialog, 
 )
-from PyQt5.QtGui import QPalette, QColor 
+from PyQt5.QtGui import (
+        QPalette, 
+        QColor, 
+)
 
-import sys
+import sys, os
 # Article to fix pyqt error I was seeing:
 # https://stackoverflow.com/questions/59809703/could-not-load-the-qt-platform-plugin-xcb-in-even-though-it-was-found
 
@@ -22,6 +26,7 @@ import sys
 #https://doc.qt.io/qtforpython-5/PySide2/QtSvg/QSvgWidget.html#more
 
 SVG_PATH = './donuts-cake-svgrepo-com.svg'
+#TODO: Keyboard shortcuts
 class MyMainWindow(QMainWindow):
     def __init__(self):
         super(MyMainWindow, self).__init__()
@@ -30,7 +35,7 @@ class MyMainWindow(QMainWindow):
 
         config_editor_widget = ConfigEditor()
         svg_viewwe_widget = SvgViewer()
-        btn_menue_widget = ButtonMenu()
+        btn_menue_widget = ButtonMenu(config_editor_widget)
 
         top_v_layout = QHBoxLayout()
         top_v_layout.addWidget(config_editor_widget)
@@ -56,6 +61,9 @@ class Color(QWidget):
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
 
+#TODO: implement zoom in with mouse wheel, or let click
+#TODO: impolemnt zoom out with mouse wheel, or right click
+#TODO: implement pan with middle mouse click + drag
 class SvgViewer(QtSvg.QSvgWidget):
     def __init__(self):
         super().__init__()
@@ -84,19 +92,22 @@ class SvgViewer(QtSvg.QSvgWidget):
     def pan(sefl, direction:str, speed:float):
         pass
 
-class ConfigEditor(QPlainTextEdit):
+#TODO: figure out how to load a text file into the widget on startup
+class ConfigEditor(QTextEdit):
     def __init__(self):
         super().__init__()
 
+#TODO: Open a text file with the file manager popup
+#TODO: Save a text file with the file manager popup
 class ButtonMenu(QWidget):
-    def __init__(self):
+    def __init__(self, config_editor):
         super().__init__()
 
         btn_menue_layout = QHBoxLayout()
 
-        btn0 = QPushButton('btn0')
-        btn0.setCheckable(True)
-        btn0.clicked.connect(self.btn0_clicked)
+        load_btn = QPushButton('load_btn')
+        load_btn.setCheckable(True)
+        load_btn.clicked.connect(self.load_btn_clicked)
 
         btn1 = QPushButton('btn1')
         btn1.setCheckable(True)
@@ -104,15 +115,30 @@ class ButtonMenu(QWidget):
 
         btn_h_spacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         
-        btn_menue_layout.addWidget(btn0)
+        btn_menue_layout.addWidget(load_btn)
         btn_menue_layout.addWidget(btn1)
+
+        self.config_editor = config_editor
+        self.config_editor.setText('Hello World!')
 #        btn_menue_layout.addWidget(btn_h_spacer)
         
 
         self.setLayout(btn_menue_layout)
 
-    def btn0_clicked(self):
-        print('btn0_clicked!')
+    def load_btn_clicked(self):
+        file_path, msg = QFileDialog.getOpenFileName(self, 'Open File')
+
+        if not(os.path.exists(file_path)):
+            print('Please Select a File that Exists')
+        file_name, file_extionsion = os.path.splitext(file_path)
+        if not(file_extionsion == '.txt' or file_extionsion == '.json'):
+            print('Can Only open txt or json files')
+        with open(file_path, 'r') as file:
+            file_text_str = file.read()
+        self.config_editor.setText(file_text_str)
+        
+           
+
     def btn1_clicked(self):
         print('btn1_clicked!')
 
