@@ -157,8 +157,8 @@ void draw_pen_stroke(SDL_Renderer *ap_renderer)
     }
     set_render_target(ap_renderer, g_state.drawing_texture);
 //    SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
-    int brush_w = 2;
-    int brush_h = 2;
+    int brush_w = 4;
+    int brush_h = 4;
     draw_textured_line(ap_renderer, g_state.brush_texture, x0, y0, x1, y1, brush_w, brush_h);
     g_state.xmo = xm; 
     g_state.ymo = ym;
