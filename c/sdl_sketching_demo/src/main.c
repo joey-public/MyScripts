@@ -9,6 +9,7 @@
 
 #define CANVAS_WIDTH 320
 #define CANVAS_HEIGHT 240
+#define CANVAS_SCALE_FACTOR 2 //scale up the canvas by 2 for drawing. Scale it down by 2 for rendering
 #define BORDER_WIDTH 25//px
 #define SCREEN_SEPERATION 5//px
 #define REFRENCE_SCREEN_X BORDER_WIDTH
@@ -30,7 +31,6 @@ const int REFRENCE_SCREEN_WIDTH = CANVAS_WIDTH * 1.5;
 const int REFRENCE_SCREEN_HEIGHT = CANVAS_HEIGHT * 1.5;
 const int CANVAS_X = BORDER_WIDTH + REFRENCE_SCREEN_WIDTH/2 - CANVAS_WIDTH/2; 
 const int CANVAS_Y = BORDER_WIDTH + SCREEN_SEPERATION + REFRENCE_SCREEN_HEIGHT;
-
 
 const SDL_Color C_WHITE = {235,235,235,255};
 const SDL_Color C_GREY = {164,164,164,255};
@@ -122,9 +122,9 @@ void draw_cursor(SDL_Renderer *ap_renderer, int a_circle_r, SDL_Color a_point_co
     }
 }
 
+//TODO: Draw to a large texture. Transform the mouse position to the larger texture space. 
 void draw_pen_stroke(SDL_Renderer *ap_renderer)
 {
-    //TODO: Make the pen draw textures
     switch(g_state.tool_type)
     {
         case TOOL_2H_PENCIL:
@@ -143,10 +143,12 @@ void draw_pen_stroke(SDL_Renderer *ap_renderer)
     int xm ,ym, x0, y0, x1, y1;
     float scale;
     SDL_GetMouseState(&xm, &ym);
+    //convert the mouse position in the main window to a local x,y values on the smaller drawing texture
     x0 = g_state.xmo - CANVAS_X;
     x1 = xm - CANVAS_X;
     y0 = g_state.ymo - CANVAS_Y;
     y1 = ym - CANVAS_Y;
+    //account for the zoom level 
     if(g_state.zoom_mode==ZOOM_MODE_IN)
     {
         scale = 1.0f / ZOOM_SCALE;
@@ -155,11 +157,17 @@ void draw_pen_stroke(SDL_Renderer *ap_renderer)
         y0 = (scale * y0) + g_state.zoom_rect.y; 
         y1 = (scale * y1) + g_state.zoom_rect.y;
     }
+    //scale up the x,y pos to the larger virtual canvas size
+    x0 = x0 * CANVAS_SCALE_FACTOR;
+    y0 = y0 * CANVAS_SCALE_FACTOR;
+    x1 = x1 * CANVAS_SCALE_FACTOR;
+    y1 = y1 * CANVAS_SCALE_FACTOR; 
+    int brush_w = 32;
+    int brush_h = 32;
+    //draws the line on a virual texture that wond be visible until the render() function
     set_render_target(ap_renderer, g_state.drawing_texture);
-//    SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
-    int brush_w = 4;
-    int brush_h = 4;
     draw_textured_line(ap_renderer, g_state.brush_texture, x0, y0, x1, y1, brush_w, brush_h);
+//    SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
     g_state.xmo = xm; 
     g_state.ymo = ym;
 }
@@ -174,7 +182,8 @@ void setup(SDL_Renderer *ap_renderer)
     /*
      * setup the global drawing texture. possible could create a canvas struct if it makes thigs easier
     */
-    g_state.drawing_texture = SDL_CreateTexture(ap_renderer, fmt, access, CANVAS_WIDTH, CANVAS_HEIGHT); 
+    //TODO: Load a paper-like texture
+    g_state.drawing_texture = SDL_CreateTexture(ap_renderer, fmt, access, CANVAS_WIDTH*CANVAS_SCALE_FACTOR, CANVAS_HEIGHT*CANVAS_SCALE_FACTOR); 
     if(g_state.drawing_texture==NULL)
     {
         printf("Error Creating Drawing texture: %s\n", SDL_GetError());
@@ -201,6 +210,7 @@ void setup(SDL_Renderer *ap_renderer)
      * Setup the Brush texture
     */
     g_state.brush_texture = load_texture_form_path(ap_renderer, "./assets/b0.png"); 
+    SDL_SetTextureBlendMode(g_state.brush_texture, SDL_BLENDMODE_BLEND); 
     /*
      * Setup the Backround texture
     */
@@ -386,12 +396,12 @@ void render(SDL_Renderer *ap_renderer)
     dest_rect.y = CANVAS_Y;
     dest_rect.w = CANVAS_WIDTH;
     dest_rect.h = CANVAS_HEIGHT;
-    g_state.zoom_rect.w = CANVAS_WIDTH;
-    g_state.zoom_rect.h = CANVAS_HEIGHT;
+    g_state.zoom_rect.w = CANVAS_WIDTH*CANVAS_SCALE_FACTOR;
+    g_state.zoom_rect.h = CANVAS_HEIGHT*CANVAS_SCALE_FACTOR;
     if(g_state.zoom_mode == ZOOM_MODE_IN)
     {
-          g_state.zoom_rect.w = CANVAS_WIDTH/ZOOM_SCALE;
-          g_state.zoom_rect.h = CANVAS_HEIGHT/ZOOM_SCALE;
+          g_state.zoom_rect.w = (CANVAS_WIDTH*CANVAS_SCALE_FACTOR)/ZOOM_SCALE;
+          g_state.zoom_rect.h = (CANVAS_HEIGHT*CANVAS_SCALE_FACTOR)/ZOOM_SCALE;
     }
     SDL_RenderCopy(ap_renderer, g_state.drawing_texture, &g_state.zoom_rect, &dest_rect);
     if(g_state.grid_mode == GRID_MODE_ON)
@@ -472,6 +482,7 @@ int main(void)
   SDL_DestroyTexture(g_state.grid_texture);
   SDL_DestroyTexture(g_state.backround_texture);
   SDL_DestroyTexture(g_state.refrence_texture);
+  SDL_DestroyTexture(g_state.brush_texture);
   SDL_DestroyRenderer(main_renderer);
   SDL_DestroyWindow(main_window);
   TTF_Quit();

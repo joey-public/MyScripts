@@ -54,7 +54,6 @@ def save_texture_to_png(texture, filename):
     """
     # Create a PIL Image from the numpy array
     image = Image.fromarray(texture, mode='RGBA')
-    
     # Save the image as PNG
     image.save(filename, format='PNG')
     print(f"Texture saved as {filename}")
@@ -62,12 +61,15 @@ def save_texture_to_png(texture, filename):
 if __name__ == '__main__':
     # Example usage:
     args = sys.argv
-    USAGE = 'python generate_brush_texture <size> <outfile>'
+    USAGE = 'python generate_brush_texture <gen_size> <scale_size> <outfile>'
     print(args)
-    if len(args) != 3:
+    if len(args) != 4:
         print(USAGE)
     else:
-        size = int(args[1]) 
-        file_path = args[2]
-        brush_texture = generate_brush_texture(size)
+        gen_size = int(args[1]) 
+        scale_size = int(args[2])
+        file_path = args[3]
+        brush_texture = generate_brush_texture(gen_size)
+        #if not(scale_size == gen_size):
+        #    brush_texture = downscale_texture(brush_texture, scale_size)
         save_texture_to_png(brush_texture, file_path)
