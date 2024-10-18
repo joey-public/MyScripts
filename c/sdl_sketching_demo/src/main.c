@@ -32,17 +32,17 @@ const int CANVAS_X = BORDER_WIDTH + REFRENCE_SCREEN_WIDTH/2 - CANVAS_WIDTH/2;
 const int CANVAS_Y = BORDER_WIDTH + SCREEN_SEPERATION + REFRENCE_SCREEN_HEIGHT;
 
 
-const SDL_Color C_WHITE= {235,235,235,255};
-const SDL_Color C_GREY= {164,164,164,255};
-const SDL_Color C_GREY2= {92,92,92,255};
-const SDL_Color C_BLACK= {20,20,20,255};
-const SDL_Color C_ALPHA= {0,0,0,0};
+const SDL_Color C_WHITE = {235,235,235,255};
+const SDL_Color C_GREY = {164,164,164,255};
+const SDL_Color C_GREY2 = {92,92,92,255};
+const SDL_Color C_BLACK = {20,20,20,255};
+const SDL_Color C_ALPHA = {0,0,0,0};
 
 #define  ZOOM_MODE_IN 0
 #define  ZOOM_MODE_OUT 1
 #define  ZOOM_SCALE 2
 
-#define  GRID_MODE_OFF 0
+#define  GRID_MODE_OFF 1
 #define  GRID_MODE_ON 1
 
 #define  WIDTH_MODE_THIN 0
@@ -63,6 +63,7 @@ typedef struct Globals {
     SDL_Texture *grid_texture; //grid that can be displayed over the top or bottom screen
     SDL_Texture *refrence_texture; //hold a refrence image you can try to draw
     SDL_Texture *backround_texture;//gets drawn first behind everything else 
+    SDL_Texture *brush_texture;//the texture for the brush
     uint8_t tool_type;
     uint8_t zoom_mode;
     uint8_t ref_mode;
@@ -113,6 +114,7 @@ void draw_cursor(SDL_Renderer *ap_renderer, int a_circle_r, SDL_Color a_point_co
         SDL_RenderFillRect(ap_renderer, &cursor_point); 
         set_render_draw_color(ap_renderer, a_circle_color);
         draw_circle(ap_renderer, xm, ym, a_circle_r);
+        //draw_texture_circle(ap_renderer, g_state.refrence_texture, xm, ym, a_circle_r);
     }
     else
     {
@@ -122,6 +124,7 @@ void draw_cursor(SDL_Renderer *ap_renderer, int a_circle_r, SDL_Color a_point_co
 
 void draw_pen_stroke(SDL_Renderer *ap_renderer)
 {
+    //TODO: Make the pen draw textures
     switch(g_state.tool_type)
     {
         case TOOL_2H_PENCIL:
@@ -153,8 +156,12 @@ void draw_pen_stroke(SDL_Renderer *ap_renderer)
         y1 = (scale * y1) + g_state.zoom_rect.y;
     }
     set_render_target(ap_renderer, g_state.drawing_texture);
-    SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
-    g_state.xmo = xm; g_state.ymo = ym;
+//    SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
+    int brush_w = 2;
+    int brush_h = 2;
+    draw_textured_line(ap_renderer, g_state.brush_texture, x0, y0, x1, y1, brush_w, brush_h);
+    g_state.xmo = xm; 
+    g_state.ymo = ym;
 }
 
 void setup(SDL_Renderer *ap_renderer)
@@ -190,6 +197,10 @@ void setup(SDL_Renderer *ap_renderer)
     SDL_RenderClear(ap_renderer);
     set_render_draw_color(ap_renderer, C_GREY2);
     draw_grid(ap_renderer, GRID_SIZE);
+    /*
+     * Setup the Brush texture
+    */
+    g_state.brush_texture = load_texture_form_path(ap_renderer, "./assets/b0.png"); 
     /*
      * Setup the Backround texture
     */
@@ -348,11 +359,11 @@ void render(SDL_Renderer *ap_renderer)
     //render the textures to the main window
     set_render_target(ap_renderer, NULL);
     //render the backround/border first
-    SDL_Rect dr;
-    dr.x = REFRENCE_SCREEN_X;
-    dr.y = REFRENCE_SCREEN_Y;
-    dr.w = REFRENCE_SCREEN_WIDTH; 
-    dr.h = REFRENCE_SCREEN_HEIGHT;
+    SDL_Rect dest_rect;
+    dest_rect.x = REFRENCE_SCREEN_X;
+    dest_rect.y = REFRENCE_SCREEN_Y;
+    dest_rect.w = REFRENCE_SCREEN_WIDTH; 
+    dest_rect.h = REFRENCE_SCREEN_HEIGHT;
     set_render_draw_color(ap_renderer, C_WHITE);
     SDL_RenderClear(ap_renderer);
     SDL_RenderCopy(ap_renderer, g_state.backround_texture, NULL, NULL);
@@ -360,21 +371,21 @@ void render(SDL_Renderer *ap_renderer)
     //render the top screen second
     if((g_state.ref_mode == REF_MODE_IMG) & (g_state.refrence_texture != NULL))
     {
-        SDL_RenderCopy(ap_renderer, g_state.refrence_texture, NULL, &dr);
+        SDL_RenderCopy(ap_renderer, g_state.refrence_texture, NULL, &dest_rect);
     }
     else
     {
-        SDL_RenderCopy(ap_renderer, g_state.drawing_texture, NULL, &dr);
+        SDL_RenderCopy(ap_renderer, g_state.drawing_texture, NULL, &dest_rect);
     }
     if(g_state.grid_mode == GRID_MODE_ON)
     {
-        SDL_RenderCopy(ap_renderer, g_state.grid_texture, NULL, &dr);
+        SDL_RenderCopy(ap_renderer, g_state.grid_texture, NULL, &dest_rect);
     }
     //render the bottom screen third
-    dr.x = CANVAS_X;
-    dr.y = CANVAS_Y;
-    dr.w = CANVAS_WIDTH;
-    dr.h = CANVAS_HEIGHT;
+    dest_rect.x = CANVAS_X;
+    dest_rect.y = CANVAS_Y;
+    dest_rect.w = CANVAS_WIDTH;
+    dest_rect.h = CANVAS_HEIGHT;
     g_state.zoom_rect.w = CANVAS_WIDTH;
     g_state.zoom_rect.h = CANVAS_HEIGHT;
     if(g_state.zoom_mode == ZOOM_MODE_IN)
@@ -382,10 +393,10 @@ void render(SDL_Renderer *ap_renderer)
           g_state.zoom_rect.w = CANVAS_WIDTH/ZOOM_SCALE;
           g_state.zoom_rect.h = CANVAS_HEIGHT/ZOOM_SCALE;
     }
-    SDL_RenderCopy(ap_renderer, g_state.drawing_texture, &g_state.zoom_rect, &dr);
+    SDL_RenderCopy(ap_renderer, g_state.drawing_texture, &g_state.zoom_rect, &dest_rect);
     if(g_state.grid_mode == GRID_MODE_ON)
     {
-        SDL_RenderCopy(ap_renderer, g_state.grid_texture, &g_state.zoom_rect, &dr);
+        SDL_RenderCopy(ap_renderer, g_state.grid_texture, &g_state.zoom_rect, &dest_rect);
     }
     //render the cursor last on top of everything else
     int cr = 24;
