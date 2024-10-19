@@ -12,7 +12,7 @@ void set_render_target(SDL_Renderer *ap_renderer, SDL_Texture *ap_texture)
     int result = SDL_SetRenderTarget(ap_renderer, ap_texture);
     if(result == -1)
     {
-        printf("Error Setting The render Target\n");
+        printf("Error Setting The render Target: %s\n", SDL_GetError());
     }
 }
 
