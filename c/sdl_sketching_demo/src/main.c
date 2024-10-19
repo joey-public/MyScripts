@@ -9,9 +9,9 @@
 
 #define CANVAS_WIDTH 320
 #define CANVAS_HEIGHT 240
-#define CANVAS_SCALE_FACTOR 4 //scale up the canvas by 2 for drawing. Scale it down by 2 for rendering
-#define BRUSH_W 320
-#define BRUSH_H 240
+#define CANVAS_SCALE_FACTOR 32 //scale up the canvas by 2 for drawing. Scale it down by 2 for rendering
+#define BRUSH_W 64 
+#define BRUSH_H 64
 #define BORDER_WIDTH 25//px
 #define SCREEN_SEPERATION 5//px
 #define REFRENCE_SCREEN_X BORDER_WIDTH
@@ -150,6 +150,11 @@ void draw_pen_stroke(SDL_Renderer *ap_renderer)
     x1 = xm - CANVAS_X;
     y0 = g_state.ymo - CANVAS_Y;
     y1 = ym - CANVAS_Y;
+    //scale up the x,y pos to the larger virtual canvas size
+    x0 = x0 * CANVAS_SCALE_FACTOR;
+    y0 = y0 * CANVAS_SCALE_FACTOR;
+    x1 = x1 * CANVAS_SCALE_FACTOR;
+    y1 = y1 * CANVAS_SCALE_FACTOR; 
     //account for the zoom level 
     if(g_state.zoom_mode==ZOOM_MODE_IN)
     {
@@ -159,11 +164,6 @@ void draw_pen_stroke(SDL_Renderer *ap_renderer)
         y0 = (scale * y0) + g_state.zoom_rect.y; 
         y1 = (scale * y1) + g_state.zoom_rect.y;
     }
-    //scale up the x,y pos to the larger virtual canvas size
-    x0 = x0 * CANVAS_SCALE_FACTOR;
-    y0 = y0 * CANVAS_SCALE_FACTOR;
-    x1 = x1 * CANVAS_SCALE_FACTOR;
-    y1 = y1 * CANVAS_SCALE_FACTOR; 
     //draws the line on a virual texture that wond be visible until the render() function
     set_render_target(ap_renderer, g_state.drawing_texture);
     draw_textured_line(ap_renderer, g_state.brush_texture, x0, y0, x1, y1, BRUSH_W, BRUSH_H);
@@ -396,6 +396,12 @@ void render(SDL_Renderer *ap_renderer)
     dest_rect.y = CANVAS_Y;
     dest_rect.w = CANVAS_WIDTH;
     dest_rect.h = CANVAS_HEIGHT;
+    g_state.zoom_rect.w = CANVAS_WIDTH;
+    g_state.zoom_rect.h = CANVAS_HEIGHT;
+    if(g_state.grid_mode == GRID_MODE_ON)
+    {
+        SDL_RenderCopy(ap_renderer, g_state.grid_texture, &g_state.zoom_rect, &dest_rect);
+    }
     g_state.zoom_rect.w = CANVAS_WIDTH*CANVAS_SCALE_FACTOR;
     g_state.zoom_rect.h = CANVAS_HEIGHT*CANVAS_SCALE_FACTOR;
     if(g_state.zoom_mode == ZOOM_MODE_IN)
@@ -404,10 +410,6 @@ void render(SDL_Renderer *ap_renderer)
           g_state.zoom_rect.h = (CANVAS_HEIGHT*CANVAS_SCALE_FACTOR)/ZOOM_SCALE;
     }
     SDL_RenderCopy(ap_renderer, g_state.drawing_texture, &g_state.zoom_rect, &dest_rect);
-    if(g_state.grid_mode == GRID_MODE_ON)
-    {
-        SDL_RenderCopy(ap_renderer, g_state.grid_texture, &g_state.zoom_rect, &dest_rect);
-    }
     //render the cursor last on top of everything else
     int cr = 24;
     if(g_state.pen_down){cr=12;}
