@@ -2,138 +2,95 @@ import numpy as np
 from PIL import Image
 import sys
 
-def generate_procedural_brush_circle(size=64, hardness=0.7, noise_amount=0.2):
+
+#def generate_brush_texture(size=64):
+#    """
+#    Generate a brush texture as a numpy array with an alpha channel.
+#    
+#    Args:
+#    size (int): The width and height of the square texture.
+#    
+#    Returns:
+#    numpy.ndarray: A 3D numpy array representing the brush texture with transparency.
+#    """
+#    # Create a grid of coordinates
+#    y, x = np.ogrid[-size/2:size/2, -size/2:size/2]
+#    # Calculate the distance from the center
+#    distance = np.sqrt(x*x + y*y)
+#    # Create the basic circular gradient
+#    texture = 1 - (distance / (size/2))
+#    # Clip values to [0, 1] range
+#    texture = np.clip(texture, 0, 1)
+#    # Add some noise for a more natural look
+#    noise = np.random.rand(size, size) * 0.2
+#    texture = np.clip(texture + noise, 0, 1)
+#    # Convert to 8-bit grayscale and create alpha channel
+#    alpha = (texture * 255).astype(np.uint8)
+#    # Create RGBA array (all channels are the same for grayscale)
+#    rgba = np.dstack([alpha, alpha, alpha, alpha])
+#    return rgba
+
+
+def generate_brush_texture(size=64, center_darkness=0.8, edge_lightness=0.2):
     """
-    Generate a circular procedural brush texture with transparency.
+    Generate a brush texture as a numpy array with an alpha channel.
+    The brush has a dark center and lighter edges.
     
     Args:
-    size (int): The width and height of the square brush texture.
-    hardness (float): Controls the brush edge softness. Range 0 to 1, where 1 is hardest.
-    noise_amount (float): Amount of noise to add. Range 0 to 1.
+    size (int): The width and height of the square texture.
+    center_darkness (float): Darkness of the center (0 to 1, where 1 is black).
+    edge_lightness (float): Lightness of the edges (0 to 1, where 1 is white).
     
     Returns:
-    numpy.ndarray: A 2D numpy array representing the circular brush texture with transparency.
+    numpy.ndarray: A 3D numpy array representing the brush texture with transparency.
     """
     # Create a grid of coordinates
     y, x = np.ogrid[-size/2:size/2, -size/2:size/2]
     # Calculate the distance from the center
     distance = np.sqrt(x*x + y*y)
-    # Create a mask for the circle
-    mask = distance <= size/2
-    # Create the basic circular gradient
-    gradient = np.zeros((size, size))
-    gradient[mask] = 1 - distance[mask] / (size/2)
-    # Apply hardness
-    gradient = (gradient - (1 - hardness)) / hardness
-    gradient = np.clip(gradient, 0, 1)
+    # Normalize the distance
+    normalized_distance = distance / (size/2)
+    # Create the gradient (dark center, light edges)
+    texture = normalized_distance * (1 - center_darkness) + center_darkness
+    # Adjust the gradient to make edges lighter
+    texture = 1 - (1 - texture) * (1 - edge_lightness)
+    # Clip values to [0, 1] range
+    texture = np.clip(texture, 0, 1)
     # Add some noise for a more natural look
-    noise = np.random.rand(size, size) * noise_amount
-    texture = np.clip(gradient + noise, 0, 1)
-    # Apply the circular mask
-    texture *= mask
-    # Convert to 8-bit alpha values
-    alpha = (texture * 255).astype(np.uint8)
-    return alpha
+    noise = np.random.rand(size, size) * 0.1
+    texture = np.clip(texture + noise, 0, 1)
+    # Convert to 8-bit grayscale
+    grayscale = (texture * 255).astype(np.uint8)
+    # Create alpha channel (fully opaque in the center, transparent at the edges)
+    alpha = ((1 - normalized_distance) * 255).astype(np.uint8)
+    # Create RGBA array
+    rgba = np.dstack([grayscale, grayscale, grayscale, alpha])
+    return rgba
 
-
-def generate_procedural_brush_circle2(size=64, hardness=0.7, noise_amount=0.2, transparency_variation=0.3):
+def save_texture_to_png(texture, filename):
     """
-    Generate a circular procedural brush texture with variable pixel transparency.
+    Save the generated brush texture to a PNG file with transparency.
     
     Args:
-    size (int): The width and height of the square brush texture.
-    hardness (float): Controls the brush edge softness. Range 0 to 1, where 1 is hardest.
-    noise_amount (float): Amount of noise to add. Range 0 to 1.
-    transparency_variation (float): Amount of random transparency variation. Range 0 to 1.
+    texture (numpy.ndarray): The brush texture as a 3D numpy array (RGBA).
+    filename (str): The name of the file to save the texture to.
+    """
+    # Create a PIL Image from the numpy array
+    image = Image.fromarray(texture, mode='RGBA')
     
-    Returns:
-    numpy.ndarray: A 2D numpy array representing the circular brush texture with transparency.
-    """
-    # Create a grid of coordinates
-    y, x = np.ogrid[-size/2:size/2, -size/2:size/2]
-    # Calculate the distance from the center
-    distance = np.sqrt(x*x + y*y)
-    # Create a mask for the circle
-    mask = distance <= size/2
-    # Create the basic circular gradient
-    gradient = np.zeros((size, size))
-    gradient[mask] = 1 - distance[mask] / (size/2)
-    # Apply hardness
-    gradient = (gradient - (1 - hardness)) / hardness
-    gradient = np.clip(gradient, 0, 1)
-    # Add some noise for a more natural look
-    noise = np.random.rand(size, size) * noise_amount
-    texture = np.clip(gradient + noise, 0, 1)
-    # Apply the circular mask
-    texture *= mask
-    # Add variable transparency
-    transparency = np.random.rand(size, size) * transparency_variation
-    transparency *= gradient  # Make transparency correlate with distance from center
-    texture *= (1 - transparency)
-    # Convert to 8-bit alpha values
-    alpha = (texture * 255).astype(np.uint8)
-    return alpha
-
-def generate_procedural_brush(size=64, hardness=0.7, noise_amount=0.2):
-    """
-    Generate a procedural brush texture with transparency.
-    
-    Args:
-    size (int): The width and height of the square brush texture.
-    hardness (float): Controls the brush edge softness. Range 0 to 1, where 1 is hardest.
-    noise_amount (float): Amount of noise to add. Range 0 to 1.
-    
-    Returns:
-    numpy.ndarray: A 2D numpy array representing the brush texture with transparency.
-    """
-    # Create a grid of coordinates
-    y, x = np.ogrid[-size/2:size/2, -size/2:size/2]
-    # Calculate the distance from the center
-    distance = np.sqrt(x*x + y*y)
-    # Create the basic circular gradient
-    gradient = 1 - distance / (size/2)
-    # Apply hardness
-    gradient = (gradient - (1 - hardness)) / hardness
-    gradient = np.clip(gradient, 0, 1)
-    # Add some noise for a more natural look
-    noise = np.random.rand(size, size) * noise_amount
-    texture = np.clip(gradient + noise, 0, 1)
-    # Convert to 8-bit alpha values
-    alpha = (texture * 255).astype(np.uint8)
-    return alpha
-
-def save_brush_to_png(brush_texture, filename, color=(0, 0, 0)):
-    """
-    Save the brush texture as a PNG file with transparency.
-    
-    Args:
-    brush_texture (numpy.ndarray): The 2D brush texture array.
-    filename (str): The name of the file to save (including .png extension).
-    color (tuple): The RGB color of the brush (default is black).
-    """
-    # Create an RGBA image
-    rgba = np.zeros((brush_texture.shape[0], brush_texture.shape[1], 4), dtype=np.uint8)
-    rgba[..., :3] = color  # Set the color channels
-    rgba[..., 3] = brush_texture  # Set the alpha channel
-    # Create a PIL Image from the RGBA array
-    image = Image.fromarray(rgba, mode='RGBA')
     # Save the image as PNG
     image.save(filename, format='PNG')
-    print(f"Brush texture saved as {filename}")
+    print(f"Texture saved as {filename}")
 
 if __name__ == '__main__':
     # Example usage:
     args = sys.argv
-    USAGE = 'python generate_brush_texture <gen_size> <hardness> <noise_amount>  <r> <g> <b> <outfile>'
-    if len(args) != 8:
+    USAGE = 'python generate_brush_texture <gen_size> <outfile>'
+    if len(args) != 3:
         print(USAGE)
     else:
         gen_size = int(args[1]) 
-        hardness = float(args[2])
-        noise_amount = float(args[3])
-        r = float(args[4])
-        g = float(args[5])
-        b = float(args[6])
-        file_path = args[7]
-        brush_texture = generate_procedural_brush_circle2(gen_size, hardness, noise_amount)
-        save_brush_to_png(brush_texture, file_path, (r,g,b))
+        file_path = args[2]
+        #brush_texture = generate_procedural_brush_circle2(gen_size, hardness, noise_amount)
+        brush_texture = generate_brush_texture(gen_size)
+        save_texture_to_png(brush_texture, file_path)
