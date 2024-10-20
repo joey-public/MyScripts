@@ -165,8 +165,8 @@ void draw_pen_stroke(SDL_Renderer *ap_renderer)
     }
     //draws the line on a virual texture that wond be visible until the render() function
     //set_render_target(ap_renderer, g_state.drawing_texture); 
-//    draw_textured_line(ap_renderer, g_state.brush_texture, x0, y0, x1, y1, BRUSH_W, BRUSH_H);
-    SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
+    draw_textured_line(ap_renderer, g_state.brush_texture, x0, y0, x1, y1, BRUSH_W, BRUSH_H);
+//    SDL_RenderDrawLine(ap_renderer, x0, y0, x1, y1);
     g_state.xmo = xm; 
     g_state.ymo = ym;
 }
