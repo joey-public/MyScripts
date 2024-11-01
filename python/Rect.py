@@ -15,10 +15,16 @@ class Rect():
     def __translate(self, dx, dy)->None:
         self.data[0,:] += dx  
         self.data[1,:] += dy 
-    def __applyXform(self, xform:np.array)->None:
+    #apply the Xform to all points in the rect. Essentially tranforming about the origin (0,0)
+    def __applyXformAbout(self, xform:np.array)->None:
         if not(xform.shape == (2,2)): 
             return 
         self.data = np.matmul(xform, self.data)
+    def moveTo(self, xpos, ypos)->tuple:
+        dx = xpos - self.x0
+        dy = ypos - self.y0
+        self.__translate(dx, dy)
+        reuturn (dx, dy)
     #read only properties. The properties cannot be altered directly. Only updated by xforming the data.
     def getData(self)->np.array:
         return self._data
