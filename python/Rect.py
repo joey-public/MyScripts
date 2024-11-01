@@ -15,11 +15,25 @@ class Rect():
     def __translate(self, dx, dy)->None:
         self.data[0,:] += dx  
         self.data[1,:] += dy 
-    #apply the Xform to all points in the rect. Essentially tranforming about the origin (0,0)
-    def __applyXformAbout(self, xform:np.array)->None:
+    #apply the Xform relative to the origin (0,0)
+    def __applyXformAboutOrigin(self, xform:np.array)->None:
         if not(xform.shape == (2,2)): 
             return 
         self.data = np.matmul(xform, self.data)
+    #TODO: Implement Me!
+    #apply the Xform relative to the rects posiiton (x0,y0)
+    def __applyXform(self, xform)->None: 
+        #move the rect to the origin
+        #transform the rect with __applyXformAboutOrigin()
+        #move the rect back to the proper position, idk exactly how to di this yet 
+        pass
+    #TODO: Implement Me!
+    #apply the Xform realtive to an arbitrary position
+    def __applyXformAboutPoint(self, xpos:int, ypos:int)->None:
+        #move the rect to the position
+        #transform the rect with __applyXform()
+        #move the rect back to the proper position, idk exactly how to di this yet 
+        pass
     def moveTo(self, xpos, ypos)->tuple:
         dx = xpos - self.x0
         dy = ypos - self.y0
@@ -77,17 +91,3 @@ class Rect():
     def getCenterY(self)->float:
         return float(self.y0) + floar(self.y1-self.y0)/2.0
     cy = property(getCenterY, None, None, 'The center y-axis of the rectangle.')
-          
-
-
-if __name__=='__main__':
-    r0 = Rect(1,3,4,6)
-    r1 = Rect(1,3,4,6)
-    r2 = Rect(0,0,4,4)
-    print(r0)
-    print(r1)
-    print(r2)
-    rlist = [r0, r1, r2]
-    print(rlist)
-    print(set(rlist))
-
