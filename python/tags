@@ -8,15 +8,298 @@
 !_TAG_FIELD_DESCRIPTION	name	/tag name/
 !_TAG_FIELD_DESCRIPTION	pattern	/pattern/
 !_TAG_FIELD_DESCRIPTION	typeref	/Type and name of a variable or typedef/
+!_TAG_FIELD_DESCRIPTION!Python	nameref	/the original name for the tag/
+!_TAG_FIELD_DESCRIPTION!XML	uri	/uri associated with name prefix/
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_KIND_DESCRIPTION!CSS	c,class	/classes/
+!_TAG_KIND_DESCRIPTION!CSS	i,id	/identities/
+!_TAG_KIND_DESCRIPTION!CSS	s,selector	/selectors/
+!_TAG_KIND_DESCRIPTION!HTML	C,stylesheet	/stylesheets/
+!_TAG_KIND_DESCRIPTION!HTML	I,id	/identifiers/
+!_TAG_KIND_DESCRIPTION!HTML	J,script	/scripts/
+!_TAG_KIND_DESCRIPTION!HTML	a,anchor	/named anchors/
+!_TAG_KIND_DESCRIPTION!HTML	c,class	/classes/
+!_TAG_KIND_DESCRIPTION!HTML	h,heading1	/H1 headings/
+!_TAG_KIND_DESCRIPTION!HTML	i,heading2	/H2 headings/
+!_TAG_KIND_DESCRIPTION!HTML	j,heading3	/H3 headings/
+!_TAG_KIND_DESCRIPTION!HTML	t,title	/titles/
+!_TAG_KIND_DESCRIPTION!Make	I,makefile	/makefiles/
+!_TAG_KIND_DESCRIPTION!Make	m,macro	/macros/
+!_TAG_KIND_DESCRIPTION!Make	t,target	/targets/
+!_TAG_KIND_DESCRIPTION!Markdown	S,subsection	/level 2 sections/
+!_TAG_KIND_DESCRIPTION!Markdown	T,l4subsection	/level 4 sections/
+!_TAG_KIND_DESCRIPTION!Markdown	c,chapter	/chapters/
+!_TAG_KIND_DESCRIPTION!Markdown	h,hashtag	/hashtags/
+!_TAG_KIND_DESCRIPTION!Markdown	n,footnote	/footnotes/
+!_TAG_KIND_DESCRIPTION!Markdown	s,section	/sections/
+!_TAG_KIND_DESCRIPTION!Markdown	t,subsubsection	/level 3 sections/
+!_TAG_KIND_DESCRIPTION!Markdown	u,l5subsection	/level 5 sections/
+!_TAG_KIND_DESCRIPTION!Python	I,namespace	/name referring a module defined in other file/
+!_TAG_KIND_DESCRIPTION!Python	Y,unknown	/name referring a class\/variable\/function\/module defined in other module/
+!_TAG_KIND_DESCRIPTION!Python	c,class	/classes/
+!_TAG_KIND_DESCRIPTION!Python	f,function	/functions/
+!_TAG_KIND_DESCRIPTION!Python	i,module	/modules/
+!_TAG_KIND_DESCRIPTION!Python	m,member	/class members/
+!_TAG_KIND_DESCRIPTION!Python	v,variable	/variables/
+!_TAG_KIND_DESCRIPTION!SVG	d,def	/ids in defs tags/
+!_TAG_KIND_DESCRIPTION!XML	i,id	/id attributes/
+!_TAG_KIND_DESCRIPTION!XML	n,nsprefix	/namespace prefixes/
+!_TAG_KIND_DESCRIPTION!XML	r,root	/root elements/
 !_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
 !_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
 !_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
 !_TAG_OUTPUT_VERSION	0.0	/current.age/
+!_TAG_PARSER_VERSION!CSS	0.0	/current.age/
+!_TAG_PARSER_VERSION!HTML	0.0	/current.age/
+!_TAG_PARSER_VERSION!Make	0.0	/current.age/
+!_TAG_PARSER_VERSION!Markdown	1.1	/current.age/
+!_TAG_PARSER_VERSION!Python	0.0	/current.age/
+!_TAG_PARSER_VERSION!SVG	0.0	/current.age/
+!_TAG_PARSER_VERSION!XML	0.0	/current.age/
 !_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
 !_TAG_PROC_CWD	/home/joey/MyScripts/python/	//
 !_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
 !_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
 !_TAG_PROGRAM_URL	https://ctags.io/	/official site/
 !_TAG_PROGRAM_VERSION	6.1.0	/p6.1.20240421.0/
+!_TAG_ROLE_DESCRIPTION!HTML!class	attribute	/assigned as attributes/
+!_TAG_ROLE_DESCRIPTION!HTML!script	extFile	/referenced as external files/
+!_TAG_ROLE_DESCRIPTION!HTML!stylesheet	extFile	/referenced as external files/
+!_TAG_ROLE_DESCRIPTION!Make!makefile	included	/included/
+!_TAG_ROLE_DESCRIPTION!Make!makefile	optional	/optionally included/
+!_TAG_ROLE_DESCRIPTION!Python!module	imported	/imported modules/
+!_TAG_ROLE_DESCRIPTION!Python!module	indirectlyImported	/module imported in alternative name/
+!_TAG_ROLE_DESCRIPTION!Python!module	namespace	/namespace from where classes\/variables\/functions are imported/
+!_TAG_ROLE_DESCRIPTION!Python!unknown	imported	/imported from the other module/
+!_TAG_ROLE_DESCRIPTION!Python!unknown	indirectlyImported	/classes\/variables\/functions\/modules imported in alternative name/
+.column	html/styles.css	/^.column {$/;"	c
+.row::after	html/styles.css	/^.row::after {$/;"	c
+BG_COLOR	pyGameTest.py	/^BG_COLOR = (0,0,0,255)$/;"	v
+ButtonMenu	pyqtTest.py	/^class ButtonMenu(QWidget):$/;"	c
+COLOR_0	pyGameTest.py	/^COLOR_0 = (255, 255, 255, 255)$/;"	v
+COLOR_1	pyGameTest.py	/^COLOR_1 = (150, 150, 150, 255)$/;"	v
+COLOR_2	pyGameTest.py	/^COLOR_2 = (100, 100, 100, 255)$/;"	v
+CP_LEN	sim1.py	/^CP_LEN = 0$/;"	v
+CP_LEN	sim1.py	/^CP_LEN = 24 $/;"	v
+CP_LEN	sim1.py	/^CP_LEN = 8 $/;"	v
+Color	pyqtTest.py	/^class Color(QWidget):$/;"	c
+ConfigEditor	pyqtTest.py	/^class ConfigEditor(QTextEdit):$/;"	c
+EXTENSIONS	md2html.py	/^EXTENSIONS=['fenced_code', 'tables']$/;"	v
+HTML_FOOTER	md2html.py	/^HTML_FOOTER = """$/;"	v
+Heading 1	html/temp.html	/^<h1>Heading 1<\/h1>$/;"	h
+Heading 1	markdown/temp.md	/^# Heading 1 $/;"	c
+Heading 2	html/temp.html	/^<h2>Heading 2<\/h2>$/;"	i
+Heading 2	markdown/temp.md	/^## Heading 2$/;"	s	chapter:Heading 1
+Heading 3	html/temp.html	/^<h3>Heading 3<\/h3>$/;"	j
+Heading 3	markdown/temp.md	/^### Heading 3$/;"	S	section:Heading 1""Heading 2
+Heading 4	html/temp.html	/^<h3>Heading 4<\/h3>$/;"	j
+Heading 4	markdown/temp.md	/^### Heading 4$/;"	S	section:Heading 1""Heading 2
+LATEX_TIMEOUT	format_funcs.py	/^LATEX_TIMEOUT = 1.0$/;"	v
+Layer_1	donuts-cake-svgrepo-com.svg	/^<svg fill="#000000" width="800px" height="800px" viewBox="0 0 32 32" xmlns="http:\/\/www.w3.org\//;"	i
+MDX_HTML_HEADER	md2html.py	/^MDX_HTML_HEADER = """$/;"	v
+MathJax-script	html/temp.html	/^    <script id="MathJax-script" async$/;"	I
+MathJax-script	html/temp2.html	/^    <script id="MathJax-script" async$/;"	I
+MyMainWindow	pyqtTest.py	/^class MyMainWindow(QMainWindow):$/;"	c
+Rect	2dXforms.py	/^class Rect():$/;"	c
+Rect	Rect.py	/^class Rect():$/;"	c
+SCREEN_HEIGHT	pyGameTest.py	/^SCREEN_HEIGHT = 500$/;"	v
+SCREEN_WIDTH	pyGameTest.py	/^SCREEN_WIDTH = 500$/;"	v
+SUPTITLE	sim1.py	/^SUPTITLE = 'L=24 Cyclic Prefix Contellations' $/;"	v
+SUPTITLE	sim1.py	/^SUPTITLE = 'L=8 Cyclic Prefix Constellations' $/;"	v
+SUPTITLE	sim1.py	/^SUPTITLE = 'No Cyclic Prefix Constellations' $/;"	v
+SVG_PATH	pyqtTest.py	/^SVG_PATH = '.\/donuts-cake-svgrepo-com.svg'$/;"	v
+SvgViewer	pyqtTest.py	/^class SvgViewer(QtSvg.QSvgWidget):$/;"	c
+Title	html/temp2.html	/^<h1>Title<\/h1>$/;"	h
+Title	markdown/temp2.md	/^# Title$/;"	c
+USAGE	generate_brush_texture.py	/^    USAGE = 'python generate_brush_texture <gen_size> <outfile>'$/;"	v
+USAGE	generate_paper_texture.py	/^    USAGE = 'python generate_paper_texture <width> <height> <noise_int> <grain_int> <path>'$/;"	v
+__eq__	Rect.py	/^    def __eq__(self, other):$/;"	m	class:Rect
+__hash__	Rect.py	/^    def __hash__(self):$/;"	m	class:Rect
+__init__	2dXforms.py	/^    def __init__(self, x0:int, y0:int, w:int, h:int):$/;"	m	class:Rect
+__init__	Rect.py	/^    def __init__(self, x0:int, y0:int, w:int, h:int):$/;"	m	class:Rect
+__init__	pyqtTest.py	/^    def __init__(self):$/;"	m	class:ConfigEditor
+__init__	pyqtTest.py	/^    def __init__(self):$/;"	m	class:MyMainWindow
+__init__	pyqtTest.py	/^    def __init__(self):$/;"	m	class:SvgViewer
+__init__	pyqtTest.py	/^    def __init__(self, color):$/;"	m	class:Color
+__init__	pyqtTest.py	/^    def __init__(self, config_editor):$/;"	m	class:ButtonMenu
+_convert_md_math_to_latex_math	format_funcs.py	/^def _convert_md_math_to_latex_math(md_math_str:str)->str:$/;"	f	typeref:typename:str
+_create_image_path	format_funcs.py	/^def _create_image_path(n:str, md_file_name:str, img_dir:str, img_fmt:str)->str:$/;"	f	typeref:typename:str
+_gen_pdf_from_latex_str	format_funcs.py	/^def _gen_pdf_from_latex_str(latex_str:str, pdf_path:str)->bool:$/;"	f	typeref:typename:bool
+_gen_png_from_latex_str	format_funcs.py	/^def _gen_png_from_latex_str(math_str:str, png_path:str)->bool: $/;"	f	typeref:typename:bool
+_get_file_name_from_path	fileio.py	/^def _get_file_name_from_path(path:str)->str:$/;"	f	typeref:typename:str
+_get_pd	my_ofdm.py	/^    def _get_pd(r, d, L):$/;"	f	function:get_schimdl_cox_metric	file:
+_is_valid_txt_or_json_file	pyqtTest.py	/^    def _is_valid_txt_or_json_file(self, path:str)->bool:$/;"	m	class:ButtonMenu	typeref:typename:bool
+_main	formatSideBySideMdImages.py	/^def _main(argv:list)->None:$/;"	f	typeref:typename:None
+_main	renumberMdFigures.py	/^def _main(argv:list)->None:$/;"	f	typeref:typename:None
+_main	renumberMdTables.py	/^def _main(argv:list)->None:$/;"	f	typeref:typename:None
+_main	replaceMdImagePaths.py	/^def _main(argv:list)->None:$/;"	f	typeref:typename:None
+_mdImage2Html	formatSideBySideMdImages.py	/^def _mdImage2Html(md_image_str)->str:$/;"	f	typeref:typename:str
+_parse_args	formatSideBySideMdImages.py	/^def _parse_args(argv:list)->str:$/;"	f	typeref:typename:str
+_parse_args	genSite.py	/^def _parse_args(argv:list)->list:$/;"	f	typeref:typename:list
+_parse_args	md2html.py	/^def _parse_args(argv:list)->list:$/;"	f	typeref:typename:list
+_parse_args	renumberMdFigures.py	/^def _parse_args(argv:list)->str:$/;"	f	typeref:typename:str
+_parse_args	renumberMdTables.py	/^def _parse_args(argv:list)->str:$/;"	f	typeref:typename:str
+_parse_args	replaceMdImagePaths.py	/^def _parse_args(argv:list)->str:$/;"	f	typeref:typename:str
+_save_latex_file	format_funcs.py	/^def _save_latex_file(latex_str:str, file_path:str)->None:$/;"	f	typeref:typename:None
+_sub	formatSideBySideMdImages.py	/^    def _sub(match_obj)->str:$/;"	f	function:formatSideBySideMdImages	typeref:typename:str	file:
+_sub	replaceMdImagePaths.py	/^    def _sub(match_obj)->str:$/;"	f	function:replaceMdImagePaths	typeref:typename:str	file:
+add_awgn	my_ofdm.py	/^def add_awgn(s:np.array, sigma2:float)->np.array:$/;"	f	typeref:typename:np.array
+add_cfo	my_ofdm.py	/^def add_cfo(signal:np.array, cfo:float)->np.array:$/;"	f	typeref:typename:np.array
+add_cp	my_ofdm.py	/^def add_cp(s:np.array, N_CP:int, loc:str='front')->np.array:$/;"	f	typeref:typename:np.array
+add_cto	my_ofdm.py	/^def add_cto(signal:np.array, sto:float)->np.array:$/;"	f	typeref:typename:np.array
+app	pyqtTest.py	/^    app = QApplication([])$/;"	v
+applyXform	Rect.py	/^    def applyXform(self, xform)->None: $/;"	m	class:Rect	typeref:typename:None
+applyXformAboutOrigin	Rect.py	/^    def applyXformAboutOrigin(self, xform:np.array)->None:$/;"	m	class:Rect	typeref:typename:None
+applyXformAboutPoint	Rect.py	/^    def applyXformAboutPoint(self, xpos:int, ypos:int)->None:$/;"	m	class:Rect	typeref:typename:None
+apply_channel_filter	my_ofdm.py	/^def apply_channel_filter(signal:np.array, h:np.array)->np.array:$/;"	f	typeref:typename:np.array
+apply_freq_offset	my_ofdm.py	/^def apply_freq_offset(signal, fn):$/;"	f
+apply_symbol_mask	my_ofdm.py	/^def apply_symbol_mask(f_symbols:np.array, mask:np.array)->np.array:$/;"	f	typeref:typename:np.array
+apply_xform	2dXforms.py	/^    def apply_xform(self, xform:np.array)->None:$/;"	m	class:Rect	typeref:typename:None
+args	generate_brush_texture.py	/^    args = sys.argv$/;"	v
+args	generate_paper_texture.py	/^    args = sys.argv$/;"	v
+bl	Rect.py	/^    bl = property(getBl, None, None, 'The bottom left point (x0,y0) of the rectangle.')$/;"	v	class:Rect
+br	Rect.py	/^    br = property(getBr, None, None, 'The bottom right point (x1,y0) of the rectangle.')$/;"	v	class:Rect
+brush_texture	generate_brush_texture.py	/^        brush_texture = generate_brush_texture(gen_size)$/;"	v
+cb	Rect.py	/^    cb = property(getCb, None, None, '')$/;"	v	class:Rect
+cc	Rect.py	/^    cc = property(getCenter, None, None, '')$/;"	v	class:Rect
+center	2dXforms.py	/^    def center(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+cl	Rect.py	/^    cl = property(getCl, None, None, '')$/;"	v	class:Rect
+clean	Makefile	/^clean:$/;"	t
+clock	pyGameTest.py	/^clock = pg.time.Clock()$/;"	v
+cool	generate_paper_texture.py	/^    cool = (245, 245, 250) $/;"	v
+cr	Rect.py	/^    cr = property(getCr, None, None, '')$/;"	v	class:Rect
+create_paper_texture	generate_paper_texture.py	/^def create_paper_texture(width, height, noise_intensity=10, grain_density=0.3, base_color=(255, /;"	f
+create_pdf_file_from_tex	fileio.py	/^def create_pdf_file_from_tex(tex_path:str, out_dir:str, $/;"	f	typeref:typename:None
+crumple_paper	generate_paper_texture.py	/^def crumple_paper(image, intensity=10):$/;"	f
+ct	Rect.py	/^    ct = property(getCt, None, None, '')$/;"	v	class:Rect
+cx	Rect.py	/^    cx = property(getCenterX, None, None, 'The center x-axis of the rectangle.')$/;"	v	class:Rect
+cy	Rect.py	/^    cy = property(getCenterY, None, None, 'The center y-axis of the rectangle.')$/;"	v	class:Rect
+debug	Makefile	/^debug:$/;"	t
+demodulate_ofdm	my_ofdm.py	/^def demodulate_ofdm(r:np.array)->np.array:$/;"	f	typeref:typename:np.array
+draw_axis	pyGameTest.py	/^def draw_axis(surface, color, width):$/;"	f
+draw_rect	pyGameTest.py	/^def draw_rect(surface, color, r:Rect, width=3):$/;"	f
+draw_rect_x	pyGameTest.py	/^def draw_rect_x(surface, outline_color, x_color, r:Rect):$/;"	f
+dt	pyGameTest.py	/^    dt = clock.tick(10) \/ 1000$/;"	v
+dt	pyGameTest.py	/^dt = 0$/;"	v
+equalize	my_ofdm.py	/^def equalize(r:np.array, h:np.array):$/;"	f
+estimate_cfo	my_ofdm.py	/^    def estimate_cfo(Md, cto, L):$/;"	f	function:get_schimdl_cox_metric	file:
+estimate_channel	my_ofdm.py	/^def estimate_channel(tx_fsyms:np.array, Y0:np.array, Y1:np.array)->np.array:$/;"	f	typeref:typename:np.array
+estimate_cto	my_ofdm.py	/^    def estimate_cto(Md, th=0.5):$/;"	f	function:get_schimdl_cox_metric	file:
+estimate_fine_cto	my_ofdm.py	/^def estimate_fine_cto(r:np.array, ts:np.array)->int:$/;"	f	typeref:typename:int
+file_path	generate_brush_texture.py	/^        file_path = args[2]$/;"	v
+formatSideBySideMdImages	formatSideBySideMdImages.py	/^def formatSideBySideMdImages(md_file_str:str)->str:$/;"	f	typeref:typename:str
+g	generate_paper_texture.py	/^    g = float(args[4])$/;"	v
+genSite	genSite.py	/^def genSite(md_dir:str, html_dir:str)->None:$/;"	f	typeref:typename:None
+gen_2_path_chan	my_ofdm.py	/^def gen_2_path_chan(a0, a1, n0):$/;"	f
+gen_math_images_from_md_str	format_funcs.py	/^def gen_math_images_from_md_str(md_file_str:str, md_file_name, img_dir:str, img_fmt:str)->bool:$/;"	f	typeref:typename:bool
+gen_rand_bitstream	my_ofdm.py	/^def gen_rand_bitstream():$/;"	f
+gen_rand_symbols	my_ofdm.py	/^def gen_rand_symbols(sz:tuple, alphabet:list=[-1+0j, 1+0j])->np.array:$/;"	f	typeref:typename:np.array
+gen_size	generate_brush_texture.py	/^        gen_size = int(args[1]) $/;"	v
+gen_symbol_mask	my_ofdm.py	/^def gen_symbol_mask(sz:tuple, channels:list, chnls_are_vld:bool=False)->np.array:$/;"	f	typeref:typename:np.array
+generate_brush_texture	generate_brush_texture.py	/^def generate_brush_texture(size=64, center_darkness=0.8, edge_lightness=0.2):$/;"	f
+generate_paper_texture	generate_paper_texture.py	/^def generate_paper_texture(w, h, noise, grain, path, crumpled=False, color =(250,247,240)):$/;"	f
+getBl	Rect.py	/^    def getBl(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getBr	Rect.py	/^    def getBr(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getCb	Rect.py	/^    def getCb(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getCenter	Rect.py	/^    def getCenter(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getCenterX	Rect.py	/^    def getCenterX(self)->float:$/;"	m	class:Rect	typeref:typename:float
+getCenterY	Rect.py	/^    def getCenterY(self)->float:$/;"	m	class:Rect	typeref:typename:float
+getCl	Rect.py	/^    def getCl(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getCr	Rect.py	/^    def getCr(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getCt	Rect.py	/^    def getCt(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getData	Rect.py	/^    def getData(self)->np.array:$/;"	m	class:Rect	typeref:typename:np.array
+getH	Rect.py	/^    def getH(self)->int:$/;"	m	class:Rect	typeref:typename:int
+getTl	Rect.py	/^    def getTl(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getTr	Rect.py	/^    def getTr(self)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+getW	Rect.py	/^    def getW(self)->int:$/;"	m	class:Rect	typeref:typename:int
+getX0	Rect.py	/^    def getX0(self)->int:$/;"	m	class:Rect	typeref:typename:int
+getX1	Rect.py	/^    def getX1(self)->int:$/;"	m	class:Rect	typeref:typename:int
+getY0	Rect.py	/^    def getY0(self)->int:$/;"	m	class:Rect	typeref:typename:int
+getY1	Rect.py	/^    def getY1(self)->int:$/;"	m	class:Rect	typeref:typename:int
+get_schimdl_cox_metric	my_ofdm.py	/^def get_schimdl_cox_metric(r:np.array, L:int)->dict:$/;"	f	typeref:typename:dict
+h	2dXforms.py	/^    def h(self)->int:$/;"	m	class:Rect	typeref:typename:int
+h	Rect.py	/^    h = property(getH, None, None, 'The height of the rectangle')$/;"	v	class:Rect
+h	generate_paper_texture.py	/^    h = int(args[2])$/;"	v
+load_btn_clicked	pyqtTest.py	/^    def load_btn_clicked(self):$/;"	m	class:ButtonMenu
+main	genSite.py	/^def main(argv:list)->None:$/;"	f	typeref:typename:None
+main	md2html.py	/^def main(argv:list)->None:$/;"	f	typeref:typename:None
+md2html	md2html.py	/^def md2html(md_file_path:str, html_dir:str)->None:$/;"	f	typeref:typename:None
+modulate_ofdm	my_ofdm.py	/^def modulate_ofdm(f_symbols:np.array)->np.array:$/;"	f	typeref:typename:np.array
+moveTo	Rect.py	/^    def moveTo(self, xpos, ypos)->tuple:$/;"	m	class:Rect	typeref:typename:tuple
+my_psd	sim1.py	/^def my_psd(x):$/;"	f
+n	generate_paper_texture.py	/^    n = int(args[3])$/;"	v
+np	2dXforms.py	/^import numpy as np$/;"	I	nameref:module:numpy
+np	Rect.py	/^import numpy as np$/;"	I	nameref:module:numpy
+np	generate_brush_texture.py	/^import numpy as np$/;"	I	nameref:module:numpy
+np	generate_paper_texture.py	/^import numpy as np$/;"	I	nameref:module:numpy
+np	my_ofdm.py	/^import numpy as np$/;"	I	nameref:module:numpy
+np	pulse_shaping.py	/^import numpy as np$/;"	I	nameref:module:numpy
+np	pyGameTest.py	/^import numpy as np$/;"	I	nameref:module:numpy
+np	sim1.py	/^import numpy as np$/;"	I	nameref:module:numpy
+ns907764e00101	donuts-cake-svgrepo-com.svg	/^<svg fill="#000000" width="800px" height="800px" viewBox="0 0 32 32" xmlns="http:\/\/www.w3.org\//;"	n	uri:http://www.w3.org/2000/svg
+p2s_conv	my_ofdm.py	/^def p2s_conv(s:np.array)->np.array:$/;"	f	typeref:typename:np.array
+pan	pyqtTest.py	/^    def pan(sefl, direction:str, speed:float):$/;"	m	class:SvgViewer
+path	generate_paper_texture.py	/^    path = args[5]$/;"	v
+pg	pyGameTest.py	/^import pygame as pg$/;"	I	nameref:module:pygame
+plot_ofdm_constellations	my_ofdm.py	/^def plot_ofdm_constellations(rx_fsyms, N_FFT, rc, xlim=None, ylim=None, txt_loc=None):$/;"	f
+plt	my_ofdm.py	/^import matplotlib.pyplot as plt$/;"	I	nameref:module:matplotlib.pyplot
+plt	sim1.py	/^import matplotlib.pyplot as plt$/;"	I	nameref:module:matplotlib.pyplot
+pulse_delta	pulse_shaping.py	/^def pulse_delta():$/;"	f
+pulse_gause	pulse_shaping.py	/^def pulse_gause(bt, span, sps):$/;"	f
+pulse_rcos	pulse_shaping.py	/^def pulse_rcos(beta, span, sps, shape='sqrt'):$/;"	f
+pulse_rect	pulse_shaping.py	/^def pulse_rect():$/;"	f
+r0	2dXforms.py	/^    r0 = Rect(0,0,1,1)$/;"	v
+r1	2dXforms.py	/^    r1 = Rect(0,0,1,1)$/;"	v
+r1	pyGameTest.py	/^r1 = Rect(0, 0, 50, 100)$/;"	v
+r2	2dXforms.py	/^    r2 = Rect(0,0,1,1)$/;"	v
+r2	pyGameTest.py	/^r2 = Rect(0, 0, 50, 100)$/;"	v
+rarray	2dXforms.py	/^    rarray = np.hstack((r0.data,r1.data,r2.data))$/;"	v
+raw_data	Rect.py	/^    raw_data = property(getData, None, None, 'The raw point data of the rectangle. Points are St/;"	v	class:Rect
+read_txt_file_content	fileio.py	/^def read_txt_file_content(path:str)->str:$/;"	f	typeref:typename:str
+reflect	2dXforms.py	/^    def reflect()->None:$/;"	m	class:Rect	typeref:typename:None
+remove_cp	my_ofdm.py	/^def remove_cp(r:np.array, N_CP:int)->np.array:$/;"	f	typeref:typename:np.array
+renumberMdFigures	renumberMdFigures.py	/^def renumberMdFigures(md_file_str:str)->str:$/;"	f	typeref:typename:str
+renumberMdTables	renumberMdTables.py	/^def renumberMdTables(md_file_str:str)->str:$/;"	f	typeref:typename:str
+replaceMdImagePaths	replaceMdImagePaths.py	/^def replaceMdImagePaths(md_file_str:str)->str:$/;"	f	typeref:typename:str
+replace_md_math_with_img_links	format_funcs.py	/^def replace_md_math_with_img_links(md_file_str:str, md_file_name, img_dir:str, img_fmt:str)->str/;"	f	typeref:typename:str
+reset_zoom	pyqtTest.py	/^    def reset_zoom(self):$/;"	m	class:SvgViewer
+rot90	2dXforms.py	/^    def rot90(self, anchor = (0,0))->None:$/;"	m	class:Rect	typeref:typename:None
+rot90_xform	pyGameTest.py	/^rot90_xform = np.array([[0, -1],$/;"	v
+rotate	2dXforms.py	/^    def rotate()->None:$/;"	m	class:Rect	typeref:typename:None
+run	Makefile	/^run:$/;"	t
+running	pyGameTest.py	/^            running = False$/;"	v
+running	pyGameTest.py	/^running = True$/;"	v
+s2p_conv	my_ofdm.py	/^def s2p_conv(rx_signal:np.array, N:int, L:int, N_CP:int)->np.array:$/;"	f	typeref:typename:np.array
+save_btn_clicked	pyqtTest.py	/^    def save_btn_clicked(self):$/;"	m	class:ButtonMenu
+save_str_to_file	fileio.py	/^def save_str_to_file(path:str, content:str)->None:$/;"	f	typeref:typename:None
+save_texture_to_png	generate_brush_texture.py	/^def save_texture_to_png(texture, filename):$/;"	f
+sbp	fileio.py	/^import subprocess as sbp$/;"	I	nameref:module:subprocess
+sbp	format_funcs.py	/^import subprocess as sbp$/;"	I	nameref:module:subprocess
+scale	2dXforms.py	/^    def scale(self, sx:float, sy:float)->None:$/;"	m	class:Rect	typeref:typename:None
+screen	pyGameTest.py	/^screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))$/;"	v
+sim1	sim1.py	/^def sim1(CP_LEN, FIG_NUM1, FIG_NUM2, FILE_NAME1, FILE_NAME2, SUPTITLE):$/;"	f
+sp	my_ofdm.py	/^import scipy as sp$/;"	I	nameref:module:scipy
+sp	sim1.py	/^import scipy as sp$/;"	I	nameref:module:scipy
+tl	Rect.py	/^    tl = property(getTl, None, None, 'The top left point (x0,y1) of the rectangle.')$/;"	v	class:Rect
+tr	Rect.py	/^    tr = property(getTr, None, None, 'The top right point (x1,y1) of the rectangle.')$/;"	v	class:Rect
+translate	2dXforms.py	/^    def translate(self, dx, dy)->None:$/;"	m	class:Rect	typeref:typename:None
+translate	Rect.py	/^    def translate(self, dx, dy)->None:$/;"	m	class:Rect	typeref:typename:None
+update_image	pyqtTest.py	/^    def update_image(self, path:str):$/;"	m	class:SvgViewer
+w	2dXforms.py	/^    def w(self)->int:$/;"	m	class:Rect	typeref:typename:int
+w	Rect.py	/^    w = property(getW, None, None, 'The width of the rectangle.')$/;"	v	class:Rect
+w	generate_paper_texture.py	/^    w = int(args[1])$/;"	v
+white	generate_paper_texture.py	/^    white = (250,247,240)$/;"	v
+window	pyqtTest.py	/^    window = MyMainWindow()$/;"	v
+x0	2dXforms.py	/^    def x0(self)->int:$/;"	m	class:Rect	typeref:typename:int
+x0	Rect.py	/^    x0 = property(getX0, None, None, 'The left-most x value of the rectangle.') $/;"	v	class:Rect
+x1	2dXforms.py	/^    def x1(self)->int:$/;"	m	class:Rect	typeref:typename:int
+x1	Rect.py	/^    x1 = property(getX1, None, None, 'The right-most x value of the rectangle.')$/;"	v	class:Rect
+xform	2dXforms.py	/^    xform = np.array([[0, -1], $/;"	v
+y0	2dXforms.py	/^    def y0(self)->int:$/;"	m	class:Rect	typeref:typename:int
+y0	Rect.py	/^    y0 = property(getY0, None, None, 'The bottom-most y value of the rectangle.')$/;"	v	class:Rect
+y1	2dXforms.py	/^    def y1(self)->int:$/;"	m	class:Rect	typeref:typename:int
+y1	Rect.py	/^    y1 = property(getY1, None, None, 'The top-most y value of the rectangle.') $/;"	v	class:Rect
+yellow	generate_paper_texture.py	/^    yellow = (252, 250, 240)$/;"	v
+zoom_in	pyqtTest.py	/^    def zoom_in(self, scale:float=2):$/;"	m	class:SvgViewer
+zoom_out	pyqtTest.py	/^    def zoom_out(self, amount:int=25):$/;"	m	class:SvgViewer

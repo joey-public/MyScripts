@@ -6,38 +6,48 @@ class Rect():
             return np.zeros(shape=(2,2))
         if h < 0:
             return np.zeros(shape=(2,2))
-        self._data = np.array([[x0, x0+w], [y0, y0+h]], dtype=int)
+        self._data = np.array([[x0, x0+w], [y0, y0+h]], dtype=np.int64)
     def __eq__(self, other):
         return (self.x0==other.x0) and (self.x1==other.x1) and (self.y0==other.y0) and (self.y1==other.y1)
     def __hash__(self):
         return hash((self.x0, self.x1, self.y0, self.y1))
+    #private functions
+    def __getMinX(self):
+        return min(self._data[0,0], self._data[0,1])
+    def __getMaxX(self):
+        return max(self._data[0,0], self._data[0,1])
+    def __getMinY(self):
+        return min(self._data[1,0], self._data[1,1])
+    def __getMaxY(self):
+        return max(self._data[1,0], self._data[1,1])
     #mutation functions that can change the state of the rectangle. 
-    def __translate(self, dx, dy)->None:
-        self._data[0,:] += dx  
-        self._data[1,:] += dy 
     #apply the Xform relative to the origin (0,0)
-    def __applyXformAboutOrigin(self, xform:np.array)->None:
+    def _applyXformAboutOrigin(self, xform:np.array)->None:
         if not(xform.shape == (2,2)): 
             return 
         self._data = np.matmul(xform, self._data)
-    #TODO: Implement Me!
-    #apply the Xform relative to the rects posiiton (x0,y0)
-    def __applyXform(self, xform)->None: 
-        #move the rect to the origin
-        #transform the rect with __applyXformAboutOrigin()
-        #move the rect back to the proper position, idk exactly how to di this yet 
-        pass
-    #TODO: Implement Me!
-    #apply the Xform realtive to an arbitrary position
-    def __applyXformAboutPoint(self, xpos:int, ypos:int)->None:
-        #move the rect to the position
-        #transform the rect with __applyXform()
-        #move the rect back to the proper position, idk exactly how to di this yet 
-        pass
+    #TODO: affine xform this shit, or gotta fix the move back part
+    #apply the Xform relative to bottom-left point  
+    def applyXform(self, xform:np.ndarray)->None: 
+        dx, dy = self.moveTo(0,0)
+        self._applyXformAboutOrigin(xform)
+        self.translate(-dx, -dy)
+    #apply the Xform relative to bottom-left point  
+    def applyXformAboutPoint(self, xform:np.ndarray, ref_point:tuple)->None: 
+        xpos, ypos = ref_point
+        dx = xpos - self.x0
+        dy = ypos - self.y0
+        print(f'Move to: {-dx}, {-dy}')
+        ddx, ddy = self.moveTo(-dx,-dy)
+        self._applyXformAboutOrigin(xform)
+        self.translate(-ddy, -ddx)
+    def translate(self, dx:int, dy:int)->None:
+        self._data[0,:] += dx  
+        self._data[1,:] += dy 
     def moveTo(self, xpos, ypos)->tuple:
         dx = xpos - self.x0
         dy = ypos - self.y0
-        self.__translate(dx, dy)
+        self.translate(dx, dy)
         return (dx, dy)
     #read only properties. The properties cannot be altered directly. Only updated by xforming the data.
     def getData(self)->np.array:
@@ -45,19 +55,19 @@ class Rect():
     raw_data = property(getData, None, None, 'The raw point data of the rectangle. Points are Stored Column Wise.')
 
     def getX0(self)->int:
-        return min(self._data[0,0], self._data[0,1])
+        return self.__getMinX()
     x0 = property(getX0, None, None, 'The left-most x value of the rectangle.') 
 
     def getY0(self)->int:
-        return min(self._data[1,0], self._data[1,1])
+        return self.__getMinY()
     y0 = property(getY0, None, None, 'The bottom-most y value of the rectangle.')
     
     def getX1(self)->int:
-        return max(self._data[0,0], self._data[0,1])
+        return self.__getMaxX()
     x1 = property(getX1, None, None, 'The right-most x value of the rectangle.')
 
     def getY1(self)->int:
-        return max(self._data[1,0], self._data[1,1])
+        return self.__getMaxY()
     y1 = property(getY1, None, None, 'The top-most y value of the rectangle.') 
 
     def getW(self)->int:
@@ -84,10 +94,28 @@ class Rect():
         return (self.x1, self.y1)
     tr = property(getTr, None, None, 'The top right point (x1,y1) of the rectangle.')
 
-    def getCenterX(self)->float:
-        return float(self.x0) + float(self.x1-self.x0)/2.0
+    def getCenterX(self)->int:
+        return int(self.x0 + self.w/2)
     cx = property(getCenterX, None, None, 'The center x-axis of the rectangle.')
 
-    def getCenterY(self)->float:
-        return float(self.y0) + floar(self.y1-self.y0)/2.0
+    def getCenterY(self)->int:
+        return int(self.y0 + self.h/2)
     cy = property(getCenterY, None, None, 'The center y-axis of the rectangle.')
+
+    def getCenter(self)->tuple:
+        return (self.cx, self.cy)
+    cc = property(getCenter, None, None, '')
+    
+    def getCl(self)->tuple:
+        return (self.x0, self.cy)
+    cl = property(getCl, None, None, '')
+    def getCr(self)->tuple:
+        return (self.x1, self.cy)
+    cr = property(getCr, None, None, '')
+    def getCb(self)->tuple:
+        return (self.cx, self.y0)
+    cb = property(getCb, None, None, '')
+    def getCt(self)->tuple:
+        return (self.cx, self.y1)
+    ct = property(getCt, None, None, '')
+
