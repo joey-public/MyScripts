@@ -13,13 +13,13 @@ class Rect():
         return hash((self.x0, self.x1, self.y0, self.y1))
     #mutation functions that can change the state of the rectangle. 
     def __translate(self, dx, dy)->None:
-        self.data[0,:] += dx  
-        self.data[1,:] += dy 
+        self._data[0,:] += dx  
+        self._data[1,:] += dy 
     #apply the Xform relative to the origin (0,0)
     def __applyXformAboutOrigin(self, xform:np.array)->None:
         if not(xform.shape == (2,2)): 
             return 
-        self.data = np.matmul(xform, self.data)
+        self._data = np.matmul(xform, self._data)
     #TODO: Implement Me!
     #apply the Xform relative to the rects posiiton (x0,y0)
     def __applyXform(self, xform)->None: 
@@ -38,7 +38,7 @@ class Rect():
         dx = xpos - self.x0
         dy = ypos - self.y0
         self.__translate(dx, dy)
-        reuturn (dx, dy)
+        return (dx, dy)
     #read only properties. The properties cannot be altered directly. Only updated by xforming the data.
     def getData(self)->np.array:
         return self._data
@@ -82,7 +82,7 @@ class Rect():
 
     def getTr(self)->tuple:
         return (self.x1, self.y1)
-    tr = property(getTl, None, None, 'The top right point (x1,y1) of the rectangle.')
+    tr = property(getTr, None, None, 'The top right point (x1,y1) of the rectangle.')
 
     def getCenterX(self)->float:
         return float(self.x0) + float(self.x1-self.x0)/2.0
