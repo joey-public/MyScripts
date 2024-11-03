@@ -1,4 +1,5 @@
 import numpy as np
+from Point2D import Point2D
 
 class Rect():
     def __init__(self, x0:int, y0:int, w:int, h:int):
@@ -78,20 +79,20 @@ class Rect():
         return self.y1-self.y0
     h = property(getH, None, None, 'The height of the rectangle')
 
-    def getBl(self)->tuple:
-        return (self.x0, self.y0)
+    def getBl(self)->Point2D:
+        return Point2D(self.x0, self.y0)
     bl = property(getBl, None, None, 'The bottom left point (x0,y0) of the rectangle.')
 
-    def getBr(self)->tuple:
-        return (self.x1, self.y0)
+    def getBr(self)->Point2D:
+        return Point2D(self.x1, self.y0)
     br = property(getBr, None, None, 'The bottom right point (x1,y0) of the rectangle.')
 
-    def getTl(self)->tuple:
-        return (self.x0, self.y1)
+    def getTl(self)->Point2D:
+        return Point2D(self.x0, self.y1)
     tl = property(getTl, None, None, 'The top left point (x0,y1) of the rectangle.')
 
-    def getTr(self)->tuple:
-        return (self.x1, self.y1)
+    def getTr(self)->Point2D:
+        return Point2D(self.x1, self.y1)
     tr = property(getTr, None, None, 'The top right point (x1,y1) of the rectangle.')
 
     def getCenterX(self)->int:
@@ -102,20 +103,20 @@ class Rect():
         return int(self.y0 + self.h/2)
     cy = property(getCenterY, None, None, 'The center y-axis of the rectangle.')
 
-    def getCenter(self)->tuple:
-        return (self.cx, self.cy)
+    def getCenter(self)->Point2D:
+        return Point2D(self.cx, self.cy)
     cc = property(getCenter, None, None, '')
     
-    def getCl(self)->tuple:
-        return (self.x0, self.cy)
+    def getCl(self)->Point2D:
+        return Point2D(self.x0, self.cy)
     cl = property(getCl, None, None, '')
-    def getCr(self)->tuple:
-        return (self.x1, self.cy)
+    def getCr(self)->Point2D:
+        return Point2D(self.x1, self.cy)
     cr = property(getCr, None, None, '')
-    def getCb(self)->tuple:
-        return (self.cx, self.y0)
+    def getCb(self)->Point2D:
+        return Point2D(self.cx, self.y0)
     cb = property(getCb, None, None, '')
-    def getCt(self)->tuple:
-        return (self.cx, self.y1)
+    def getCt(self)->Point2D:
+        return Point2D(self.cx, self.y1)
     ct = property(getCt, None, None, '')
 
