@@ -1,5 +1,5 @@
 import numpy as np
-from .shapes import _Shape
+from Point2D import _Shape
 
 def xform(shape:_Shape, xform:np.array):
     data = shape.getData
