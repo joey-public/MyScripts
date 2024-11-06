@@ -48,11 +48,11 @@ def draw_rect_array(surface, ra:RectArray, outline_width:int, outline_color:tupl
             rect.translate(ra.pitch.x, 0)
         rect.translate(-1*int(ra.ncols*ra.pitch.x), ra.pitch.y)
     draw_point(surface, ra.bbox.bl, 3, outline_color)
-def draw_rect_grid(surface, rg:RectGrid, width0, width1, color):
+def draw_rect_grid(surface, color, rg:RectGrid):
     if rg is None: return 
-    draw_rect_array(surface, rg.h_rects, width0, color)
-    draw_rect_array(surface, rg.v_rects, width0, color)
-    draw_rect_array(surface, rg.o_rects, width1, color)
+    draw_rect_array(surface, rg.h_rects)
+    draw_rect_array(surface, rg.v_rects)
+    draw_point(surface, COLOR_BLUE, rg.bbox.bl, 5)
 
 if __name__ == '__main__':
     
@@ -68,10 +68,6 @@ if __name__ == '__main__':
     r0 = Rect(50,50,200,50)
     r1 = Rect(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 100, 100)
     r2 = Rect(r0.xm, r0.ym, FILL_WH, FILL_WH) 
-
-    h_rects = RectArray(Rect(20,20,100,20), 0, 30, 2, 1)
-    v_rects = RectArray(Rect(30,10,20,100), 30, 0, 1, 3)
-    rect_grid = RectGrid(h_rects, v_rects)
     
     while running:
         #handle input
@@ -94,7 +90,6 @@ if __name__ == '__main__':
         draw_rect(canvas, r0, 1, COLOR_0)
         draw_point(canvas, r0.bl, 3, COLOR_0)
         draw_rect(canvas, r1, 1, COLOR_2)
-        draw_rect_grid(canvas, rect_grid, 1, 3, COLOR_1)
         if rm.rect_contains_point(r1, r0.mm):
             draw_point(canvas, r0.mm, 3, COLOR_RED)
         if rm.rect_crosses_x(r0, r1.x0):
