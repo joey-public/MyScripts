@@ -2,6 +2,7 @@ import numpy as np
 
 from Point2D import Point2D
 from Rect import Rect
+from RectArray import RectArray
 
 def rect_crosses_x(r:Rect, x)->bool:
     return x >= r.x0 and x <= r.x1 
@@ -88,3 +89,47 @@ def get_overlap_rect(r0:Rect, r1:Rect)->Rect:
         h = (r0.y1-r1.y0)
         return Rect(x0,y0,w,h)
     return Rect(0,0,0,0) 
+    
+def get_overlap_rect_array_h(r0:Rect, r1:Rect, r2:Rect, pitch, enc)->RectArray:
+    if not(rect_overlaps_rect(r0, r1)): return None
+    r_olap = get_overlap_rect(r0, r1)
+    if not(r2.w*r2.h < r_olap.w*r_olap.h): return None
+    ncols = 1
+    h_rects = RectArray(r2, pitch, 0, 1, ncols)
+    while h_rects.bbox.w <= r_olap.w-2*enc:
+        h_rects.ncols = h_rects.ncols + 1
+    h_rects.moveTo(0,0)
+    x = r_olap.xm - h_rects.bbox.w/2
+    y = r_olap.ym - h_rects.bbox.h/2
+    h_rects.moveTo(x,y)
+    return h_rects
+
+def get_overlap_rect_array_v(r0:Rect, r1:Rect, r2:Rect, pitch, enc)->RectArray:
+    if not(rect_overlaps_rect(r0, r1)): return None
+    r_olap = get_overlap_rect(r0, r1)
+    if not(r2.w*r2.h < r_olap.w*r_olap.h): return None
+    nrows = 1
+    v_rects = RectArray(r2, 0, pitch, nrows, 1)
+    while v_rects.bbox.h <= r_olap.h-2*enc:
+        v_rects.nrows = v_rects.nrows + 1
+    v_rects.moveTo(0,0)
+    x = r_olap.xm - v_rects.bbox.w/2
+    y = r_olap.ym - v_rects.bbox.h/2
+    v_rects.moveTo(x,y)
+    return v_rects
+
+def get_overlap_rect_array(r0:Rect, r1:Rect, r2:Rect, pitch:Point2D, enc:float)->RectArray:
+    if not(rect_overlaps_rect(r0, r1)): return None
+    r_olap = get_overlap_rect(r0, r1)
+    if not(r2.w*r2.h < r_olap.w*r_olap.h): return None
+    rects = RectArray(r2, pitch.x, pitch.y, 1, 1)
+    while rects.bbox.w <= r_olap.w-2*enc:
+        rects.ncols = rects.ncols + 1
+    while rects.bbox.h <= r_olap.h-2*enc:
+        rects.nrows = rects.nrows + 1
+    rects.moveTo(0,0)
+    x = r_olap.xm - rects.bbox.w/2
+    y = r_olap.ym - rects.bbox.h/2
+    rects.moveTo(x,y)
+    return rects
+

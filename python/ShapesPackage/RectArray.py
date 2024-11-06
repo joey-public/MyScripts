@@ -4,7 +4,9 @@ from Rect import Rect
 from Point2D import Point2D
 
 class RectArray(_Shape):
-    def __init__(self, r0:Rect, x_pitch, y_pitch, nrows:int, ncols:int, data_type=np.float64):
+    def __init__(self, r0:Rect, x_pitch, y_pitch, 
+                       nrows:int, ncols:int, 
+                       data_type=np.float64):
         self._r0 = r0
         self._pitch = Point2D(x_pitch, y_pitch)
         self.nrows = nrows
@@ -24,7 +26,7 @@ class RectArray(_Shape):
         x0 = self.r0.x0
         y0 = self.r0.y0
         w = (self.ncols-1)*self.pitch.x + self.r0.w
-        h = (self.nrows-1)*self.pitch.x + self.r0.w
+        h = (self.nrows-1)*self.pitch.y + self.r0.h
         return Rect(x0, y0, w, h) 
     r0 = property(__getR0, None, None, 'The bottom Left Rect in the Array.') 
     pitch = property(__getPitch, None, None, 'The x-pitch of the Array.')
