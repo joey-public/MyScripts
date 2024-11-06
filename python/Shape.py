@@ -25,8 +25,15 @@ class _Shape:
         pos.shape = (2,1)
         d = pos - self.getAnchor()
         self.updateData(self.getData() + d)
-    def scale(self, sx, sy, xpos, ypos)->None: 
-        pass
+    def scale(self, sf)->None: 
+        self.updateData(self.getData()*sf)
+    def stretch(self, sx, sy)->None:
+        x, y = (self.x0, self.y0)
+        self.moveTo(0,0)
+        xf = np.array([ [sx, 0], 
+                           [0,  sy] ])
+        self.xform(xf)
+        self.moveTo(x,y)
     def rot90(self, xpos, ypos)->None:
         self.translate(-xpos,-ypos)
         self.xform(ROT90_XFORM)

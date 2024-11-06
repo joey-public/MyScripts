@@ -27,8 +27,8 @@ canvas = pg.Surface((SCREEN_WIDTH,SCREEN_HEIGHT))
 
 p00 = Point2D(0,0)
 
-r0 = Rect(0,0, 10, 10)
-r1 = RectArray(r0, 25, 15, 1, 1)
+r0 = Rect(0,0, 10, 100)
+r1 = RectArray(r0, 25, 15, 1, 4)
 print(f'{r1}')
 print(f'r1.bl_rect: {r1.bl_rect.x0} {r1.bl_rect.y0} {r1.bl_rect.w} {r1.bl_rect.h}\n{r1.bl_rect.getData()}')
 print(f'r1.pitch: ({r1.pitch.x}, {r1.pitch.y})')
@@ -64,7 +64,6 @@ def draw_rect_x2(surface, outline_color, x_color, r):
 
 def draw_rect_array(surface, color, ra:RectArray):
     rect = Rect(ra.bl_rect.x0, ra.bl_rect.y0, ra.bl_rect.w, ra.bl_rect.h)
-    print(ra.nrows)
     for r in range(ra.nrows):
         for c in range(ra.ncols):
             if r==0 and c==0:
@@ -108,6 +107,10 @@ while running:
         r1.ncols = max(r1.ncols - 1, 0)
     if keys[pg.K_4]:
         r1.ncols = min(r1.ncols + 1, 7)
+    if keys[pg.K_b]:
+        r1.bl_rect.stretch(1, 2)
+    if keys[pg.K_c]:
+        r1.bl_rect.stretch(1, 1/2)
         #r1.rot90(r1.xm, r1.ym)
     #render
     canvas.fill(BG_COLOR)
