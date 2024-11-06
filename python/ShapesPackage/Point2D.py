@@ -11,12 +11,11 @@ class Point2D(_Shape):
     def __hash__(self):
         return hash((self.x, self.y))
     ##public functions
-    def updateData(self, x, y):
-        self._data[0,0] = x
-        self._data[0,1] = y
+    def updateData(self, new_data):
+        self._data = new_data
     def getData(self):
         return self._data
-    def getAnchor(self):
+    def getPos(self):
         return self._data
     ##read only properties
     def __getX(self):

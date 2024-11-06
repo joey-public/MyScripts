@@ -30,80 +30,69 @@ class Rect(_Shape):
         self._data[1,1] = y1
     def getData(self):
         return self._data
-    def getAnchor(self):
+    def getPos(self):
         a = np.array([self.x0, self.y0])
         a.shape = (2,1)
         return a
-    #private property getters
-    def _getX0(self):
+    #Properties
+    def __getX0(self):
         data = self._data[0,0]
         assert data == self.__getMinX(self._data), f'rect data misformatted, x0 is not min x.'
         return data
-    def _getX1(self):
+    def __getX1(self):
         data = self._data[0,1]
         assert data == self.__getMaxX(self._data), f'rect data misformatted, x1 is not max x1.'
         return data
-    def _getY0(self):
+    def __getY0(self):
         data = self._data[1,0]
         assert data == self.__getMinY(self._data), 'rect data misformatted, y0 is not min y.'
         return data
-    def _getY1(self):
+    def __getY1(self):
         data = self._data[1,1]
         assert data == self.__getMaxY(self._data), f'rect data misformatted, y1 is not max y.'
         return data
-    def _getW(self):
+    def __getW(self):
         return self.x1-self.x0
-    def _getH(self):
+    def __getH(self):
         return self.y1-self.y0
-    def _getBl(self)->Point2D:
+    def __getBl(self)->Point2D:
         return Point2D(self.x0, self.y0)
-    def _getBr(self)->Point2D:
+    def __getBr(self)->Point2D:
         return Point2D(self.x1, self.y0)
-    def _getTl(self)->Point2D:
+    def __getTl(self)->Point2D:
         return Point2D(self.x0, self.y1)
-    def _getTr(self)->Point2D:
+    def __getTr(self)->Point2D:
         return Point2D(self.x1, self.y1)
-    def _getCenterX(self)->int:
+    def __getCenterX(self)->int:
         return int(self.x0 + self.w/2)
-    def _getCenterY(self)->int:
+    def __getCenterY(self)->int:
         return int(self.y0 + self.h/2)
-    def _getCenter(self)->Point2D:
+    def __getCenter(self)->Point2D:
         return Point2D(self.xm, self.ym)
-    def _getCl(self)->Point2D:
+    def __getCl(self)->Point2D:
         return Point2D(self.x0, self.ym)
-    def _getCr(self)->Point2D:
+    def __getCr(self)->Point2D:
         return Point2D(self.x1, self.ym)
-    def _getCb(self)->Point2D:
+    def __getCb(self)->Point2D:
         return Point2D(self.xm, self.y0)
-    def _getCt(self)->Point2D:
+    def __getCt(self)->Point2D:
         return Point2D(self.xm, self.y1)
     #dtype properties
-    x0 = property(_getX0, None, None, 'The left-most x value of the rectangle.') 
-    y0 = property(_getY0, None, None, 'The bottom-most y value of the rectangle.')
-    x1 = property(_getX1, None, None, 'The right-most x value of the rectangle.')
-    y1 = property(_getY1, None, None, 'The top-most y value of the rectangle.') 
-    xm = property(_getCenterX, None, None, 'The center x-axis of the rectangle.')
-    ym = property(_getCenterY, None, None, 'The center y-axis of the rectangle.')
-    w = property(_getW, None, None, 'The width of the rectangle.')
-    h = property(_getH, None, None, 'The height of the rectangle')
+    x0 = property(__getX0, None, None, 'The left-most x value of the rectangle.') 
+    y0 = property(__getY0, None, None, 'The bottom-most y value of the rectangle.')
+    x1 = property(__getX1, None, None, 'The right-most x value of the rectangle.')
+    y1 = property(__getY1, None, None, 'The top-most y value of the rectangle.') 
+    xm = property(__getCenterX, None, None, 'The center x-axis of the rectangle.')
+    ym = property(__getCenterY, None, None, 'The center y-axis of the rectangle.')
+    w = property(__getW, None, None, 'The width of the rectangle.')
+    h = property(__getH, None, None, 'The height of the rectangle')
     #Point2D properties 
-    bl = property(_getBl, None, None, 'The bottom left point (x0,y0) of the rectangle.')
-    br = property(_getBr, None, None, 'The bottom right point (x1,y0) of the rectangle.')
-    tl = property(_getTl, None, None, 'The top left point (x0,y1) of the rectangle.')
-    tr = property(_getTr, None, None, 'The top right point (x1,y1) of the rectangle.')
-    ml = property(_getCl, None, None, '')
-    mr = property(_getCr, None, None, '')
-    mt = property(_getCt, None, None, '')
-    mb = property(_getCb, None, None, '')
-    mm = property(_getCenter, None, None, '')
-
-if __name__=='__main__':
-    r = Rect(0,0,2,4)
-    data = r.getData()
-    print(r)
-    print(f'data: \n {r.getData()}')
-    print(f'd00, x0: {data[0,0]}, {r.x0}')
-    print(f'd01, x1: {data[0,1]}, {r.x1}')
-    print(f'd10, y0: {data[1,0]}, {r.y0}')
-    print(f'd11, y1: {data[1,1]}, {r.y1}')
-    print(f'w, h: {r.w}, {r.h}')
+    bl = property(__getBl, None, None, 'The bottom left point (x0,y0) of the rectangle.')
+    br = property(__getBr, None, None, 'The bottom right point (x1,y0) of the rectangle.')
+    tl = property(__getTl, None, None, 'The top left point (x0,y1) of the rectangle.')
+    tr = property(__getTr, None, None, 'The top right point (x1,y1) of the rectangle.')
+    ml = property(__getCl, None, None, '')
+    mr = property(__getCr, None, None, '')
+    mt = property(__getCt, None, None, '')
+    mb = property(__getCb, None, None, '')
+    mm = property(__getCenter, None, None, '')
