@@ -1,10 +1,6 @@
 import numpy as np
+from Shape import _Shape
 
-class _Shape:
-    def updateData(): pass
-    def getData(): pass
-    #def updateDataType(): pass
-    #def getDataType(): pass
 
 class Point2D(_Shape):
     def __init__(self, x, y, dtype=np.int64):
@@ -19,6 +15,8 @@ class Point2D(_Shape):
         self._data[0,0] = x
         self._data[0,1] = y
     def getData(self):
+        return self._data
+    def getAnchor(self):
         return self._data
     ##read only properties
     def __getX(self):

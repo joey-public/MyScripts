@@ -1,7 +1,9 @@
 import pygame as pg
 import numpy as np
+from Shape import _Shape
 from Point2D import Point2D
 from Rect import Rect
+from RectArrays import RectArray
 import xforms as xf
 
 SCREEN_WIDTH = 500
@@ -25,7 +27,12 @@ canvas = pg.Surface((SCREEN_WIDTH,SCREEN_HEIGHT))
 
 p00 = Point2D(0,0)
 
-r1 = Rect(10,10, 80, 50)
+r0 = Rect(0,0, 10, 10)
+r1 = RectArray(r0, 25, 15, 1, 1)
+print(f'{r1}')
+print(f'r1.bl_rect: {r1.bl_rect.x0} {r1.bl_rect.y0} {r1.bl_rect.w} {r1.bl_rect.h}\n{r1.bl_rect.getData()}')
+print(f'r1.pitch: ({r1.pitch.x}, {r1.pitch.y})')
+print(f'r1.spacing: ({r1.dx}, {r1.dy})')
 
 rot90_xform = np.array([[0, -1],
                         [1, 0]])
@@ -50,6 +57,22 @@ def draw_rect_x(surface, outline_color, x_color, r):
     draw_rect(surface, outline_color, r)
     draw_line(surface, x_color, r.tl, r.br)
     draw_line(surface, x_color, r.tr, r.bl)
+def draw_rect_x2(surface, outline_color, x_color, r):
+    draw_rect2(surface, outline_color, r)
+    draw_line(surface, x_color, r.tl, r.br)
+    draw_line(surface, x_color, r.tr, r.bl)
+
+def draw_rect_array(surface, color, ra:RectArray):
+    rect = Rect(ra.bl_rect.x0, ra.bl_rect.y0, ra.bl_rect.w, ra.bl_rect.h)
+    print(ra.nrows)
+    for r in range(ra.nrows):
+        for c in range(ra.ncols):
+            if r==0 and c==0:
+                draw_rect_x2(surface, color, color, rect)
+            else:
+                draw_rect_x(surface, color, color, rect)
+            rect.translate(ra.pitch.x, 0)
+        rect.translate(-1*int(ra.ncols*ra.pitch.x), ra.pitch.y)
 
 def draw_axis(surface, color, width):
     pg.draw.line(surface, color, (SCREEN_WIDTH/2, 0), (SCREEN_WIDTH/2, SCREEN_HEIGHT), width)
@@ -61,18 +84,35 @@ while running:
         if event.type == pg.QUIT:
             running = False
     keys = pg.key.get_pressed()
-    if keys[pg.K_r]:
-        xf.translate(r1, 25, 25)    
     if keys[pg.K_j]:
-        xf.translate(r1, -25, -25)    
-    if keys[pg.K_s]:
-        xf.scale(r1,2)
+        r1.bl_rect.translate(0, -25)    
     if keys[pg.K_k]:
-        xf.scale(r1,0.5)
+        r1.bl_rect.translate(0, 25)    
+    if keys[pg.K_l]:
+        r1.bl_rect.translate(25, 0)    
+    if keys[pg.K_h]:
+        r1.bl_rect.translate(-25, 0)    
+    if keys[pg.K_w]:
+        r1.bl_rect.moveTo(SCREEN_WIDTH/2-r1.bl_rect.w/2, SCREEN_HEIGHT-r1.bl_rect.h)
+    if keys[pg.K_a]:
+        r1.bl_rect.moveTo(0, 0)
+    if keys[pg.K_r]:
+        r1.bl_rect.rot90(r1.bl_rect.x0, r1.bl_rect.y0)
+    if keys[pg.K_f]:
+        r1.bl_rect.flip(True, False)
+    if keys[pg.K_1]:
+        r1.nrows = max(r1.nrows - 1, 0)
+    if keys[pg.K_2]:
+        r1.nrows = min(r1.nrows + 1, 5)
+    if keys[pg.K_3]:
+        r1.ncols = max(r1.ncols - 1, 0)
+    if keys[pg.K_4]:
+        r1.ncols = min(r1.ncols + 1, 7)
+        #r1.rot90(r1.xm, r1.ym)
     #render
     canvas.fill(BG_COLOR)
     draw_point(canvas, COLOR_BLUE, p00, 3)
-    draw_rect_x(canvas, COLOR_1, COLOR_2, r1) 
+    draw_rect_array(canvas, COLOR_1, r1)
     screen.blit(pg.transform.flip(canvas, False, True), (0,0))
     draw_axis(screen, COLOR_0, 1)
     pg.display.flip()

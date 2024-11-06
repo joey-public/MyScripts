@@ -1,9 +1,10 @@
 import numpy as np
-from Point2D import _Shape, Point2D
+from Point2D import Point2D
+from Shape import _Shape
 
 class Rect(_Shape):
-    def __init__(self, x0, y0, w, h, dtype=np.int64):
-        self._data = np.array([[x0, x0+w], [y0, y0+h]], dtype=np.int64)
+    def __init__(self, x0, y0, w, h, data_type=np.float64):
+        self._data = np.array([[x0, x0+w], [y0, y0+h]], dtype=data_type)
     def __eq__(self, other):
         return (self.x0==other.x0) and (self.y0==other.y0) and (self.x1==other.x1) and (self.y1==other.y1)
     #private funcs
@@ -29,6 +30,10 @@ class Rect(_Shape):
         self._data[1,1] = y1
     def getData(self):
         return self._data
+    def getAnchor(self):
+        a = np.array([self.x0, self.y0])
+        a.shape = (2,1)
+        return a
     #private property getters
     def _getX0(self):
         data = self._data[0,0]
@@ -63,15 +68,15 @@ class Rect(_Shape):
     def _getCenterY(self)->int:
         return int(self.y0 + self.h/2)
     def _getCenter(self)->Point2D:
-        return Point2D(self.cx, self.cy)
+        return Point2D(self.xm, self.ym)
     def _getCl(self)->Point2D:
-        return Point2D(self.x0, self.cy)
+        return Point2D(self.x0, self.ym)
     def _getCr(self)->Point2D:
-        return Point2D(self.x1, self.cy)
+        return Point2D(self.x1, self.ym)
     def _getCb(self)->Point2D:
-        return Point2D(self.cx, self.y0)
+        return Point2D(self.xm, self.y0)
     def _getCt(self)->Point2D:
-        return Point2D(self.cx, self.y1)
+        return Point2D(self.xm, self.y1)
     #dtype properties
     x0 = property(_getX0, None, None, 'The left-most x value of the rectangle.') 
     y0 = property(_getY0, None, None, 'The bottom-most y value of the rectangle.')

@@ -13,3 +13,8 @@ def translate(shape:_Shape, dx, dy):
     d.shape = (2,1)
     shape.updateData(shape.getData() + d)
 
+def moveTo(shape:_Shape, xpos, ypos):
+    pos = np.array([xpos, ypos])
+    pos.shape = (2,1)
+    d = pos - shape.getAnchor()
+    shape.updateData(shape.getData() + d)
