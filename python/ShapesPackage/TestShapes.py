@@ -31,8 +31,8 @@ class TestPoint2D(unittest.TestCase):
         self.assertEqual(Point2D(3,-4), Point2D(3,-4))
         self.assertNotEqual(Point2D(7,2), Point2D(2,7))
         self.assertNotEqual(Point2D(3,4), Point2D(3,-4))
-    def test__hash__(self):
-        self.assertTrue(True)
+#    def test__hash__(self):
+#        self.assertTrue(True)
     def test_getData(self):
         #test simple point with no dtype passed
         data = Point2D(3,4).getData()
@@ -93,17 +93,67 @@ class TestPoint2D(unittest.TestCase):
         expected_y = 8726
         self.assertEqual(y, expected_y)
 
-#class TestRect(unittest.TestCase):
-#    def test__eq__(self):
-#        pass
+class TestRect(unittest.TestCase):
+    def test__eq__(self):
+        ntests = 10
+        for i in range(ntests):
+            x0 = random.randint(-100,100)
+            y0 = random.randint(-100,100)
+            w = random.randint(-100,100)
+            h = random.randint(-100,100)
+            self.assertEqual(Rect(x0,y0,w,h), Rect(x0,y0,w,h))
+        self.assertNotEqual(Rect(0,0,10,10), Rect(0,0,1,1))
 #    def test__hash__(self):
 #        pass
-#    def test_getData(self):
-#        pass
-#    def test_updateData(self):
-#        pass
-#    def test_getPos(self):
-#        pass
+    def test_getData(self):
+        ntests = 10
+        dtypes = [np.int64, np.float64]
+        for i in range(ntests):
+            for dt in dtypes:
+                x = random.randint(-100,100)
+                y = random.randint(-100,100)
+                w = random.randint(-100,100)
+                h = random.randint(-100,100)
+                r = Rect(x,y,w,h,dt)
+                data = r.getData()
+                expected_data = np.array([[r.x0, r.x1], 
+                                          [r.y0, r.y1]], dt)
+                self.assertEqual(type(data), type(expected_data))
+                self.assertEqual(data.dtype, expected_data.dtype)
+                self.assertEqual(data.shape, expected_data.shape)
+                self.assertEqual(data[0,0], expected_data[0,0])
+                self.assertEqual(data[1,0], expected_data[1,0])
+    def test_updateData(self):
+        ntests = 100
+        dtypes = [np.int64, np.float64]
+        for i in range(ntests):
+            for dt in dtypes:
+                x = random.randint(-100,100)
+                y = random.randint(-100,100)
+                w = random.randint(-100,100)
+                h = random.randint(-100,100)
+                r = Rect(x,y,w,h,dt)
+                x = random.randint(-100,100)
+                y = random.randint(-100,100)
+                w  = random.randint(-100,100)
+                h  = random.randint(-100,100)
+                data = np.array([[x, x+w], 
+                                 [y, y+h]], dtype=dt)
+                r.updateData(data)
+                x0 = min(data[0,0], data[0,1])
+                x1 = max(data[0,0], data[0,1])
+                y0 = min(data[1,0], data[1,1])
+                y1 = max(data[1,0], data[1,1])
+                expected_r = Rect(x0, y0, x1-x0, y1-y0)
+                self.assertEqual(r, expected_r)
+    def test_getPos(self):
+        pos = Rect(9.7, 7.9, 10.3, 39.6).getPos()
+        expected_pos = np.array([[9.7], [7.9]])
+        self.assertEqual(type(pos), type(expected_pos))
+        self.assertEqual(pos.dtype, expected_pos.dtype)
+        self.assertEqual(pos.shape, expected_pos.shape)
+        self.assertEqual(pos[0,0], expected_pos[0,0])
+        self.assertEqual(pos[1,0], expected_pos[1,0])
 #    def test__getMinX(self):
 #        pass
 #    def test__getMaxX(self):
@@ -112,40 +162,38 @@ class TestPoint2D(unittest.TestCase):
 #        pass
 #    def test__getMaxY(self):
 #        pass
-#    def test_x0(self):
-#        pass
-#    def test_y0(self):
-#        pass
-#    def test_x1(self):
-#        pass
-#    def test_y1(self):
-#        pass
-#    def test_xm(self):
-#        pass
-#    def test_ym(self):
-#        pass
-#    def test_w(self):
-#        pass
-#    def test_h(self):
-#        pass
-#    def test_bl(self):
-#        pass
-#    def test_br(self):
-#        pass
-#    def test_tl(self):
-#        pass
-#    def test_tr(self):
-#        pass
-#    def test_ml(self):
-#        pass
-#    def test_mr(self):
-#        pass
-#    def test_mb(self):
-#        pass
-#    def test_mt(self):
-#        pass
-#    def test_mm(self):
-#        pass
+    def test_properties(self):
+        ntests = 100
+        dtypes = [np.int64, np.float64]
+        for i in range(ntests):
+            for dt in dtypes:
+                x = random.randint(-100,100)
+                y = random.randint(-100,100)
+                w = random.randint(-100,100)
+                h = random.randint(-100,100)
+                r0 = Rect(x,y,w,h,dt)
+                r1 = Rect(x,y,w,h,dt)
+
+                self.assertEqual(r0.x0, r1.x0)
+                self.assertEqual(r0.y0, r1.y0)
+                self.assertEqual(r0.x1, r1.x1)
+                self.assertEqual(r0.y1, r1.y1)
+                self.assertEqual(r0.xm, r1.xm)
+                self.assertEqual(r0.ym, r1.ym)
+                self.assertEqual(r0.w, r1.w)
+                self.assertEqual(r0.h, r1.h)
+
+                self.assertEqual(r0.bl, r1.bl)
+                self.assertEqual(r0.br, r1.br)
+                self.assertEqual(r0.tl, r1.tl)
+                self.assertEqual(r0.tr, r1.tr)
+
+                self.assertEqual(r0.ml, r1.ml)
+                self.assertEqual(r0.mr, r1.mr)
+                self.assertEqual(r0.mt, r1.mt)
+                self.assertEqual(r0.mb, r1.mb)
+                
+                self.assertEqual(r0.mm, r1.mm)
 
 if __name__=='__main__':
     unittest.main()

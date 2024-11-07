@@ -4,7 +4,14 @@ from Shape import _Shape
 
 class Rect(_Shape):
     def __init__(self, x0, y0, w, h, data_type=np.float64):
-        self._data = np.array([[x0, x0+w], [y0, y0+h]], dtype=data_type)
+        data = np.array([[x0, x0+w], 
+                         [y0, y0+h]], dtype=data_type)
+        x0 = self.__getMinX(data)
+        y0 = self.__getMinY(data)
+        x1 = self.__getMaxX(data)
+        y1 = self.__getMaxY(data)
+        self._data = np.array([ [x0, x1], 
+                                [y0, y1] ], dtype=data_type)
     def __eq__(self, other):
         return (self.x0==other.x0) and (self.y0==other.y0) and (self.x1==other.x1) and (self.y1==other.y1)
     #private funcs
@@ -91,8 +98,10 @@ class Rect(_Shape):
     br = property(__getBr, None, None, 'The bottom right point (x1,y0) of the rectangle.')
     tl = property(__getTl, None, None, 'The top left point (x0,y1) of the rectangle.')
     tr = property(__getTr, None, None, 'The top right point (x1,y1) of the rectangle.')
+
     ml = property(__getCl, None, None, '')
     mr = property(__getCr, None, None, '')
     mt = property(__getCt, None, None, '')
     mb = property(__getCb, None, None, '')
+
     mm = property(__getCenter, None, None, '')
