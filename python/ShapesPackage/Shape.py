@@ -20,6 +20,7 @@ class _Shape:
         new_data = np.matmul(xform, data)
         self.updateData(np.round(new_data, self._precision))
     def scale(self, sf)->None: 
+        assert sf>0, 'Shape.scale error: scale factor (sf) must be > 0.'
         self.updateData(self.getData()*sf)
     def translate(self, dx, dy)->None:
         d = np.array([dx,dy])
@@ -32,6 +33,8 @@ class _Shape:
         new_data = self.getData() + d
         self.updateData(np.round(new_data, self._precision))
     def stretch(self, sx, sy)->None:
+        assert sx>=0, '_Shape.stretch sx must be > 0.'
+        assert sy>=0, '_Shape.stretch sy must be > 0.'
         x, y = (self.getPos()[0,0], self.getPos()[1,0])
         self.moveTo(0,0)
         xf = np.array([ [sx, 0], 

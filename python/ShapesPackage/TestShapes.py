@@ -25,6 +25,10 @@ class Shape(unittest.TestCase):
             (0,0): Rect(0,0,10,10),
             (12.4, 34.7): Rect(-10,10,4,2.7),
             (123.789, 12347.809): Rect(99.65, 87.90, 12.659, 11.75),
+            (124, 10): RectArray(Rect(0,0,10,10), 12, 12, 4, 2),
+            (12, -12): RectArray(Rect(10.4,0.10,10,10), 12.7, 2, 400, 20), 
+            (124.8972, 0.220): RectArray(Rect(0,0,10,10), 12, 12, 4, 2), 
+            (-124.8972, -0.020): RectArray(Rect(0,0,10,10), 12, 12, 4, 2), 
     }
     def test_translate(self):
         test_dict = self.test_dict_0
@@ -35,6 +39,9 @@ class Shape(unittest.TestCase):
                 exp_s = Point2D(s.x+dx, s.y+dy)
             if type(s) == Rect:
                 exp_s = Rect(s.x0+dx, s.y0+dy, s.w, s.h)
+            if type(s) == RectArray:
+                r = Rect(s.r0.x0+dx, s.r0.y0+dy, s.r0.w, s.r0.h)
+                exp_s = RectArray(r, s.pitch.x, s.pitch.y, s.nrows, s.ncols)
             s.translate(dx, dy)
             m = f'\ns: {type(s)}\n{s.getPos()}\n---\nexp_s: {type(s)}\n{exp_s.getPos()}' 
             self.assertEqual(s, exp_s, msg=m)
@@ -47,13 +54,43 @@ class Shape(unittest.TestCase):
                 exp_s = Point2D(xpos, ypos)
             if type(s) == Rect:
                 exp_s = Rect(xpos, ypos, s.w, s.h)
+            if type(s) == RectArray:
+                r = Rect(xpos, ypos, s.r0.w, s.r0.h)
+                exp_s = RectArray(r, s.pitch.x, s.pitch.y, s.nrows, s.ncols)
             s.moveTo(xpos, ypos)
             m = f'\ns: {type(s)}\n{s.getPos()}\n---\nexp_s: {type(s)}\n{exp_s.getPos()}' 
             self.assertEqual(s, exp_s, msg=m)
-#    def scale(self):
-#        pass
-#    def test_stretch(self):
-#        pass
+    def test_scale(self):
+        test_dict = self.test_dict_0
+        for key in test_dict.keys():
+            s = test_dict[key]
+            sf0, sf1 = key
+            sf = abs(1/(sf0+sf1+0.1))
+            if type(s) == Point2D:
+                exp_s = Point2D(sf*s.x, sf*s.y)
+            if type(s) == Rect:
+                exp_s = Rect(sf*s.x0, sf*s.y0, sf*s.w, sf*s.h)
+            if type(s) == RectArray:
+                r = Rect(sf*s.r0.x0, sf*s.r0.y0, sf*s.r0.w, sf*s.r0.h)
+                exp_s = RectArray(r, sf*s.pitch.x, sf*s.pitch.y, s.nrows, s.ncols)
+            s.scale(sf)
+            m = f'\ns: {type(s)}\n{s.getPos()}\n---\nexp_s: {type(s)}\n{exp_s.getPos()}' 
+            self.assertEqual(s, exp_s, msg=m)
+    def test_stretch(self):
+        test_dict = self.test_dict_0
+        for key in test_dict:
+            s = test_dict[key]
+            sx, sy = (abs(key[0]), abs(key[1]))
+            if type(s) == Point2D:
+                exp_s = Point2D(s.x, s.y)
+            if type(s) == Rect:
+                exp_s = Rect(s.x0, s.y0, sx*s.w, sy*s.h)
+            if type(s) == RectArray:
+                r = Rect(s.r0.x0, s.r0.y0, sx*s.r0.w, sy*s.r0.h)
+                exp_s = RectArray(r, s.pitch.x, s.pitch.y, s.nrows, s.ncols)
+            s.stretch(sx, sy)
+            m = f'\ns: {type(s)}\n{s.getPos()}\n---key: {key}\nexp_s: {type(s)}\n{exp_s.getPos()}' 
+            self.assertEqual(s, exp_s, msg=m)
 #    def test_rot90(self):
 #        pass
 
