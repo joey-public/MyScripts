@@ -6,6 +6,11 @@ import numpy as np
 from Shape import _Shape
 from Point2D import Point2D
 from Rect import Rect
+from RectArray import RectArray
+
+NTRIALS = 100
+MIN_VAL = -1000
+MAX_VAL = 1000
 
 #class Shape(unittest.TestCase):
 #    def test_xform(self):
@@ -44,12 +49,11 @@ class TestPoint2D(unittest.TestCase):
         self.assertEqual(data[0,0], expected_data[0,0])
         self.assertEqual(data[1,0], expected_data[1,0])
         #test several random points with int and float dtypes 
-        ntests = 10
         dtypes = [np.int64, np.float64]
-        for i in range(ntests):
+        for i in range(NTRIALS):
             for dt in dtypes:
-                x = random.randint(-100,100)
-                y = random.randint(-100,100)
+                x = random.randint(MIN_VAL,MAX_VAL)
+                y = random.randint(MIN_VAL,MAX_VAL)
                 data = Point2D(x, y, dt).getData()
                 expected_data = np.array([[x], [y]], dt)
                 self.assertEqual(type(data), type(expected_data))
@@ -63,15 +67,14 @@ class TestPoint2D(unittest.TestCase):
         p.updateData(new_data)
         expected_p = Point2D(2,4)
         self.assertEqual(p, expected_p)
-        ntests = 10
         dtypes = [np.int64, np.float64]
-        for i in range(ntests):
+        for i in range(NTRIALS):
             for dt in dtypes:
-                x = random.randint(-100,100)
-                y = random.randint(-100,100)
+                x = random.randint(MIN_VAL,MAX_VAL)
+                y = random.randint(MIN_VAL,MAX_VAL)
                 p = Point2D(x,y)
-                x = random.randint(-100,100)
-                y = random.randint(-100,100)
+                x = random.randint(MIN_VAL,MAX_VAL)
+                y = random.randint(MIN_VAL,MAX_VAL)
                 new_data = np.array([[x], [y]])
                 p.updateData(new_data)
                 expected_p = Point2D(x,y)
@@ -95,25 +98,23 @@ class TestPoint2D(unittest.TestCase):
 
 class TestRect(unittest.TestCase):
     def test__eq__(self):
-        ntests = 10
-        for i in range(ntests):
-            x0 = random.randint(-100,100)
-            y0 = random.randint(-100,100)
-            w = random.randint(-100,100)
-            h = random.randint(-100,100)
+        for i in range(NTRIALS):
+            x0 = random.randint(MIN_VAL,MAX_VAL)
+            y0 = random.randint(MIN_VAL,MAX_VAL)
+            w = random.randint(MIN_VAL,MAX_VAL)
+            h = random.randint(MIN_VAL,MAX_VAL)
             self.assertEqual(Rect(x0,y0,w,h), Rect(x0,y0,w,h))
         self.assertNotEqual(Rect(0,0,10,10), Rect(0,0,1,1))
 #    def test__hash__(self):
 #        pass
     def test_getData(self):
-        ntests = 10
         dtypes = [np.int64, np.float64]
-        for i in range(ntests):
+        for i in range(NTRIALS):
             for dt in dtypes:
-                x = random.randint(-100,100)
-                y = random.randint(-100,100)
-                w = random.randint(-100,100)
-                h = random.randint(-100,100)
+                x = random.randint(MIN_VAL,MAX_VAL)
+                y = random.randint(MIN_VAL,MAX_VAL)
+                w = random.randint(MIN_VAL,MAX_VAL)
+                h = random.randint(MIN_VAL,MAX_VAL)
                 r = Rect(x,y,w,h,dt)
                 data = r.getData()
                 expected_data = np.array([[r.x0, r.x1], 
@@ -124,19 +125,18 @@ class TestRect(unittest.TestCase):
                 self.assertEqual(data[0,0], expected_data[0,0])
                 self.assertEqual(data[1,0], expected_data[1,0])
     def test_updateData(self):
-        ntests = 100
         dtypes = [np.int64, np.float64]
-        for i in range(ntests):
+        for i in range(NTRIALS):
             for dt in dtypes:
-                x = random.randint(-100,100)
-                y = random.randint(-100,100)
-                w = random.randint(-100,100)
-                h = random.randint(-100,100)
+                x = random.randint(MIN_VAL,MAX_VAL)
+                y = random.randint(MIN_VAL,MAX_VAL)
+                w = random.randint(MIN_VAL,MAX_VAL)
+                h = random.randint(MIN_VAL,MAX_VAL)
                 r = Rect(x,y,w,h,dt)
-                x = random.randint(-100,100)
-                y = random.randint(-100,100)
-                w  = random.randint(-100,100)
-                h  = random.randint(-100,100)
+                x = random.randint(MIN_VAL,MAX_VAL)
+                y = random.randint(MIN_VAL,MAX_VAL)
+                w  = random.randint(MIN_VAL,MAX_VAL)
+                h  = random.randint(MIN_VAL,MAX_VAL)
                 data = np.array([[x, x+w], 
                                  [y, y+h]], dtype=dt)
                 r.updateData(data)
@@ -163,14 +163,13 @@ class TestRect(unittest.TestCase):
 #    def test__getMaxY(self):
 #        pass
     def test_properties(self):
-        ntests = 100
         dtypes = [np.int64, np.float64]
-        for i in range(ntests):
+        for i in range(NTRIALS):
             for dt in dtypes:
-                x = random.randint(-100,100)
-                y = random.randint(-100,100)
-                w = random.randint(-100,100)
-                h = random.randint(-100,100)
+                x = random.randint(MIN_VAL,MAX_VAL)
+                y = random.randint(MIN_VAL,MAX_VAL)
+                w = random.randint(MIN_VAL,MAX_VAL)
+                h = random.randint(MIN_VAL,MAX_VAL)
                 r0 = Rect(x,y,w,h,dt)
                 r1 = Rect(x,y,w,h,dt)
 
@@ -194,6 +193,87 @@ class TestRect(unittest.TestCase):
                 self.assertEqual(r0.mb, r1.mb)
                 
                 self.assertEqual(r0.mm, r1.mm)
+
+class TestRectArray(unittest.TestCase):
+    def test__eq__(self):
+        for i in range(NTRIALS):
+            x = random.randint(MIN_VAL,MAX_VAL)
+            y = random.randint(MIN_VAL,MAX_VAL)
+            w = random.randint(MIN_VAL,MAX_VAL)
+            h = random.randint(MIN_VAL,MAX_VAL)
+            xp = random.randint(0,MAX_VAL)
+            yp = random.randint(0,MAX_VAL)
+            nr = random.randint(1,MAX_VAL)
+            nc = random.randint(1,MAX_VAL)
+            ra0 =  RectArray(Rect(x,y,w,h), xp, yp, nr, nc)
+            ra1 = RectArray(Rect(x,y,w,h), xp, yp, nr, nc)
+            self.assertEqual(ra0, ra1)
+    def test_getData(self):
+        for i in range(NTRIALS):
+            x = random.randint(MIN_VAL,MAX_VAL)
+            y = random.randint(MIN_VAL,MAX_VAL)
+            w = random.randint(MIN_VAL,MAX_VAL)
+            h = random.randint(MIN_VAL,MAX_VAL)
+            xp = random.randint(0,MAX_VAL)
+            yp = random.randint(0,MAX_VAL)
+            nr = random.randint(1,MAX_VAL)
+            nc = random.randint(1,MAX_VAL)
+            data =  RectArray(Rect(x,y,w,h), xp, yp, nr, nc).getData()
+            expected_data = Rect(x,y,w,h).getData()
+            self.assertEqual(type(data), type(expected_data))
+            self.assertEqual(data.dtype, expected_data.dtype)
+            self.assertEqual(data.shape, expected_data.shape)
+            self.assertEqual(data[0,0], expected_data[0,0])
+            self.assertEqual(data[1,0], expected_data[1,0])
+    def test_updateData(self):
+        for i in range(NTRIALS):
+            x = random.randint(MIN_VAL,MAX_VAL)
+            y = random.randint(MIN_VAL,MAX_VAL)
+            w = random.randint(MIN_VAL,MAX_VAL)
+            h = random.randint(MIN_VAL,MAX_VAL)
+            xp = random.randint(0,MAX_VAL)
+            yp = random.randint(0,MAX_VAL)
+            nr = random.randint(1,MAX_VAL)
+            nc = random.randint(1,MAX_VAL)
+            ra =  RectArray(Rect(x,y,w,h), xp, yp, nr, nc)
+
+            x = random.randint(MIN_VAL,MAX_VAL)
+            y = random.randint(MIN_VAL,MAX_VAL)
+            w = random.randint(MIN_VAL,MAX_VAL)
+            h = random.randint(MIN_VAL,MAX_VAL)
+            xp = random.randint(0,MAX_VAL)
+            yp = random.randint(0,MAX_VAL)
+            nr = random.randint(1,MAX_VAL)
+            nc = random.randint(1,MAX_VAL)
+            new_data =  Rect(x,y,w,h).getData()
+            ra.updateData(new_data)
+            self.assertEqual(ra.r0, Rect(x,y,w,h))
+    def test_getPos(self):
+        r0 = Rect(9.7, 7.9, 10.3, 39.6)
+        pos = RectArray(r0,12,10,19,134).getPos()
+        expected_pos = np.array([[9.7], [7.9]])
+        self.assertEqual(type(pos), type(expected_pos))
+        self.assertEqual(pos.dtype, expected_pos.dtype)
+        self.assertEqual(pos.shape, expected_pos.shape)
+        self.assertEqual(pos[0,0], expected_pos[0,0])
+        self.assertEqual(pos[1,0], expected_pos[1,0])
+    def test_propertes(self):
+        for i in range(NTRIALS):
+            x = random.randint(MIN_VAL,MAX_VAL)
+            y = random.randint(MIN_VAL,MAX_VAL)
+            w = random.randint(MIN_VAL,MAX_VAL)
+            h = random.randint(MIN_VAL,MAX_VAL)
+            xp = random.randint(0,MAX_VAL)
+            yp = random.randint(0,MAX_VAL)
+            nr = random.randint(1,MAX_VAL)
+            nc = random.randint(1,MAX_VAL)
+            ra0 = RectArray(Rect(x,y,w,h), xp, yp, nr, nc)
+            ra1 = RectArray(Rect(x,y,w,h), xp, yp, nr, nc)
+            self.assertEqual(ra0.r0, ra1.r0)
+            self.assertEqual(ra0.pitch, ra1.pitch)
+            self.assertEqual(ra0.dx, ra1.dx)
+            self.assertEqual(ra0.dy, ra1.dy)
+            self.assertEqual(ra0.bbox, ra1.bbox)
 
 if __name__=='__main__':
     unittest.main()
