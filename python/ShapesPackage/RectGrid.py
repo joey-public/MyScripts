@@ -15,6 +15,20 @@ class RectGrid(_Shape):
         self._v_rects = v_rects
     def __eq__(self, other):
         return self.h_rects==other.h_rects and self.v_rects==other.v_rects and self.bbox==other.bbox
+    def getData(self)->np.ndarray:
+        d = np.hstack((self.h_rects.getData(), self.v_rects.getData()))
+        return np.hstack((self.h_rects.getData(), self.v_rects.getData()))
+    def updateData(self, new_data:np.ndarray)->None:
+        if not(new_data.shape == (2,4)): return 
+        h_rect_data = new_data[0:2, 0:2]
+        v_rect_data = new_data[0:2, 2:4]
+        self._h_rects.updateData(h_rect_data)
+        self._v_rects.updateData(v_rect_data)
+    def getPos(self):
+        return self.bbox.getPos()
+    def stretch(self, sx, sy)->None:
+        self._h_rects.stretch(sx, 1)
+        self._v_rects.stretch(1, sy)
     def __getHRects(self)->RectArray:
         return self._h_rects
     def __getVRects(self)->RectArray:
@@ -39,17 +53,3 @@ class RectGrid(_Shape):
     o_rects = property(__getOlapRects, None, None, '')
     nrows = property(__getRows, None, None, '')
     ncols = property(__getCols, None, None, '')
-    def getData(self)->np.ndarray:
-        d = np.hstack((self.h_rects.getData(), self.v_rects.getData()))
-        return np.hstack((self.h_rects.getData(), self.v_rects.getData()))
-    def updateData(self, new_data:np.ndarray)->None:
-        if not(new_data.shape == (2,4)): return 
-        h_rect_data = new_data[0:2, 0:2]
-        v_rect_data = new_data[0:2, 2:4]
-        self._h_rects.updateData(h_rect_data)
-        self._v_rects.updateData(v_rect_data)
-    def getPos(self):
-        return self.bbox.getPos()
-    def stretch(self, sx, sy)->None:
-        self._h_rects.stretch(sx, 1)
-        self._v_rects.stretch(1, sy)

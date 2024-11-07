@@ -7,6 +7,8 @@ from Shape import _Shape
 from Point2D import Point2D
 from Rect import Rect
 from RectArray import RectArray
+from RectGrid import RectGrid
+import RectMath as rm
 
 NTRIALS = 100
 MIN_VAL = -1000
@@ -345,6 +347,189 @@ class TestRectArray(unittest.TestCase):
             self.assertEqual(ra0.dx, ra1.dx)
             self.assertEqual(ra0.dy, ra1.dy)
             self.assertEqual(ra0.bbox, ra1.bbox)
+
+class TestRectGrid(unittest.TestCase):
+    def test__eq__(self):
+        for i in range(NTRIALS):
+            x = random.randint(MIN_VAL,MAX_VAL)
+            y = random.randint(MIN_VAL,MAX_VAL)
+            w = random.randint(MIN_VAL,MAX_VAL)
+            h = random.randint(MIN_VAL,MAX_VAL)
+            xp = random.randint(0,MAX_VAL)
+            yp = random.randint(0,MAX_VAL)
+            nr = random.randint(1,MAX_VAL)
+            nc = random.randint(1,MAX_VAL)
+            hra = RectArray(Rect(x,y,w,h), 0, yp, nr, 1)
+            vra = RectArray(Rect(x,y,w,h), xp, 0, 1, nc)
+            rg0 = RectGrid(hra, vra)
+            rg1 = RectGrid(hra, vra)
+            self.assertEqual(rg0, rg1)
+    def test_getData(self):
+        for i in range(NTRIALS):
+            x = random.randint(MIN_VAL,MAX_VAL)
+            y = random.randint(MIN_VAL,MAX_VAL)
+            w = random.randint(MIN_VAL,MAX_VAL)
+            h = random.randint(MIN_VAL,MAX_VAL)
+            xp = random.randint(0,MAX_VAL)
+            yp = random.randint(0,MAX_VAL)
+            nr = random.randint(1,MAX_VAL)
+            nc = random.randint(1,MAX_VAL)
+            hra = RectArray(Rect(x,y,w,h), 0, yp, nr, 1)
+            vra = RectArray(Rect(x,y,w,h), xp, 0, 1, nc)
+            rg0 = RectGrid(hra, vra)
+            data = RectGrid(hra, vra).getData()
+            expected_data = np.array([ [hra.r0.x0, hra.r0.x1, vra.r0.x0, vra.r0.x1], 
+                                       [hra.r0.y0, hra.r0.y1, vra.r0.y0, vra.r0.y1] ])
+            self.assertEqual(type(data), type(expected_data))
+            self.assertEqual(data.dtype, expected_data.dtype)
+            self.assertEqual(data.shape, expected_data.shape)
+            self.assertEqual(data[0,0], expected_data[0,0])
+            self.assertEqual(data[1,0], expected_data[1,0])
+#    def test_getPos(self):
+#        pass
+#    def test_updateData(self):
+#        pass 
+#    def test_properties(self):
+#        pass
+
+class TestRectMath(unittest.TestCase):
+    def test_rect_crosses_x(self):
+        x = 0
+        r = Rect(0,0,10,10)
+        m = f'\nx: {x}, Rect x0, x1: {r.x0}, {r.x1}\n'
+        self.assertEqual(rm.rect_crosses_x(r, x), True, msg=m)
+        x = -1
+        self.assertEqual(rm.rect_crosses_x(r, x), False, msg=m)
+        r = Rect(-10,10,-20,10)
+        self.assertEqual(rm.rect_crosses_x(r, x), False, msg=m)
+        r = Rect(-10,10,20,10)
+        self.assertEqual(rm.rect_crosses_x(r, x), True, msg=m)
+        x = 1.345
+        r = Rect(0,0,1.344,100)
+        self.assertEqual(rm.rect_crosses_x(r, x), False, msg=m)
+        r = Rect(0,0,1.346,100)
+        self.assertEqual(rm.rect_crosses_x(r, x), True, msg=m)
+    def test_rect_crosses_y(self):
+        y = 0
+        r = Rect(0,0,10,10)
+        m = f'\ny: {y}, Rect y0, y1: {r.y0}, {r.y1}\n'
+        self.assertEqual(rm.rect_crosses_y(r, y), True, msg=m)
+        y = 10
+        self.assertEqual(rm.rect_crosses_y(r, y), True, msg=m)
+        y = 1
+        self.assertEqual(rm.rect_crosses_y(r, y), True, msg=m)
+        y = -1
+        self.assertEqual(rm.rect_crosses_y(r, y), False, msg=m)
+        r = Rect(0,0.12330,10,1092.8)
+        y = 1092.9
+        self.assertEqual(rm.rect_crosses_y(r, y), True, msg=m)
+        y = 1093.9
+        self.assertEqual(rm.rect_crosses_y(r, y), False, msg=m)
+    def test_rect_within_x_bounds(self):
+        xmin = 0
+        xmax = 10
+        r = Rect(0,0,10,10)
+        self.assertEqual(rm.rect_within_x_bounds(r, xmin, xmax), True,
+                                                                 msg=f'\nxmin, xmax: {xmin}, {xmax}\nr.x0, r.x1: {r.x0}, {r.x1}\n')
+        xmin, xmax = (-10,1) 
+        self.assertEqual(rm.rect_within_x_bounds(r, xmin, xmax), False, 
+                                                                 msg=f'\nxmin, xmax: {xmin}, {xmax}\nr.x0, r.x1: {r.x0}, {r.x1}\n')
+        xmin, xmax = (-10,-1) 
+        self.assertEqual(rm.rect_within_x_bounds(r, xmin, xmax), False, 
+                                                                 msg=f'\nxmin, xmax: {xmin}, {xmax}\nr.x0, r.x1: {r.x0}, {r.x1}\n')
+        xmin, xmax = (0,10.000001) 
+        self.assertEqual(rm.rect_within_x_bounds(r, xmin, xmax), True, 
+                                                                 msg=f'\nxmin, xmax: {xmin}, {xmax}\nr.x0, r.x1: {r.x0}, {r.x1}\n')
+        xmin, xmax = (0.000001,10.000001) 
+        self.assertEqual(rm.rect_within_x_bounds(r, xmin, xmax), False, 
+                                                                 msg=f'\nxmin, xmax: {xmin}, {xmax}\nr.x0, r.x1: {r.x0}, {r.x1}\n')
+        xmin, xmax = (0,9.9999999) 
+        self.assertEqual(rm.rect_within_x_bounds(r, xmin, xmax), False, 
+                                                                 msg=f'\nxmin, xmax: {xmin}, {xmax}\nr.x0, r.x1: {r.x0}, {r.x1}\n')
+    def test_rect_within_y_bounds(self):
+        ymin = 0
+        ymax = 10
+        r = Rect(0,0,10,10)
+        self.assertEqual(rm.rect_within_y_bounds(r, ymin, ymax), True,
+                                                                 msg=f'\nymin, ymax: {ymin}, {ymax}\nr.y0, r.y1: {r.y0}, {r.y1}\n')
+        r = Rect(0,0,10,10.0001)
+        self.assertEqual(rm.rect_within_y_bounds(r, ymin, ymax), False,
+                                                                 msg=f'\nymin, ymax: {ymin}, {ymax}\nr.y0, r.y1: {r.y0}, {r.y1}\n')
+        r = Rect(0,0.001,10,10)
+        self.assertEqual(rm.rect_within_y_bounds(r, ymin, ymax), False,
+                                                                 msg=f'\nymin, ymax: {ymin}, {ymax}\nr.y0, r.y1: {r.y0}, {r.y1}\n')
+        r = Rect(0,0,10,10)
+        ymin, ymax = (0.1, 11)
+        self.assertEqual(rm.rect_within_y_bounds(r, ymin, ymax), False,
+                                                                 msg=f'\nymin, ymax: {ymin}, {ymax}\nr.y0, r.y1: {r.y0}, {r.y1}\n')
+        ymin, ymax = (-0.1, 10.01)
+        self.assertEqual(rm.rect_within_y_bounds(r, ymin, ymax), True,
+                                                                 msg=f'\nymin, ymax: {ymin}, {ymax}\nr.y0, r.y1: {r.y0}, {r.y1}\n')
+    def test_rect_contains_point(self):
+        r = Rect(0,0,10,10)
+        p = Point2D(5,5)
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = r.bl
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = r.br
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = r.tl
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = r.tr
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = r.mr
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = r.ml
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = r.mt
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = r.mb
+        self.assertEqual(rm.rect_contains_point(r, p), True)
+        p = Point2D(-1,0)
+        self.assertEqual(rm.rect_contains_point(r, p), False)
+        p = Point2D(0,-1)
+        self.assertEqual(rm.rect_contains_point(r, p), False)
+        p = Point2D(0,11)
+        self.assertEqual(rm.rect_contains_point(r, p), False)
+        p = Point2D(11,11)
+        self.assertEqual(rm.rect_contains_point(r, p), False)
+    def test_rect_contains_rect(self):
+        r0 = Rect(0,0,10,10)
+        r1 = Rect(0,0,10,10)
+        self.assertEqual(rm.rect_contains_rect(r0,r1), True)
+        r1 = Rect(0,3,1,1)
+        self.assertEqual(rm.rect_contains_rect(r0,r1), True)
+        r1 = Rect(-10,0,10,10)
+        self.assertEqual(rm.rect_contains_rect(r0,r1), False)
+        r1 = Rect(0,-10,10,10)
+        self.assertEqual(rm.rect_contains_rect(r0,r1), False)
+        r1 = Rect(0,20,10,10)
+        self.assertEqual(rm.rect_contains_rect(r0,r1), False)
+        r1 = Rect(20,20,10,10)
+        self.assertEqual(rm.rect_contains_rect(r0,r1), False)
+    def test_rect_pass_through_rect_x(self):
+        pass
+    def test_rect_pass_through_rect_y(self):
+        pass
+    def test_rect_pass_into_rect_left(self):
+        pass
+    def test_rect_pass_into_rect_right(self):
+        pass
+    def test_rect_pass_into_rect_top(self):
+        pass
+    def test_rect_pass_into_rect_bottom(self):
+        pass
+    def test_rect_overlaps_rect(self):
+        pass
+    def test_get_overlap_rect(self):
+        pass
+    def test_get_overlap_rect_array_h(self):
+        pass
+    def test_get_overlap_rect_array_v(self):
+        pass
+    def test_get_overlap_rect_array(self):
+        pass
+
 
 if __name__=='__main__':
     unittest.main()
