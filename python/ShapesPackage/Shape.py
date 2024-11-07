@@ -11,12 +11,14 @@ FLIP_HV_XFORM = np.array([[-1,  0],
                          [ 0, -1] ])
 
 class _Shape:
+    _precision = 6#round to 6 decimals
     def getData(self)->np.ndarray: pass
     def updateData(self, new_data:np.array)->None: pass
     def getPos(self)->np.ndarray: pass
     def xform(self, xform:np.ndarray)->None:
         data = self.getData()
-        self.updateData(np.matmul(xform, data))
+        new_data = np.matmul(xform, data)
+        self.updateData(np.round(new_data, self._precision))
     def scale(self, sf)->None: 
         self.updateData(self.getData()*sf)
     def translate(self, dx, dy)->None:
@@ -27,7 +29,8 @@ class _Shape:
         pos = np.array([xpos, ypos])
         pos.shape = (2,1)
         d = pos - self.getPos()
-        self.updateData(self.getData() + d)
+        new_data = self.getData() + d
+        self.updateData(np.round(new_data, self._precision))
     def stretch(self, sx, sy)->None:
         x, y = (self.getPos()[0,0], self.getPos()[1,0])
         self.moveTo(0,0)

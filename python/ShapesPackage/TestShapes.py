@@ -12,12 +12,45 @@ NTRIALS = 100
 MIN_VAL = -1000
 MAX_VAL = 1000
 
-#class Shape(unittest.TestCase):
-#    def test_xform(self):
-#        pass
-#    def test_translate(self):
-#        pass
-#    def test_moveTo(self):
+class Shape(unittest.TestCase):
+    test_dict_0 = {
+            (10,4) : Point2D(10,14), 
+            (0, 0) : Point2D(1,1),
+            (0, 0) : Point2D(0,0),
+            (1.7, 10.2) : Point2D(1.7,0),
+            (-1, 10.2) : Point2D(12,0),
+            (-1, 10.2) : Point2D(12.7,12),
+            (-11.4, 10.2) : Point2D(3.8, 129.3),
+            (101.478, -123810.452) : Point2D(347, 1083.897),
+            (0,0): Rect(0,0,10,10),
+            (12.4, 34.7): Rect(-10,10,4,2.7),
+            (123.789, 12347.809): Rect(99.65, 87.90, 12.659, 11.75),
+    }
+    def test_translate(self):
+        test_dict = self.test_dict_0
+        for key in test_dict.keys():
+            s = test_dict[key]
+            dx, dy = key
+            if type(s) == Point2D:
+                exp_s = Point2D(s.x+dx, s.y+dy)
+            if type(s) == Rect:
+                exp_s = Rect(s.x0+dx, s.y0+dy, s.w, s.h)
+            s.translate(dx, dy)
+            m = f'\ns: {type(s)}\n{s.getPos()}\n---\nexp_s: {type(s)}\n{exp_s.getPos()}' 
+            self.assertEqual(s, exp_s, msg=m)
+    def test_moveTo(self):
+        test_dict = self.test_dict_0
+        for key in test_dict.keys():
+            s = test_dict[key]
+            xpos, ypos = key
+            if type(s) == Point2D:
+                exp_s = Point2D(xpos, ypos)
+            if type(s) == Rect:
+                exp_s = Rect(xpos, ypos, s.w, s.h)
+            s.moveTo(xpos, ypos)
+            m = f'\ns: {type(s)}\n{s.getPos()}\n---\nexp_s: {type(s)}\n{exp_s.getPos()}' 
+            self.assertEqual(s, exp_s, msg=m)
+#    def scale(self):
 #        pass
 #    def test_stretch(self):
 #        pass
@@ -87,6 +120,7 @@ class TestPoint2D(unittest.TestCase):
         self.assertEqual(pos.shape, expected_pos.shape)
         self.assertEqual(pos[0,0], expected_pos[0,0])
         self.assertEqual(pos[1,0], expected_pos[1,0])
+
     def test_x(self):
         x = Point2D(9,7).x
         expected_x = 9

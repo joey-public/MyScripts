@@ -10,8 +10,9 @@ class Rect(_Shape):
         y0 = self.__getMinY(data)
         x1 = self.__getMaxX(data)
         y1 = self.__getMaxY(data)
-        self._data = np.array([ [x0, x1], 
-                                [y0, y1] ], dtype=data_type)
+        self._data = np.round(np.array([ [x0, x1], 
+                                [y0, y1] ], dtype=data_type), 
+                              self._precision)
     def __eq__(self, other):
         return (self.x0==other.x0) and (self.y0==other.y0) and (self.x1==other.x1) and (self.y1==other.y1)
     #private funcs
@@ -35,6 +36,7 @@ class Rect(_Shape):
         self._data[1,0] = y0
         self._data[0,1] = x1
         self._data[1,1] = y1
+        self._data = np.round(self._data, self._precision)
     def getData(self):
         return self._data
     def getPos(self):
