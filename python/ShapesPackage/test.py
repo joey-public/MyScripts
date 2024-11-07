@@ -67,8 +67,9 @@ if __name__ == '__main__':
     
     r0 = Rect(20, 25, 20, 20) # a square
 
-    ra0 = RectArray(Rect(25, 25, r0.w, r0.h), 40, 40, 3, 2)   
+    ra0 = RectArray(r0, 40, 40, 3, 2)   
     ra0.moveTo(r0.x1+ra0.dx,r0.y0)
+
     ra1 = RectArray(Rect(0, 0, r0.w, ra0.bbox.h), ra0.pitch.x, 0, 1, 3)   
     ra1.moveTo(ra0.bbox.x1 + ra0.dx, r0.y0)
     ra2 = RectArray(Rect(0, 0, ra1.bbox.w, r0.h), 0, ra0.pitch.y, 3, 1)

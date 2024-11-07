@@ -11,8 +11,8 @@ class RectGrid(_Shape):
         assert h_rects.ncols==1, 'RectGrid.h_rects must have 1 col.'
         assert v_rects.nrows==1, 'RectGrid.v_rects must have 1 col.'
         assert rm.rect_overlaps_rect(h_rects.r0, v_rects.r0), 'REctGrid h_rect.r0 and v_rect.r0 must overlapREctGrid h_rect.r0 and v_rect.r0 must overlap.'
-        self._h_rects = h_rects
-        self._v_rects = v_rects
+        self._h_rects = RectArray(h_rects.r0, h_rects.pitch.x, h_rects.pitch.y, h_rects.nrows, h_rects.ncols)
+        self._v_rects = RectArray(v_rects.r0, v_rects.pitch.x, v_rects.pitch.y, v_rects.nrows, v_rects.ncols) 
     def __eq__(self, other):
         return self.h_rects==other.h_rects and self.v_rects==other.v_rects and self.bbox==other.bbox
     def getData(self)->np.ndarray:

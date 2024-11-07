@@ -11,7 +11,7 @@ class RectArray(_Shape):
         assert nrows>0, f'RectArray must have at lease 1 row. you passed {nrows}.'
         assert ncols>0, f'RectArray must have at lease 1 col. you passed {ncols}.'
         assert r0.getData().dtype == dt, 'RectArray r0 dtype does not match dt. This is a know bug that needs fixing.'
-        self._r0 = r0
+        self._r0 = Rect(r0.x0, r0.y0, r0.w, r0.h)
         self._pitch = Point2D(x_pitch, y_pitch, dt)
         self.nrows = nrows
         self.ncols = ncols
