@@ -69,6 +69,7 @@ if __name__ == '__main__':
     canvas = pg.Surface((SCREEN_WIDTH,SCREEN_HEIGHT))
     
     r0 = Rect(20, 25, 20, 20) # a square
+    r1 = Rect(20, 25, 20, 20) # a square
 
     ra0 = RectArray(r0, 40, 40, 3, 2)   
     ra0.moveTo(r0.x1+ra0.dx,r0.y0)
@@ -85,6 +86,7 @@ if __name__ == '__main__':
 
     dev = ShapeContainer()
     dev.addShape(r0)
+    dev.addShape(r1)
     dev.addShape(ra0)
     dev.addShape(ra1)
     dev.addShape(ra2)

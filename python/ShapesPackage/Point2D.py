@@ -8,6 +8,8 @@ class Point2D(_Shape):
         self._data.shape = (2,1)
         self._data = np.round(self._data, self._precision)
     def __eq__(self, other):
+        if not(type(other)==type(self)): 
+            return False
         return (self.x == other.x) and (self.y == other.y)
     def __hash__(self):
         return hash((self.x, self.y))

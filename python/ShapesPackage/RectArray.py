@@ -16,7 +16,11 @@ class RectArray(_Shape):
         self.nrows = nrows
         self.ncols = ncols
     def __eq__(self, other):
-        return self.r0 == other.r0 and self._pitch==other._pitch 
+        if not(type(other)==type(self)): 
+            return False
+        return self.r0 == other.r0 and self._pitch==other._pitch and self.nrows==other.nrows and self.ncols==other.ncols
+    def __hash__(self, other):
+        return hash((self._r0, self._pitch, self.nrows, self.ncols))
     #public functions
     def getData(self):
         return self.r0.getData()

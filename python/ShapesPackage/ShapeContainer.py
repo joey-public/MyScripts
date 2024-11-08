@@ -18,8 +18,12 @@ class ShapeContainer:
     #TODO: check if s is in shape list. Need to be able to univerally compare shapes.
     # Maybe add a type check into each shapes __eq__ function.
     def addShape(self, s:_Shape)->None:
+        if s in self._shape_list:
+            return 
         self._shape_list.append(s)
     def removeShape(self, s:_Shape)->None:
+        if not(s in self._shape_list):
+            return 
         self._shape_list.remove(s)
     #TODO: add bbox
     def __getBbox(self):

@@ -14,6 +14,10 @@ class Rect(_Shape):
                                 [y0, y1] ], dtype=data_type), 
                               self._precision)
     def __eq__(self, other):
+        if not(type(other)==type(self)): 
+            return False
+        if not(self._data.dtype==other._data.dtype): 
+            return False
         return (self.x0==other.x0) and (self.y0==other.y0) and (self.x1==other.x1) and (self.y1==other.y1)
     #private funcs
     def __getMinX(self, data:np.array):

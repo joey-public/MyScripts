@@ -14,6 +14,8 @@ class RectGrid(_Shape):
         self._h_rects = RectArray(h_rects.r0, h_rects.pitch.x, h_rects.pitch.y, h_rects.nrows, h_rects.ncols)
         self._v_rects = RectArray(v_rects.r0, v_rects.pitch.x, v_rects.pitch.y, v_rects.nrows, v_rects.ncols) 
     def __eq__(self, other):
+        if not(type(other)==type(self)): 
+            return False
         return self.h_rects==other.h_rects and self.v_rects==other.v_rects and self.bbox==other.bbox
     def getData(self)->np.ndarray:
         d = np.hstack((self.h_rects.getData(), self.v_rects.getData()))
