@@ -6,7 +6,9 @@ from Point2D import Point2D
 from Rect import Rect
 from RectArray import RectArray
 from RectGrid import RectGrid
+from ShapeContainer import ShapeContainer
 import RectMath as rm
+
 
 SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 500
@@ -54,6 +56,7 @@ def draw_rect_grid(surface, rg:RectGrid, width0, width1, color):
     draw_rect_array(surface, rg.v_rects, width0, color)
     draw_rect_array(surface, rg.o_rects, width1, color)
 
+
 if __name__ == '__main__':
     
     # pygame setup
@@ -79,12 +82,34 @@ if __name__ == '__main__':
     rv = RectArray(Rect(0, 0, r0.w, ra0.bbox.h), ra0.pitch.x, 0, 1, 3)   
     rg = RectGrid(rh, rv)
     rg.moveTo(ra2.bbox.x1+ra0.dx,r0.y0)
+
+    dev = ShapeContainer()
+    dev.addShape(r0)
+    dev.addShape(ra0)
+    dev.addShape(ra1)
+    dev.addShape(ra2)
+    dev.addShape(rg)
     
     while running:
         #handle input
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+        #Handle input
+        keys = pg.key.get_pressed()
+        if keys[pg.K_j]:
+            dev.translate(0,-10)
+        if keys[pg.K_k]:
+            dev.translate(0,10)
+        if keys[pg.K_h]:
+            dev.translate(-10, 0)
+        if keys[pg.K_l]:
+            dev.translate(10, 0)
+        if keys[pg.K_b]:
+            dev.scale(2)
+        if keys[pg.K_c]:
+            dev.scale(1/2)
+        
         #render
         canvas.fill(BG_COLOR)
         draw_rect(canvas, r0, 1, COLOR_0)
