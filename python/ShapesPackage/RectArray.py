@@ -4,23 +4,36 @@ from Rect import Rect
 from Point2D import Point2D
 
 class RectArray(_Shape):
-    def __init__(self, r0:Rect, x_pitch, y_pitch, 
-                       nrows:int, ncols:int, dt=np.float64):
-        assert x_pitch>=0, 'RectArrya has not been tested with negative x pitches.'
-        assert y_pitch>=0, 'RectArrya has not been tested with negative y pitches.'
+    def __init__(self, r0:Rect, x_pitch=0, y_pitch=0, 
+                       nrows:int=1, ncols:int=1, **kwargs):
+        for key, val in kwargs.items():
+            if key=='x_pitch':
+                x_pitch = val
+            if key=='y_pitch':
+                y_pitch = val
+            if key=='ncols':
+                ncols = val
+            if key=='nrows':
+                nrows = val
+            if key == 'dtype':
+                self._dtype = val
+            if key == 'prec':
+                self._precision = val
+        assert x_pitch>=0, 'RectArry has not been tested with negative x pitches.'
+        assert y_pitch>=0, 'RectArry has not been tested with negative y pitches.'
         assert nrows>0, f'RectArray must have at lease 1 row. you passed {nrows}.'
         assert ncols>0, f'RectArray must have at lease 1 col. you passed {ncols}.'
-        assert r0.getData().dtype == dt, 'RectArray r0 dtype does not match dt. This is a know bug that needs fixing.'
+        assert r0.getData().dtype == self._dtype, 'RectArray r0 dtype does not match dt. This is a know bug that needs fixing.'
         self._r0 = Rect(r0.x0, r0.y0, r0.w, r0.h)
-        self._pitch = Point2D(x_pitch, y_pitch, dt)
+        self._pitch = Point2D(x_pitch, y_pitch, self._dtype)
         self.nrows = nrows
         self.ncols = ncols
     def __eq__(self, other):
         if not(type(other)==type(self)): 
             return False
-        return self.r0 == other.r0 and self._pitch==other._pitch and self.nrows==other.nrows and self.ncols==other.ncols
+        return self.r0 == other.r0 and self._pitch==other._pitch and self.nrows==other.nrows and self.ncols==other.ncols and self._dtype==other._dtype and self._precision==other._precision
     def __hash__(self, other):
-        return hash((self._r0, self._pitch, self.nrows, self.ncols))
+        return hash((self._r0, self._pitch, self.nrows, self.ncols, self._dtype, self._precision))
     #public functions
     def getData(self):
         return self.r0.getData()

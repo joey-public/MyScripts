@@ -58,7 +58,6 @@ def draw_rect_grid(surface, rg:RectGrid, width0, width1, color):
 
 
 if __name__ == '__main__':
-    
     # pygame setup
     pg.init()
     screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

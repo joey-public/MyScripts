@@ -3,22 +3,29 @@ from Point2D import Point2D
 from Shape import _Shape
 
 class Rect(_Shape):
-    def __init__(self, x0, y0, w, h, data_type=np.float64):
+    def __init__(self, x0, y0, w, h, 
+                 dtype=np.float64, prec=6,**kwargs):
+        self._dtype = dtype
+        self._precision = prec
+        for key, val in kwargs.items():
+            if key == 'dtype':
+                self._dtype = val
+            if key == 'prec':
+                self._precision = prec
         data = np.array([[x0, x0+w], 
-                         [y0, y0+h]], dtype=data_type)
+                         [y0, y0+h]], dtype=self._dtype)
         x0 = self.__getMinX(data)
         y0 = self.__getMinY(data)
         x1 = self.__getMaxX(data)
         y1 = self.__getMaxY(data)
         self._data = np.round(np.array([ [x0, x1], 
-                                [y0, y1] ], dtype=data_type), 
-                              self._precision)
+                                         [y0, y1] ], 
+                                        dtype=self._dtype), 
+                                        self._precision)
     def __eq__(self, other):
         if not(type(other)==type(self)): 
             return False
-        if not(self._data.dtype==other._data.dtype): 
-            return False
-        return (self.x0==other.x0) and (self.y0==other.y0) and (self.x1==other.x1) and (self.y1==other.y1)
+        return (self.x0==other.x0) and (self.y0==other.y0) and (self.x1==other.x1) and (self.y1==other.y1) and (self._dtype==other._dtype) and (self._precision==other._precision)
     #private funcs
     def __getMinX(self, data:np.array):
         return min(data[0,0], data[0,1])

@@ -12,6 +12,7 @@ FLIP_HV_XFORM = np.array([[-1,  0],
 
 class _Shape:
     _precision = 6#round to 6 decimals
+    _dtype = np.float64
     def getData(self)->np.ndarray: pass
     def updateData(self, new_data:np.array)->None: pass
     def getPos(self)->np.ndarray: pass
