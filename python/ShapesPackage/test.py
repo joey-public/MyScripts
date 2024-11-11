@@ -26,6 +26,8 @@ FILL_PITCH = 15
 FILL_ENC = 15
 
 
+#TODO: Seperate draw fucns into an isolated module
+#TODO: implement **kwargs for the drawing functions
 def draw_point(surface, p:Point2D, radius:int, color:tuple):
     if p is None: return 
     pg.draw.circle(surface, color, (p.x, p.y), radius)
@@ -55,7 +57,17 @@ def draw_rect_grid(surface, rg:RectGrid, width0, width1, color):
     draw_rect_array(surface, rg.h_rects, width0, color)
     draw_rect_array(surface, rg.v_rects, width0, color)
     draw_rect_array(surface, rg.o_rects, width1, color)
-
+def draw_shape_container(surface:pg.Surface, c:ShapeContainer, **kwargs):
+    for shape in c._shape_list:
+        shape_type = type(shape) 
+        if shape_type == Point2D:
+            draw_point(surface, shape, 3, COLOR_0)
+        if shape_type == Rect:
+            draw_rect(surface, shape, 1, COLOR_0)
+        if shape_type == RectArray:
+            draw_rect_array(surface, shape, 1, COLOR_0)
+        if shape_type == RectGrid:
+            draw_rect_grid(surface, shape, 1, 3, COLOR_0)
 
 if __name__ == '__main__':
     # pygame setup
@@ -67,29 +79,21 @@ if __name__ == '__main__':
 
     canvas = pg.Surface((SCREEN_WIDTH,SCREEN_HEIGHT))
     
-    r0 = Rect(20, 25, 20, 20) # a square
-    r1 = Rect(20, 25, 20, 20) # a square
-
-    ra0 = RectArray(r0, 40, 40, 3, 2)   
-    ra0.moveTo(r0.x1+ra0.dx,r0.y0)
-
-    ra1 = RectArray(Rect(0, 0, r0.w, ra0.bbox.h), ra0.pitch.x, 0, 1, 3)   
-    ra1.moveTo(ra0.bbox.x1 + ra0.dx, r0.y0)
-    ra2 = RectArray(Rect(0, 0, ra1.bbox.w, r0.h), 0, ra0.pitch.y, 3, 1)
-    ra2.moveTo(ra1.bbox.x1 + ra1.dx, r0.y0)
+    bbox = Rect(0,0,200,100)
+    r0 = Rect(0,0,30,80)
+    v_rects = RectArray(r0, x_pitch=50, ncols=3)
+    v_rects.translate(35, 10)
+    r0 = Rect(0,0,210,10)
+    h_rects = RectArray(r0, y_pitch=15, nrows=11)
+    h_rects.translate(0, -5)
     
-    rh = RectArray(Rect(0, 0, ra1.bbox.w, r0.h), 0, ra0.pitch.y, 3, 1)
-    rv = RectArray(Rect(0, 0, r0.w, ra0.bbox.h), ra0.pitch.x, 0, 1, 3)   
-    rg = RectGrid(rh, rv)
-    rg.moveTo(ra2.bbox.x1+ra0.dx,r0.y0)
-
     dev = ShapeContainer()
-    dev.addShape(r0)
-    dev.addShape(r1)
-    dev.addShape(ra0)
-    dev.addShape(ra1)
-    dev.addShape(ra2)
-    dev.addShape(rg)
+    dev.addShape(bbox)
+    dev.addShape(v_rects)
+    #dev.addShape(h_rects)
+    xpos = SCREEN_WIDTH/2 - bbox.w/2
+    ypos = SCREEN_HEIGHT/2 - bbox.h/2
+    dev.translate(xpos, ypos)
     
     while running:
         #handle input
@@ -113,11 +117,7 @@ if __name__ == '__main__':
         
         #render
         canvas.fill(BG_COLOR)
-        draw_rect(canvas, r0, 1, COLOR_0)
-        draw_rect_array(canvas, ra0, 1, COLOR_0)
-        draw_rect_array(canvas, ra1, 1, COLOR_0)
-        draw_rect_array(canvas, ra2, 1, COLOR_0)
-        draw_rect_grid(canvas, rg, 1, 2, COLOR_0)
+        draw_shape_container(canvas, dev)
 
         screen.blit(pg.transform.flip(canvas, False, True), (0,0))
 #        screen.blit(canvas, (0,0))

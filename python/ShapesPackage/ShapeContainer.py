@@ -9,9 +9,9 @@ class ShapeContainer:
     def translate(self, dx, dy)->None:
         for s in self._shape_list:
             s.translate(dx, dy)
-    def moveTo(self, dx, dy)->None:
-        for s in self._shape_list:
-            s.moveTo(xpos, ypos)
+#    def moveTo(self, xpos, ypos)->None:
+#        for s in self._shape_list:
+#            s.moveTo(xpos, ypos)
     def scale(self, sf)->None:
         for s in self._shape_list:
             s.scale(sf)
