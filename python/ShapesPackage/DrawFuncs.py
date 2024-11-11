@@ -94,3 +94,18 @@ def drawShapeContainer(surface:pg.Surface, c:ShapeContainer, **kwargs):
             draw_rect_array(surface, shape, **kwargs)
 #        if shape_type == RectGrid:
 #            draw_rect_grid(surface, shape, **kwargs)
+
+def drawText(surface:pg.Surface, text:str, pos:Point2D, **kwargs):
+    font_type = 'Open Sans'
+    font_size = 24 
+    font_color = (255,255,255)
+    aa = True
+    if 'font' in kwargs.keys(): 
+        font_type = kwargs['font']
+    if 'font_size' in kwargs.keys(): 
+        font_size = kwargs['font_size']
+    if 'font_color' in kwargs.keys(): 
+        font_color = kwargs['font_color']
+    font = pg.font.SysFont(font_type, font_size)
+    label = font.render(text, aa, font_color)
+    surface.blit(pg.transform.flip(label,False,True), (pos.x, pos.y))

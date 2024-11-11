@@ -94,6 +94,10 @@ if __name__ == '__main__':
                           fill_pattern = 'x', 
                           fill_pattern_width = 1, 
                           fill_pattern_color = (100,0,0)) 
+
+        renderer.drawText(canvas, 'Hello World!', Point2D(10,10), 
+                          font_size = 24, 
+                          font_color = (255,255,255))
         screen.blit(pg.transform.flip(canvas, False, True), (0,0))
 #        screen.blit(canvas, (0,0))
         pg.display.flip()
