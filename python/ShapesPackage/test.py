@@ -7,8 +7,10 @@ from Rect import Rect
 from RectArray import RectArray
 from RectGrid import RectGrid
 from ShapeContainer import ShapeContainer
+from Checkbox import Checkbox
 import RectMath as rm
 import DrawFuncs as renderer
+
 
 
 SCREEN_WIDTH = 500
@@ -47,11 +49,14 @@ if __name__ == '__main__':
                                        x_pitch=150, ncols=2)
     ra1.translate(250,0)
     
+    checkbox = Checkbox(Rect(100, 450, 25, 25), 'My Checkbox')
+    
     while running:
         #handle input
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+        checkbox.update()
         #render
         canvas.fill(BG_COLOR)
         renderer.drawRect(canvas, r0, 
@@ -94,11 +99,11 @@ if __name__ == '__main__':
                           fill_pattern = 'x', 
                           fill_pattern_width = 1, 
                           fill_pattern_color = (100,0,0)) 
-
         renderer.drawText(canvas, 'Hello World!', Point2D(10,10), 
                           font_size = 24, 
                           font_color = (255,255,255))
-        screen.blit(pg.transform.flip(canvas, False, True), (0,0))
+        checkbox.render(canvas)
+        screen.blit(canvas, (0,0))
 #        screen.blit(canvas, (0,0))
         pg.display.flip()
         #handle fsp

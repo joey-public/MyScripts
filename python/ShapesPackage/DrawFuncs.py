@@ -108,4 +108,4 @@ def drawText(surface:pg.Surface, text:str, pos:Point2D, **kwargs):
         font_color = kwargs['font_color']
     font = pg.font.SysFont(font_type, font_size)
     label = font.render(text, aa, font_color)
-    surface.blit(pg.transform.flip(label,False,True), (pos.x, pos.y))
+    surface.blit(label, (pos.x, pos.y))
