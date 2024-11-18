@@ -1,7 +1,8 @@
 import numpy as np
-from Shape import _Shape
-from Rect import Rect
-from Point2D import Point2D
+
+from .Shape import _Shape
+from .Rect import Rect
+from .Point2D import Point2D
 
 class RectArray(_Shape):
     def __init__(self, r0:Rect, x_pitch=0, y_pitch=0, 

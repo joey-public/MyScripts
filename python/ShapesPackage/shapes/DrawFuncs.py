@@ -1,11 +1,8 @@
-import pygame as pg
-import numpy as np
-
-from Point2D import Point2D
-from Rect import Rect
-from RectArray import RectArray
-from RectGrid import RectGrid
-from ShapeContainer import ShapeContainer
+from .Point2D import Point2D
+from .Rect import Rect
+from .RectArray import RectArray
+from .RectGrid import RectGrid
+from .ShapeContainer import ShapeContainer
 
 def drawPoint(surface, p:Point2D, **kwargs):
     radius = 3

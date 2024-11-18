@@ -1,6 +1,6 @@
 import numpy as np
-from Shape import _Shape
 
+from .Shape import _Shape
 
 class Point2D(_Shape):
     def __init__(self, x, y, data_type=np.float64):

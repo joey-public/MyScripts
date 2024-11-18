@@ -1,6 +1,6 @@
 import numpy as np
-from Point2D import Point2D
-from Shape import _Shape
+from .Point2D import Point2D
+from .Shape import _Shape
 
 class Rect(_Shape):
     def __init__(self, x0, y0, w, h, 

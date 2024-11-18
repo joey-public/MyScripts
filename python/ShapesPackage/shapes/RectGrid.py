@@ -1,10 +1,10 @@
 import numpy as np
 
-from Shape import _Shape
-from Point2D import Point2D
-from Rect import Rect
-from RectArray import RectArray
-import RectMath as rm
+from .Shape import _Shape
+from .Point2D import Point2D
+from .Rect import Rect
+from .RectArray import RectArray
+import .RectMath as rm
 
 class RectGrid(_Shape):
     def __init__(self, h_rects:RectArray, v_rects:RectArray):

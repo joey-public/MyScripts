@@ -1,8 +1,8 @@
 import numpy as np
 
-from Point2D import Point2D
-from Rect import Rect
-from RectArray import RectArray
+from .Point2D import Point2D
+from .Rect import Rect
+from .RectArray import RectArray
 
 def rect_crosses_x(r:Rect, x)->bool:
     return x >= r.x0 and x <= r.x1 
