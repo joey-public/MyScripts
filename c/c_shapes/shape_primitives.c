@@ -14,10 +14,22 @@ Point newPoint(int32_t x, int32_t y)
     p.data[1] = y;
     return p;
 }
-int32_t getPointX(Point* p) { return p->data[0]; }
-int32_t getPointY(Point* p) { return p->data[1]; }
-void setPointX(Point* p, int32_t x) { p->data[0] = x; }
-void setPointY(Point* p, int32_t y) { p->data[1] = y; }
+int32_t getPointX(Point* p) 
+{ 
+    return p->data[0]; 
+}
+int32_t getPointY(Point* p) 
+{ 
+    return p->data[1]; 
+}
+void setPointX(Point* p, int32_t x) 
+{ 
+    p->data[0] = x; 
+}
+void setPointY(Point* p, int32_t y) 
+{ 
+    p->data[1] = y; 
+}
 void pointApplyXform(Point* p, int32_t xform[2][2]) 
 {
     return;//need to implement this 
