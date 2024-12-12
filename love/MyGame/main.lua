@@ -1,39 +1,48 @@
-function love.load()
-    -- Remember: camelCasing!
-    listOfRectangles = {}
+local function calc_spritesheet_stats(ss, tileW, tileH)
+  local ssW, ssH = ss:getWidth(), ss:getHeight()
+  local ss_rows = math.floor(ssH, tileH)
+  local ss_cols = math.floor(ssW, tileW)
+  local n_tiles = math.floor(ss_rows*ss_cols)
+  return {ss_w=ssW, ss_h=ssH, 
+          tile_w=tileW, tile_h=tileH, 
+          nrows=ss_rows, ncols=ss_cols, 
+          ntiles=ss_rows*ss_cols}
 end
 
-function createRect()
-    rect = {}
-    rect.x = 100
-    rect.y = 100
-    rect.width = 70
-    rect.height = 90
-    rect.speed = 100
+local function load_tiles(ss, ss_stats)
+  local tiles = {}
+  for i=0, ss_stats.ntiles do
+    table.insert(tiles, 'Hi!')
+  end
+  return tiles
+end
 
-    -- Put the new rectangle in the list
-    table.insert(listOfRectangles, rect)
+local function load_quad(x, y, ss_stats)
+  local s = ss_stats
+  return love.graphics.newQuad(x, y, s.tile_w, s.tile_h, s.ss_w, s.ss_h) 
+end
+
+function love.load()
+  local png_path = 'assets/roguelikeSheet_transparent.png'
+  local ss = love.graphics.newImage(png_path)
+  local tw, th = 16, 16
+  g_spritesheet = ss
+  g_spritesheet_stats = calc_spritesheet_stats(ss, tw, th)
+  g_tiles = load_tiles(g_spritesheet, g_spritesheet_stats)
 end
 
 function love.keypressed(key)
-    if key == "j" then 
-        love.event.push("quit")
-    end
-    -- Remember, 2 equal signs (==) for comparing!
-    if key == "space" then
-        createRect()
-    end
+  if key == 'j' then 
+    love.event.push('quit')
+  end
 end
 
 function love.update(dt)
-    for i,v in ipairs(listOfRectangles) do
-        v.x = v.x + v.speed * dt
-    end
 end
 
-function love.draw(dt)
-    for i,v in ipairs(listOfRectangles) do
-        love.graphics.rectangle("line", v.x, v.y, v.width, v.height)
-    end
+function love.draw() 
+  local print = love.graphics.print
+  local draw = love.graphics.draw
+  --draw(ss, tiles[i], (i)*ss_stats.tile_w, 0*ss_stats.tile_h)
+  --print(g_tiles[0])
 end
-
